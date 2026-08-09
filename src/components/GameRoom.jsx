@@ -13,7 +13,6 @@ import {
 import { playVictoryAudio } from "../utils/audio";
 import HostTVView from "./HostTVView";
 import PlayerMobileCard from "./PlayerMobileCard";
-import TableSelectorModal from "./TableSelectorModal";
 import { Tv, Smartphone, ArrowLeft, Trophy } from "lucide-react";
 import confetti from "canvas-confetti";
 
@@ -23,7 +22,6 @@ export default function GameRoom({ session, onLeaveRoom }) {
   const [connectionMode, setConnectionMode] = useState("local");
   const [viewMode, setViewMode] = useState(isHost ? "tv" : "mobile");
   const [claimMessage, setClaimMessage] = useState(null);
-  const [isSelectingTable, setIsSelectingTable] = useState(false);
 
   // Escuchar la sala en tiempo real en Firebase
   useEffect(() => {
@@ -56,24 +54,6 @@ export default function GameRoom({ session, onLeaveRoom }) {
   const myPlayer = roomData.players ? roomData.players[playerId] : null;
   const drawnBalls = roomData.drawnBalls || [];
   const availableNumbers = roomData.availableNumbers || [];
-
-  // Mostrar modal de selección solo si el jugador NO viene del Player Journey o no posee cartón asignado
-  if (!isHost && (!myPlayer || !myPlayer.card) && isSelectingTable) {
-    return (
-      <TableSelectorModal
-        initialTableId={myPlayer?.tableId || 1}
-        onSelectTable={async ({ tableId, tableName, card }) => {
-          await updatePlayerDataProvider(roomId, playerId, {
-            tableId,
-            tableName,
-            card,
-            confirmedNumbers: []
-          });
-          setIsSelectingTable(false);
-        }}
-      />
-    );
-  }
 
   const handleDrawNextBall = async () => {
     if (!isHost || availableNumbers.length === 0) return;
@@ -118,7 +98,7 @@ export default function GameRoom({ session, onLeaveRoom }) {
   };
 
   /**
-   * Sincronización Móvil -> Firebase (con parseo estricto a Number para arreglar el bug de balotas como la 37)
+   * Sincronización Móvil -> Firebase (con parseo estricto a Number)
    */
   const handleToggleCell = async (rIdx, cIdx) => {
     if (!myPlayer || !myPlayer.card) return;
@@ -198,69 +178,69 @@ export default function GameRoom({ session, onLeaveRoom }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#090514] font-syne text-white flex flex-col">
-      {/* Barra de Control de Vistas */}
-      <nav className="bg-[#120a26] border-b-4 border-[#ff007f] px-6 py-3 flex justify-between items-center">
-        <div className="flex items-center gap-3">
+    <div className="min-h-screen bg-[#090514] font-syne text-white flex flex-col justify-between">
+      {/* Barra de Control de Vistas (Compacta en Móvil) */}
+      <nav className="bg-[#120a26] border-b-2 border-[#ff007f] px-3 py-2 flex justify-between items-center z-20">
+        <div className="flex items-center gap-2">
           <button
             onClick={onLeaveRoom}
-            className="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 font-bold border border-slate-600 text-sm flex items-center gap-2"
+            className="bg-slate-800 hover:bg-slate-700 text-white px-2.5 py-1 font-bold border border-slate-600 text-xs flex items-center gap-1"
           >
-            <ArrowLeft size={16} /> SALIR
+            <ArrowLeft size={14} /> SALIR
           </button>
-          <span className="text-xs bg-[#090514] border border-[#00f3ff] text-[#00f3ff] font-black px-2.5 py-1 uppercase tracking-wider hidden sm:inline-block">
+          <span className="text-[10px] bg-[#090514] border border-[#00f3ff] text-[#00f3ff] font-black px-2 py-0.5 uppercase tracking-wider hidden sm:inline-block">
             {connectionMode === "firebase" ? "🟢 Firebase DB" : "⚡ Modo Demo Local"}
           </span>
         </div>
 
         {/* Switcher de Vista */}
-        <div className="flex bg-[#090514] border-2 border-[#a855f7] p-1">
+        <div className="flex bg-[#090514] border border-[#a855f7] p-0.5">
           <button
             onClick={() => setViewMode("tv")}
-            className={`px-4 py-1 text-xs font-black uppercase flex items-center gap-2 transition-all ${
+            className={`px-2.5 py-1 text-[10px] font-black uppercase flex items-center gap-1 transition-all ${
               viewMode === "tv"
                 ? "bg-[#ff007f] text-white border border-white"
                 : "text-slate-400 hover:text-white"
             }`}
           >
-            <Tv size={14} /> TV Bot Locutor
+            <Tv size={12} /> TV Bot
           </button>
           <button
             onClick={() => setViewMode("mobile")}
-            className={`px-4 py-1 text-xs font-black uppercase flex items-center gap-2 transition-all ${
+            className={`px-2.5 py-1 text-[10px] font-black uppercase flex items-center gap-1 transition-all ${
               viewMode === "mobile"
                 ? "bg-[#00f3ff] text-black border border-black"
                 : "text-slate-400 hover:text-white"
             }`}
           >
-            <Smartphone size={14} /> Jugar en esta Pantalla
+            <Smartphone size={12} /> Mi Cartón
           </button>
         </div>
       </nav>
 
       {claimMessage && (
-        <div className="bg-[#ff0055] text-white font-black text-center py-2.5 px-4 text-xs border-b-2 border-black tracking-wider uppercase animate-bounce">
+        <div className="bg-[#ff0055] text-white font-black text-center py-2 px-3 text-xs border-b border-black tracking-wider uppercase animate-bounce z-20">
           {claimMessage}
         </div>
       )}
 
       {/* Overlay de Ganador */}
       {roomData.winner && (
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-6">
-          <div className="arcade-card-glass border-4 border-[#ff007f] p-8 max-w-lg w-full text-center arcade-glow-magenta">
-            <Trophy size={72} className="text-[#ffb700] mx-auto mb-4" />
-            <h1 className="text-4xl font-black text-white uppercase tracking-tight">¡BINGO CANTADO!</h1>
-            <h2 className="text-2xl font-black text-[#00f3ff] mt-2 uppercase">
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="arcade-card-glass border-4 border-[#ff007f] p-6 max-w-sm w-full text-center arcade-glow-magenta">
+            <Trophy size={60} className="text-[#ffb700] mx-auto mb-3" />
+            <h1 className="text-3xl font-black text-white uppercase tracking-tight">¡BINGO CANTADO!</h1>
+            <h2 className="text-xl font-black text-[#00f3ff] mt-1 uppercase">
               🏆 {roomData.winner.playerName} ({roomData.winner.tableName})
             </h2>
-            <p className="text-slate-200 font-bold mt-2 uppercase tracking-wide border-y border-slate-700 py-2">
+            <p className="text-xs text-slate-200 font-bold mt-2 uppercase tracking-wide border-y border-slate-700 py-2">
               {roomData.winner.bingoType}
             </p>
 
             {isHost && (
               <button
                 onClick={handleResetGame}
-                className="mt-6 w-full bg-[#ffb700] hover:bg-yellow-300 text-black font-black py-4 border-4 border-black uppercase tracking-wider arcade-glow-gold"
+                className="mt-4 w-full bg-[#ffb700] hover:bg-yellow-300 text-black font-black py-3 border-2 border-black uppercase tracking-wider arcade-glow-gold text-sm"
               >
                 Reiniciar Partida
               </button>
@@ -270,14 +250,14 @@ export default function GameRoom({ session, onLeaveRoom }) {
       )}
 
       {/* Renderizado de Vistas */}
-      <div className="flex-1">
+      <div className="flex-1 flex flex-col justify-center">
         {viewMode === "tv" ? (
           <HostTVView
             currentBall={roomData.currentBall}
             drawnBalls={drawnBalls}
             availableNumbers={availableNumbers}
             players={roomData.players}
-            maxPlayers={roomData.maxPlayers || 4}
+            maxPlayers={roomData.maxPlayers || 1}
             status={roomData.status || "waiting"}
             victoryMode={roomData.victoryMode || "line"}
             isHost={isHost}
@@ -287,7 +267,7 @@ export default function GameRoom({ session, onLeaveRoom }) {
             roomId={roomId}
           />
         ) : (
-          <div className="py-6 px-4">
+          <div className="w-full flex-1 flex flex-col justify-center p-2 sm:p-4">
             <PlayerMobileCard
               card={myPlayer ? myPlayer.card : []}
               playerName={playerName}
