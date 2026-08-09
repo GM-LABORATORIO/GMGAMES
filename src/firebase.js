@@ -1,7 +1,6 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
 
-// Credenciales reales de Firebase Realtime Database para El Bingo de la Familia Loaiza Sille
 const firebaseConfig = {
   apiKey: "AIzaSyCP7ff7oxn2lT5JAMf2hVP2GOh5tG_TjhI",
   authDomain: "bingo-loaiza-sille.firebaseapp.com",
@@ -13,5 +12,6 @@ const firebaseConfig = {
   measurementId: "G-L9PGL9YDEC"
 };
 
-const app = initializeApp(firebaseConfig);
+// Evitar errores de inicialización duplicada en recargas HMR
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 export const db = getDatabase(app);
