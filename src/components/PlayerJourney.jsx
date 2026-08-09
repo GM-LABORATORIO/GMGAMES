@@ -7,7 +7,7 @@ export const NEON_COLORS = Object.values(NEON_THEMES);
 
 export default function PlayerJourney({
   initialRoomCode = "",
-  occupiedTables = {}, // Mapa { [tableId]: "Nombre del Jugador" }
+  occupiedTables = {},
   onCompleteJourney
 }) {
   const [step, setStep] = useState(1);
@@ -18,7 +18,6 @@ export default function PlayerJourney({
   const activeTheme = getPlayerNeonTheme(selectedColor);
   const cardMatrixPreview = getPresetCard(selectedTableId);
 
-  // Verificar si la tabla seleccionada ya está ocupada por otro jugador
   const isCurrentTableOccupied = Boolean(occupiedTables[selectedTableId]);
   const occupiedByName = occupiedTables[selectedTableId] || "";
 
@@ -41,28 +40,26 @@ export default function PlayerJourney({
   };
 
   return (
-    <div className="min-h-screen bg-[#090514] text-white font-syne p-4 md:p-8 flex items-center justify-center select-none relative overflow-hidden">
-      {/* Background Arcade Casino */}
-      <div className="absolute inset-0 opacity-15 pointer-events-none bg-cover bg-center" style={{ backgroundImage: "url('/tv_casino_bg.png')" }} />
-
+    <div className="min-h-screen bg-[#090d16] text-white font-syne p-4 md:p-8 flex items-center justify-center select-none relative overflow-hidden">
+      
       <div className="max-w-xl w-full mx-auto relative z-10">
         
-        {/* Barra de Progreso del Journey */}
-        <div className="flex items-center justify-between mb-6 bg-[#120a26] border-2 border-slate-800 p-2 brutal-shadow-white">
+        {/* Barra de Progreso JUNTOS JUGAMOS */}
+        <div className="flex items-center justify-between mb-6 bg-[#101726] border-4 border-white p-2.5 brutal-shadow-yellow">
           {[
             { id: 1, label: "NOMBRE" },
             { id: 2, label: "COLOR NEÓN" },
             { id: 3, label: "CARTÓN" },
             { id: 4, label: "¡LISTO!" }
           ].map((s) => (
-            <div key={s.id} className="flex items-center gap-1">
+            <div key={s.id} className="flex items-center gap-1.5">
               <div
                 style={{
-                  backgroundColor: step >= s.id ? activeTheme.hex : "#1e293b",
-                  color: step >= s.id ? activeTheme.text : "#94a3b8"
+                  backgroundColor: step >= s.id ? "#ffcc00" : "#1e293b",
+                  color: step >= s.id ? "#000000" : "#94a3b8"
                 }}
-                className={`w-7 h-7 rounded-full font-black text-xs flex items-center justify-center border transition-all ${
-                  step === s.id ? "border-white scale-110 shadow-[0_0_10px_#ffffff]" : "border-black"
+                className={`w-8 h-8 rounded-none font-black text-xs flex items-center justify-center border-2 border-black transition-all ${
+                  step === s.id ? "scale-110 shadow-[2px_2px_0px_#fff]" : ""
                 }`}
               >
                 {s.id}
@@ -76,9 +73,9 @@ export default function PlayerJourney({
 
         {/* ESCENA 1: REGISTRO DE NOMBRE DE JUGADOR */}
         {step === 1 && (
-          <div className="arcade-card-glass border-4 border-[#00f3ff] p-8 arcade-glow-cyan animate-fadeIn space-y-6">
+          <div className="bg-[#101726] border-4 border-[#ffcc00] p-8 brutal-shadow-white animate-fadeIn space-y-6">
             <div className="text-center">
-              <span className="bg-[#00f3ff] text-black font-black px-3 py-1 text-xs uppercase tracking-widest border border-black inline-block mb-3">
+              <span className="bg-[#ffcc00] text-black font-black px-3 py-1 text-xs uppercase tracking-widest border border-black inline-block mb-3">
                 PASO 1 DE 4 // INGRESO
               </span>
               <h2 className="text-3xl font-black text-white uppercase tracking-tight">
@@ -91,7 +88,7 @@ export default function PlayerJourney({
 
             <form onSubmit={handleNextFromStep1} className="space-y-4">
               <div>
-                <label className="block text-xs font-black text-[#00f3ff] uppercase mb-2">NOMBRE / APODO:</label>
+                <label className="block text-xs font-black text-[#ffcc00] uppercase mb-2">NOMBRE / APODO:</label>
                 <input
                   type="text"
                   required
@@ -100,14 +97,14 @@ export default function PlayerJourney({
                   value={playerName}
                   onChange={(e) => setPlayerName(e.target.value)}
                   placeholder="EJ: BRUNO LOAIZA"
-                  className="w-full bg-[#090514] border-2 border-[#00f3ff] text-white px-5 py-4 font-black text-xl focus:outline-none uppercase"
+                  className="w-full bg-[#090d16] border-2 border-white text-white px-5 py-4 font-black text-xl focus:outline-none uppercase focus:border-[#ffcc00]"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={!playerName.trim()}
-                className="w-full bg-gradient-to-r from-[#00f3ff] to-[#00ff88] text-black font-black text-xl py-4 border-4 border-black uppercase tracking-wider arcade-glow-cyan flex items-center justify-center gap-2 disabled:opacity-40"
+                className="w-full bg-[#ffcc00] hover:bg-yellow-300 text-black font-black text-xl py-4 border-4 border-black uppercase tracking-wider brutal-shadow-white flex items-center justify-center gap-2 cursor-pointer disabled:opacity-40"
               >
                 CONTINUAR AL COLOR NEÓN <ArrowRight size={20} />
               </button>
@@ -117,19 +114,10 @@ export default function PlayerJourney({
 
         {/* ESCENA 2: ELECCIÓN DE COLOR NEÓN */}
         {step === 2 && (
-          <div
-            style={{
-              borderColor: activeTheme.borderColor,
-              boxShadow: activeTheme.glow
-            }}
-            className="arcade-card-glass border-4 p-8 animate-fadeIn space-y-6 transition-all duration-300"
-          >
+          <div className="bg-[#101726] border-4 border-white p-8 animate-fadeIn space-y-6 brutal-shadow-yellow">
             <div className="text-center">
-              <span
-                style={{ backgroundColor: activeTheme.hex, color: activeTheme.text }}
-                className="font-black px-3 py-1 text-xs uppercase tracking-widest border border-black inline-block mb-3"
-              >
-                PASO 2 DE 4 // TEMA PERSONALIZADO
+              <span className="bg-[#ffcc00] text-black font-black px-3 py-1 text-xs uppercase tracking-widest border border-black inline-block mb-3">
+                PASO 2 DE 4 // TEMA PERSONAL
               </span>
               <h2 className="text-3xl font-black text-white uppercase tracking-tight">
                 ELIGE TU COLOR NEÓN
@@ -146,12 +134,10 @@ export default function PlayerJourney({
                     onClick={() => setSelectedColor(color)}
                     style={{
                       backgroundColor: color.hex,
-                      color: color.text,
-                      boxShadow: isSelected ? color.glowStrong : "none",
-                      transform: isSelected ? "scale(1.05)" : "scale(1)"
+                      color: color.text
                     }}
-                    className={`p-3 font-black text-xs uppercase border-2 border-black flex flex-col items-center justify-center gap-1 transition-all ${
-                      isSelected ? "border-4 border-white shadow-lg" : "opacity-80 hover:opacity-100"
+                    className={`p-3 font-black text-xs uppercase border-4 border-black flex flex-col items-center justify-center gap-1 transition-all ${
+                      isSelected ? "scale-105 brutal-shadow-white" : "opacity-80 hover:opacity-100"
                     }`}
                   >
                     {isSelected ? <Check size={18} className="stroke-[4]" /> : <Heart size={16} />}
@@ -164,18 +150,13 @@ export default function PlayerJourney({
             <div className="flex gap-3">
               <button
                 onClick={() => setStep(1)}
-                className="w-1/3 bg-slate-800 text-slate-300 font-bold py-4 text-xs uppercase border border-slate-700"
+                className="w-1/3 bg-slate-800 text-slate-300 font-bold py-4 text-xs uppercase border border-slate-700 cursor-pointer"
               >
                 ATRÁS
               </button>
               <button
                 onClick={() => setStep(3)}
-                style={{
-                  boxShadow: activeTheme.glowStrong,
-                  backgroundColor: activeTheme.hex,
-                  color: activeTheme.text
-                }}
-                className="w-2/3 font-black text-xl py-4 border-4 border-black uppercase tracking-wider flex items-center justify-center gap-2"
+                className="w-2/3 bg-[#ffcc00] hover:bg-yellow-300 text-black font-black text-xl py-4 border-4 border-black uppercase tracking-wider flex items-center justify-center gap-2 brutal-shadow-white cursor-pointer"
               >
                 ELEGIR CARTÓN <ArrowRight size={20} />
               </button>
@@ -185,18 +166,9 @@ export default function PlayerJourney({
 
         {/* ESCENA 3: SELECCIÓN DE CARTÓN 1 AL 10 CON EXCLUSIVIDAD */}
         {step === 3 && (
-          <div
-            style={{
-              borderColor: isCurrentTableOccupied ? "#ff0055" : activeTheme.borderColor,
-              boxShadow: isCurrentTableOccupied ? "0 0 25px #ff0055" : activeTheme.glow
-            }}
-            className="arcade-card-glass border-4 p-8 animate-fadeIn space-y-6 transition-all duration-300"
-          >
+          <div className="bg-[#101726] border-4 border-[#ffcc00] p-8 animate-fadeIn space-y-6 brutal-shadow-white">
             <div className="text-center">
-              <span
-                style={{ backgroundColor: isCurrentTableOccupied ? "#ff0055" : activeTheme.hex, color: isCurrentTableOccupied ? "#fff" : activeTheme.text }}
-                className="font-black px-3 py-1 text-xs uppercase tracking-widest border border-black inline-block mb-3"
-              >
+              <span className="bg-[#ffcc00] text-black font-black px-3 py-1 text-xs uppercase tracking-widest border border-black inline-block mb-3">
                 PASO 3 DE 4 // SELECCIÓN DE TABLA
               </span>
               <h2 className="text-3xl font-black text-white uppercase tracking-tight">
@@ -204,24 +176,21 @@ export default function PlayerJourney({
               </h2>
             </div>
 
-            {/* Selector de Tabla (1 a 10) */}
-            <div className="flex justify-between items-center bg-[#090514] border-2 border-slate-700 p-2">
+            {/* Selector de Tabla */}
+            <div className="flex justify-between items-center bg-[#090d16] border-2 border-white p-2.5">
               <button
                 onClick={() => setSelectedTableId((prev) => (prev > 1 ? prev - 1 : 10))}
-                className="bg-slate-800 text-white font-black px-4 py-2 border border-slate-600 text-sm"
+                className="bg-slate-800 text-white font-black px-4 py-2 border border-slate-600 text-sm cursor-pointer"
               >
                 ◄ ANTERIOR
               </button>
 
               <div className="text-center">
-                <span
-                  style={{ color: isCurrentTableOccupied ? "#ff0055" : activeTheme.hex }}
-                  className="font-black text-xl font-space block"
-                >
+                <span className="font-black text-xl font-space block text-[#ffcc00]">
                   TABLA #{selectedTableId}
                 </span>
                 {isCurrentTableOccupied && (
-                  <span className="text-[10px] bg-[#ff0055] text-white px-2 py-0.5 font-black uppercase inline-flex items-center gap-1 border border-black">
+                  <span className="text-[10px] bg-red-600 text-white px-2 py-0.5 font-black uppercase inline-flex items-center gap-1 border border-black">
                     <Lock size={10} /> OCUPADA POR {occupiedByName}
                   </span>
                 )}
@@ -229,28 +198,28 @@ export default function PlayerJourney({
 
               <button
                 onClick={() => setSelectedTableId((prev) => (prev < 10 ? prev + 1 : 1))}
-                className="bg-slate-800 text-white font-black px-4 py-2 border border-slate-600 text-sm"
+                className="bg-slate-800 text-white font-black px-4 py-2 border border-slate-600 text-sm cursor-pointer"
               >
                 SIGUIENTE ►
               </button>
             </div>
 
-            {/* Banner de Advertencia si está ocupada */}
+            {/* Banner si la tabla está ocupada */}
             {isCurrentTableOccupied && (
-              <div className="bg-[#ff0055] text-white font-black p-3 border-2 border-black text-center text-xs uppercase tracking-wider animate-bounce flex items-center justify-center gap-2">
+              <div className="bg-red-600 text-white font-black p-3 border-2 border-black text-center text-xs uppercase tracking-wider animate-bounce flex items-center justify-center gap-2">
                 <AlertTriangle size={18} />
                 <span>ESTA TABLA YA FUE ELEGIDA POR {occupiedByName}. POR FAVOR ELIGE OTRA.</span>
               </div>
             )}
 
-            {/* Previsualización 5x5 de la Tabla Elegida */}
-            <div className="bg-[#120a26] border-2 border-slate-700 p-3">
+            {/* Previsualización 5x5 */}
+            <div className="bg-[#090d16] border-2 border-white p-3">
               <div className="grid grid-cols-5 gap-1 mb-1 text-center font-black text-xs">
-                <div className="bg-[#ff0055] text-white py-0.5 border border-black">B</div>
-                <div className="bg-[#ffb700] text-black py-0.5 border border-black">I</div>
-                <div className="bg-[#00f3ff] text-black py-0.5 border border-black">N</div>
-                <div className="bg-[#00ff88] text-black py-0.5 border border-black">G</div>
-                <div className="bg-[#a855f7] text-white py-0.5 border border-black">O</div>
+                <div className="bg-[#ffcc00] text-black py-0.5 border border-black">B</div>
+                <div className="bg-white text-black py-0.5 border border-black">I</div>
+                <div className="bg-[#ffcc00] text-black py-0.5 border border-black">N</div>
+                <div className="bg-white text-black py-0.5 border border-black">G</div>
+                <div className="bg-[#ffcc00] text-black py-0.5 border border-black">O</div>
               </div>
 
               <div className="grid grid-cols-5 gap-1 opacity-90">
@@ -259,9 +228,9 @@ export default function PlayerJourney({
                     <div
                       key={`${rIdx}-${cIdx}`}
                       style={{
-                        backgroundColor: cell.val === "FREE" ? activeTheme.hex : "#090514",
-                        color: cell.val === "FREE" ? activeTheme.text : "#ffffff",
-                        borderColor: cell.val === "FREE" ? activeTheme.borderColor : "#334155"
+                        backgroundColor: cell.val === "FREE" ? "#ffcc00" : "#101726",
+                        color: cell.val === "FREE" ? "#000000" : "#ffffff",
+                        borderColor: cell.val === "FREE" ? "#000000" : "#334155"
                       }}
                       className="aspect-square flex items-center justify-center font-black text-xs border font-space"
                     >
@@ -275,19 +244,14 @@ export default function PlayerJourney({
             <div className="flex gap-3">
               <button
                 onClick={() => setStep(2)}
-                className="w-1/3 bg-slate-800 text-slate-300 font-bold py-4 text-xs uppercase border border-slate-700"
+                className="w-1/3 bg-slate-800 text-slate-300 font-bold py-4 text-xs uppercase border border-slate-700 cursor-pointer"
               >
                 ATRÁS
               </button>
               <button
                 onClick={() => !isCurrentTableOccupied && setStep(4)}
                 disabled={isCurrentTableOccupied}
-                style={{
-                  boxShadow: isCurrentTableOccupied ? "none" : activeTheme.glowStrong,
-                  backgroundColor: isCurrentTableOccupied ? "#475569" : activeTheme.hex,
-                  color: isCurrentTableOccupied ? "#94a3b8" : activeTheme.text
-                }}
-                className="w-2/3 font-black text-xl py-4 border-4 border-black uppercase tracking-wider flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-2/3 bg-[#ffcc00] hover:bg-yellow-300 text-black font-black text-xl py-4 border-4 border-black uppercase tracking-wider flex items-center justify-center gap-2 brutal-shadow-white cursor-pointer disabled:opacity-50"
               >
                 {isCurrentTableOccupied ? "TABLA OCUPADA" : "CONFIRMAR TABLA"} <ArrowRight size={20} />
               </button>
@@ -295,42 +259,28 @@ export default function PlayerJourney({
           </div>
         )}
 
-        {/* ESCENA 4: CONFIRMACIÓN Y ESTADO ¡LISTO PARA JUGAR! */}
+        {/* ESCENA 4: CONFIRMACIÓN ¡LISTO PARA JUGAR! */}
         {step === 4 && (
-          <div
-            style={{
-              borderColor: activeTheme.borderColor,
-              boxShadow: activeTheme.glowStrong
-            }}
-            className="arcade-card-glass border-4 p-8 animate-fadeIn text-center space-y-6 transition-all duration-300"
-          >
-            <div className="inline-block p-4 bg-[#090514] border-4 border-white rounded-full animate-bounce">
-              <Trophy size={48} style={{ color: activeTheme.hex }} />
+          <div className="bg-[#101726] border-4 border-[#ffcc00] p-8 animate-fadeIn text-center space-y-6 brutal-shadow-white">
+            <div className="inline-block p-4 bg-[#090d16] border-4 border-white rounded-full animate-bounce">
+              <Trophy size={48} className="text-[#ffcc00]" />
             </div>
 
             <div>
-              <span
-                style={{ backgroundColor: activeTheme.hex, color: activeTheme.text }}
-                className="font-black px-4 py-1 text-xs uppercase tracking-widest border border-black inline-block mb-2"
-              >
+              <span className="bg-[#ffcc00] text-black font-black px-4 py-1 text-xs uppercase tracking-widest border border-black inline-block mb-2">
                 ¡LISTO PARA EL BINGO FAMILIAR!
               </span>
               <h2 className="text-4xl font-black text-white uppercase">
                 {playerName}
               </h2>
               <p className="text-xs text-slate-300 font-bold mt-1 uppercase">
-                SELECCIONASTE LA <span style={{ color: activeTheme.hex }}>TABLA #{selectedTableId}</span> CON TEMA NEÓN <span style={{ color: activeTheme.hex }}>{activeTheme.name}</span>
+                SELECCIONASTE LA <span className="text-[#ffcc00]">TABLA #{selectedTableId}</span> CON TEMA NEÓN <span className="text-[#ffcc00]">{activeTheme.name}</span>
               </p>
             </div>
 
             <button
               onClick={handleFinishJourney}
-              style={{
-                boxShadow: activeTheme.glowStrong,
-                backgroundColor: activeTheme.hex,
-                color: activeTheme.text
-              }}
-              className="w-full font-black text-2xl py-5 border-4 border-black uppercase tracking-wider animate-pulse flex items-center justify-center gap-3"
+              className="w-full bg-[#ffcc00] hover:bg-yellow-300 text-black font-black text-2xl py-5 border-4 border-black uppercase tracking-wider flex items-center justify-center gap-3 brutal-shadow-white animate-pulse cursor-pointer"
             >
               ¡EMPEZAR A JUGAR AHORA! 🎮
             </button>

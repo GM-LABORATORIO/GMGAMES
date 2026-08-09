@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { createRoomProvider, joinRoomProvider } from "../utils/realtimeProvider";
 import { generateAvailableNumbers } from "../utils/bingoLogic";
 import PlayerJourney from "./PlayerJourney";
-import { Users, Play, LogIn, Tv, Gamepad2, ShieldCheck, TestTube } from "lucide-react";
+import { Users, Play, LogIn, Tv, Gamepad2, ShieldCheck, TestTube, ArrowLeft } from "lucide-react";
 
 export default function Lobby({ onJoinRoom, onBackToHub }) {
   const [playerName, setPlayerName] = useState("");
@@ -26,7 +26,7 @@ export default function Lobby({ onJoinRoom, onBackToHub }) {
   };
 
   /**
-   * Crear Sala Host TV (El TV es un Bot Transmisor, NO consume cupo de jugador)
+   * Crear Sala Host TV (El TV es un Bot Transmisor)
    */
   const handleCreateRoom = async (e) => {
     e.preventDefault();
@@ -49,7 +49,7 @@ export default function Lobby({ onJoinRoom, onBackToHub }) {
         victoryMode: "line",
         createdAt: Date.now(),
         winner: null,
-        players: {} // La sala nace sin jugadores; el TV es un Bot Transmisor
+        players: {}
       };
 
       const res = await createRoomProvider(newRoomId, newRoomData);
@@ -131,21 +131,21 @@ export default function Lobby({ onJoinRoom, onBackToHub }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#090514] text-white font-syne p-8 md:p-12 flex flex-col justify-between select-none relative overflow-hidden">
+    <div className="min-h-screen bg-[#090d16] text-white font-syne p-6 md:p-12 flex flex-col justify-between select-none relative overflow-hidden">
       
-      {/* Background visual asset Cyber Casino */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none bg-cover bg-center" style={{ backgroundImage: "url('/tv_casino_bg.png')" }} />
+      {/* Background sutil */}
+      <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#ffcc00_1px,transparent_1px)] [background-size:24px_24px]" />
 
       <div className="max-w-7xl w-full mx-auto relative z-10 space-y-8">
         
-        {/* Portada Gigante: JUNTOS JUGAMOS // BINGO MULTIJUGADOR */}
+        {/* Header Elegante JUNTOS JUGAMOS */}
         <header className="flex flex-wrap justify-between items-center border-b-4 border-[#ffcc00] pb-6 gap-6">
           <div>
             <div className="inline-flex items-center gap-2 bg-[#ffcc00] text-black font-black px-3 py-1 text-xs tracking-widest border border-black mb-3 uppercase">
               <Gamepad2 size={16} /> JUNTOS JUGAMOS // BINGO FAMILIAR
             </div>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight text-white uppercase leading-tight drop-shadow-[4px_4px_0px_#000]">
-              EL BINGO DE LA <br />
+            <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white uppercase leading-tight drop-shadow-[4px_4px_0px_#000]">
+              BINGO DE LA <br />
               <span className="text-[#ffcc00]">FAMILIA LOAIZA SILLE</span>
             </h1>
           </div>
@@ -154,54 +154,54 @@ export default function Lobby({ onJoinRoom, onBackToHub }) {
             {onBackToHub && (
               <button
                 onClick={onBackToHub}
-                className="bg-[#101726] border-2 border-white hover:border-[#ffcc00] px-4 py-2 text-xs font-black text-white uppercase tracking-wider brutal-shadow-yellow"
+                className="bg-[#101726] border-2 border-white hover:border-[#ffcc00] px-4 py-2 text-xs font-black text-white uppercase tracking-wider brutal-shadow-yellow flex items-center gap-2 cursor-pointer"
               >
-                🎮 CATÁLOGOS JUNTOS JUGAMOS
+                <ArrowLeft size={16} /> VOLVER A JUNTOS JUGAMOS
               </button>
             )}
           </div>
         </header>
 
         {error && (
-          <div className="bg-[#ff0055] text-white font-black text-sm p-4 border-2 border-black max-w-2xl mx-auto uppercase tracking-wider text-center animate-bounce">
+          <div className="bg-[#ffcc00] text-black font-black text-sm p-4 border-4 border-black max-w-2xl mx-auto uppercase tracking-wider text-center animate-bounce brutal-shadow-white">
             {error}
           </div>
         )}
 
-        {/* Widescreen 2-Column TV Layout */}
+        {/* 2 Columnas de Lujo Brutalista */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
           
-          {/* Columna 1: CREAR SALA (TV BOT LOCUTOR AUTOMÁTICO) */}
-          <div className="arcade-card-glass p-8 border-4 border-[#ff007f] arcade-glow-magenta flex flex-col justify-between space-y-6">
+          {/* Columna 1: CREAR SALA EN LA TV */}
+          <div className="bg-[#101726] p-8 border-4 border-[#ffcc00] brutal-shadow-white flex flex-col justify-between space-y-6">
             <div>
-              <div className="flex justify-between items-center border-b-2 border-slate-800 pb-3 mb-4">
-                <h3 className="text-2xl font-black text-[#ff007f] uppercase flex items-center gap-3">
-                  <Tv size={28} /> CREAR SALA (TV BOT AUTOMÁTICO)
+              <div className="flex justify-between items-center border-b-4 border-slate-700 pb-3 mb-4">
+                <h3 className="text-2xl font-black text-[#ffcc00] uppercase flex items-center gap-3">
+                  <Tv size={28} /> TRANSMISIÓN EN LA TV
                 </h3>
-                <span className="bg-[#ff007f] text-white font-black text-xs px-3 py-1 uppercase border border-white">
-                  MODO TRANSMISIÓN
+                <span className="bg-[#ffcc00] text-black font-black text-xs px-3 py-1 uppercase border border-black">
+                  TRANSMISOR
                 </span>
               </div>
 
-              <p className="text-sm text-slate-300 font-bold mb-6">
-                El TV actúa como un <span className="text-[#00f3ff]">Bot Locutor Automático</span> con voz latina y temporizador de balotas. <span className="text-[#ffb700]">Tú y toda la familia escanean el QR para jugar.</span>
+              <p className="text-sm text-slate-300 font-bold mb-6 uppercase">
+                El TV proyecta el bombo de balotas en 4K con la voz del locutor. <span className="text-[#ffcc00]">La familia escanea el QR con su celular para jugar.</span>
               </p>
 
               <div>
-                <label className="block text-xs font-black text-[#00f3ff] uppercase tracking-wider mb-2">
-                  SELECCIONA NÚMERO DE JUGADORES ESPERADOS:
+                <label className="block text-xs font-black text-[#ffcc00] uppercase tracking-wider mb-2">
+                  JUGADORES ESPERADOS:
                 </label>
                 <select
                   value={maxPlayers}
                   onChange={(e) => setMaxPlayers(Number(e.target.value))}
-                  className="w-full bg-[#090514] text-[#ffb700] font-black border-2 border-[#00f3ff] px-4 py-3 text-base uppercase focus:outline-none"
+                  className="w-full bg-[#090d16] text-[#ffcc00] font-black border-2 border-white px-4 py-3 text-base uppercase focus:outline-none"
                 >
-                  <option value={1}>🧪 1 JUGADOR (MODO PRUEBAS SOLO)</option>
+                  <option value={1}>🧪 1 JUGADOR (MODO PRUEBAS)</option>
                   <option value={2}>2 JUGADORES (DUELO FAMILIAR)</option>
                   <option value={4}>4 JUGADORES (ESTÁNDAR)</option>
                   <option value={6}>6 JUGADORES (MEDIO)</option>
                   <option value={8}>8 JUGADORES (GRANDE)</option>
-                  <option value={10}>10 JUGADORES (GRAN FAMILIA MÁXIMO)</option>
+                  <option value={10}>10 JUGADORES (MÁXIMO FAMILIAR)</option>
                 </select>
               </div>
             </div>
@@ -209,36 +209,36 @@ export default function Lobby({ onJoinRoom, onBackToHub }) {
             <button
               onClick={handleCreateRoom}
               disabled={loading}
-              className="w-full bg-gradient-to-r from-[#ff007f] to-[#a855f7] hover:opacity-90 text-white font-black text-2xl py-5 border-4 border-black uppercase tracking-wider arcade-glow-magenta active:translate-x-1 active:translate-y-1 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+              className="w-full bg-[#ffcc00] hover:bg-yellow-300 text-black font-black text-2xl py-5 border-4 border-black uppercase tracking-wider brutal-shadow-white active:translate-x-1 active:translate-y-1 transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50"
             >
-              <Play size={24} fill="currentColor" /> {loading ? "CREANDO SALA..." : "INICIAR TV BOT Y CÓDIGO QR"}
+              <Play size={24} fill="currentColor" /> {loading ? "CREANDO SALA..." : "INICIAR TV Y CÓDIGO QR"}
             </button>
           </div>
 
-          {/* Columna 2: UNIRSE A SALA (MÓVIL JUGADOR) */}
-          <div className="arcade-card-glass p-8 border-4 border-[#00f3ff] arcade-glow-cyan flex flex-col justify-between space-y-6">
+          {/* Columna 2: UNIRSE A LA SALA DESDE EL CELULAR */}
+          <div className="bg-[#101726] p-8 border-4 border-white brutal-shadow-yellow flex flex-col justify-between space-y-6">
             <div>
-              <div className="flex justify-between items-center border-b-2 border-slate-800 pb-3 mb-4">
-                <h3 className="text-2xl font-black text-[#00f3ff] uppercase flex items-center gap-3">
-                  <LogIn size={28} /> UNIRSE A LA SALA (MÓVIL)
+              <div className="flex justify-between items-center border-b-4 border-slate-700 pb-3 mb-4">
+                <h3 className="text-2xl font-black text-white uppercase flex items-center gap-3">
+                  <LogIn size={28} /> UNIRSE DESDE CELULAR
                 </h3>
-                <span className="bg-[#00f3ff] text-black font-black text-xs px-3 py-1 uppercase border border-black">
-                  PLAYER JOURNEY (4 PASOS)
+                <span className="bg-white text-black font-black text-xs px-3 py-1 uppercase border border-black">
+                  4 PASOS
                 </span>
               </div>
 
-              <p className="text-sm text-slate-300 font-bold mb-4">
-                Escanea el QR de la TV desde tu celular o ingresa el código para elegir tu color neón y tu tabla del 1 al 10.
+              <p className="text-sm text-slate-300 font-bold mb-4 uppercase">
+                Escanea el QR de la TV o ingresa el código de sala para elegir tu tabla del 1 al 10.
               </p>
 
               <div>
-                <label className="block text-xs font-black text-[#ff007f] uppercase tracking-wider mb-2">
+                <label className="block text-xs font-black text-[#ffcc00] uppercase tracking-wider mb-2">
                   CÓDIGO DE SALA EN LA TV:
                 </label>
                 <input
                   type="text"
-                  className="w-full bg-[#090514] border-2 border-[#ff007f] text-[#ffb700] font-black px-4 py-3 text-lg uppercase tracking-widest focus:outline-none focus:border-[#00f3ff]"
-                  placeholder="CÓDIGO EJ: BINGO-9284"
+                  className="w-full bg-[#090d16] border-2 border-white text-[#ffcc00] font-black px-4 py-3 text-lg uppercase tracking-widest focus:outline-none focus:border-[#ffcc00]"
+                  placeholder="EJ: BINGO-9284"
                   value={roomCode}
                   onChange={(e) => setRoomCode(e.target.value)}
                 />
@@ -247,20 +247,20 @@ export default function Lobby({ onJoinRoom, onBackToHub }) {
 
             <button
               onClick={() => setShowPlayerJourney(true)}
-              className="w-full bg-gradient-to-r from-[#00f3ff] to-[#00ff88] hover:opacity-90 text-black font-black text-2xl py-5 border-4 border-black uppercase tracking-wider arcade-glow-cyan active:translate-x-1 active:translate-y-1 transition-all flex items-center justify-center gap-3"
+              className="w-full bg-white hover:bg-slate-200 text-black font-black text-2xl py-5 border-4 border-black uppercase tracking-wider brutal-shadow-yellow active:translate-x-1 active:translate-y-1 transition-all flex items-center justify-center gap-3 cursor-pointer"
             >
-              <LogIn size={24} /> ENTRAR COMO JUGADOR (MÓVIL)
+              <LogIn size={24} /> ENTRAR COMO JUGADOR
             </button>
           </div>
         </div>
 
-        {/* Footer */}
+        {/* Footer de Marca */}
         <footer className="border-t-2 border-slate-800 pt-4 flex flex-wrap justify-between items-center text-xs text-slate-400 font-bold uppercase tracking-widest gap-4">
-          <span className="flex items-center gap-2 text-[#00f3ff]">
-            <ShieldCheck size={16} /> EL BINGO DE LA FAMILIA LOAIZA SILLE // TV BOT AUTOMÁTICO
+          <span className="flex items-center gap-2 text-[#ffcc00]">
+            <ShieldCheck size={16} /> JUNTOS JUGAMOS // BINGO MULTIJUGADOR FAMILIAR
           </span>
-          <span className="flex items-center gap-1 text-[#ffb700]">
-            <TestTube size={14} /> MODO 1 JUGADOR DE PRUEBAS DISPONIBLE
+          <span className="text-slate-500">
+            EDICIÓN ESPECIAL FAMILIA LOAIZA SILLE
           </span>
         </footer>
       </div>
