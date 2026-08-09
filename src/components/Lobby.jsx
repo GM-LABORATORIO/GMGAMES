@@ -4,10 +4,10 @@ import { generateAvailableNumbers } from "../utils/bingoLogic";
 import PlayerJourney from "./PlayerJourney";
 import { Users, Play, LogIn, Tv, Gamepad2, ShieldCheck, TestTube } from "lucide-react";
 
-export default function Lobby({ onJoinRoom }) {
+export default function Lobby({ onJoinRoom, onBackToHub }) {
   const [playerName, setPlayerName] = useState("");
   const [roomCode, setRoomCode] = useState("");
-  const [maxPlayers, setMaxPlayers] = useState(1); // 1 jugador por defecto para pruebas rápidas
+  const [maxPlayers, setMaxPlayers] = useState(1);
   const [showPlayerJourney, setShowPlayerJourney] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -138,23 +138,27 @@ export default function Lobby({ onJoinRoom }) {
 
       <div className="max-w-7xl w-full mx-auto relative z-10 space-y-8">
         
-        {/* Portada Gigante: EL BINGO DE LA FAMILIA LOAIZA SILLE */}
-        <header className="flex flex-wrap justify-between items-center border-b-4 border-[#ff007f] pb-6 gap-6">
+        {/* Portada Gigante: JUNTOS JUGAMOS // BINGO MULTIJUGADOR */}
+        <header className="flex flex-wrap justify-between items-center border-b-4 border-[#ffcc00] pb-6 gap-6">
           <div>
-            <div className="inline-flex items-center gap-2 bg-[#ff007f] text-white font-black px-4 py-1 text-xs tracking-widest border border-white mb-3 uppercase">
-              <Gamepad2 size={16} /> EDICIÓN ESPECIAL FAMILIAR
+            <div className="inline-flex items-center gap-2 bg-[#ffcc00] text-black font-black px-3 py-1 text-xs tracking-widest border border-black mb-3 uppercase">
+              <Gamepad2 size={16} /> JUNTOS JUGAMOS // BINGO FAMILIAR
             </div>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight text-white uppercase leading-tight drop-shadow-[0_4px_16px_rgba(255,0,127,0.6)]">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight text-white uppercase leading-tight drop-shadow-[4px_4px_0px_#000]">
               EL BINGO DE LA <br />
-              <span className="text-[#00f3ff]">FAMILIA LOAIZA SILLE</span>
+              <span className="text-[#ffcc00]">FAMILIA LOAIZA SILLE</span>
             </h1>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="bg-[#120a26]/90 border-2 border-[#00f3ff] px-6 py-3 text-center arcade-glow-cyan">
-              <span className="text-[10px] text-[#00f3ff] font-black uppercase tracking-widest block">TV BOT TRANSMISOR</span>
-              <span className="text-xl font-black text-[#ffb700] font-space">AUTOMÁTICO 4K</span>
-            </div>
+            {onBackToHub && (
+              <button
+                onClick={onBackToHub}
+                className="bg-[#101726] border-2 border-white hover:border-[#ffcc00] px-4 py-2 text-xs font-black text-white uppercase tracking-wider brutal-shadow-yellow"
+              >
+                🎮 CATÁLOGOS JUNTOS JUGAMOS
+              </button>
+            )}
           </div>
         </header>
 
