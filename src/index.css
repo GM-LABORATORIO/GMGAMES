@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Syne:wght@700;800;900&display=swap');
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-dark-obsidian: #090514;
+    --neon-cyan: #00f3ff;
+    --neon-magenta: #ff007f;
+    --neon-gold: #ffb700;
+    --neon-green: #00ff88;
+    --neon-purple: #a855f7;
+
+    --col-b: #ff0055;
+    --col-i: #ffb700;
+    --col-n: #00f3ff;
+    --col-g: #00ff88;
+    --col-o: #a855f7;
+  }
+
+  body {
+    background-color: #090514;
+    background-image: 
+      radial-gradient(circle at 10% 20%, rgba(255, 0, 127, 0.15) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(0, 243, 255, 0.15) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.1) 0%, transparent 50%);
+    color: #ffffff;
+    font-family: 'Syne', 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+}
+
+.font-syne {
+  font-family: 'Syne', sans-serif;
+}
+
+.font-space {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+/* Sombras Neón Arcade */
+.arcade-glow-cyan {
+  box-shadow: 0 0 25px rgba(0, 243, 255, 0.4), 4px 4px 0px 0px #00f3ff;
+}
+
+.arcade-glow-magenta {
+  box-shadow: 0 0 25px rgba(255, 0, 127, 0.4), 4px 4px 0px 0px #ff007f;
+}
+
+.arcade-glow-gold {
+  box-shadow: 0 0 25px rgba(255, 183, 0, 0.4), 4px 4px 0px 0px #ffb700;
+}
+
+.arcade-glow-purple {
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.4), 4px 4px 0px 0px #a855f7;
+}
+
+.arcade-card-glass {
+  background: rgba(18, 10, 38, 0.85);
+  backdrop-filter: blur(16px);
+  border: 2px solid rgba(168, 85, 247, 0.3);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+}
