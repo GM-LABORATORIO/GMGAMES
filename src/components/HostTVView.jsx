@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getLetterForNumber } from "../utils/bingoLogic";
-import { speakBallNumber, toggleBackgroundMusic, unlockTVAudio } from "../utils/audio";
-import { Play, Pause, RotateCcw, Sparkles, Tv, QrCode, X, Copy, Check, Users, LayoutGrid, Volume2, Music, Gamepad2, Timer, Trophy, VolumeX, Zap } from "lucide-react";
+import { speakBallNumber, toggleBackgroundMusic, unlockTVAudio, getAvailableSpanishVoices } from "../utils/audio";
+import { Play, Pause, RotateCcw, Sparkles, Tv, QrCode, X, Copy, Check, Users, LayoutGrid, Volume2, Music, Gamepad2, Timer, Trophy, VolumeX, Zap, Mic } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import PlayersTVGrid from "./PlayersTVGrid";
 
@@ -28,19 +28,39 @@ export default function HostTVView({
   const [showLargeQR, setShowLargeQR] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [tvRightTab, setTvRightTab] = useState("board");
-  const [voiceLang, setVoiceLang] = useState("es-MX");
-  const [bgMusicEnabled, setBgMusicEnabled] = useState(true);
+  const [bgMusicEnabled, setBgMusicEnabled] = useState(false);
   const [announcerSubtitle, setAnnouncerSubtitle] = useState("");
   const [isTvAudioActivated, setIsTvAudioActivated] = useState(false);
-  const [tvPerformanceMode, setTvPerformanceMode] = useState(true); // Alto rendimiento activado por defecto
+  
+  // Estado para voces del navegador disponibles
+  const [availableVoices, setAvailableVoices] = useState([]);
+  const [selectedVoiceURI, setSelectedVoiceURI] = useState("");
 
   const playersList = Object.values(players || {});
   const joinUrl = `${window.location.origin}/?room=${roomId}`;
   const isRoomFull = playersList.length >= maxPlayers;
 
+  // Cargar lista de voces del navegador
+  useEffect(() => {
+    const loadVoices = () => {
+      const voices = getAvailableSpanishVoices();
+      setAvailableVoices(voices);
+      if (voices.length > 0 && !selectedVoiceURI) {
+        setSelectedVoiceURI(voices[0].voiceURI);
+      }
+    };
+
+    loadVoices();
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+  }, []);
+
   const handleActivateAudio = () => {
     unlockTVAudio();
     setIsTvAudioActivated(true);
+    toggleBackgroundMusic(true);
+    setBgMusicEnabled(true);
   };
 
   // Calcular el líder actual de la partida
@@ -366,19 +386,38 @@ export default function HostTVView({
                   </select>
                 </div>
 
-                <div className="bg-[#090514] border border-slate-700 p-2">
-                  <span className="text-[9px] text-slate-400 font-bold uppercase block mb-1">LOCUTOR</span>
+                <div className="bg-[#090514] border border-slate-700 p-2 col-span-2">
+                  <span className="text-[9px] text-slate-400 font-bold uppercase block mb-1 flex items-center gap-1">
+                    <Mic size={10} className="text-[#00f3ff]" /> VOZ EN VIVO (SELECCIÓN LIBRE)
+                  </span>
                   <select
-                    value={voiceLang}
-                    onChange={(e) => setVoiceLang(e.target.value)}
+                    value={selectedVoiceURI}
+                    onChange={(e) => setSelectedVoiceURI(e.target.value)}
                     className="w-full bg-[#120a26] text-[#00f3ff] font-black border border-slate-700 text-xs px-1 py-1 uppercase focus:outline-none"
                   >
-                    <option value="es-MX">MÉXICO</option>
-                    <option value="es-CO">COLOMBIA</option>
-                    <option value="es-AR">ARGENTINA</option>
-                    <option value="es-US">EE.UU</option>
-                    <option value="es-ES">ESPAÑA</option>
+                    {availableVoices.map((v) => (
+                      <option key={v.voiceURI} value={v.voiceURI}>
+                        🗣️ {v.name} ({v.lang})
+                      </option>
+                    ))}
                   </select>
+                </div>
+
+                <div className="bg-[#090514] border border-slate-700 p-2 flex items-center justify-center">
+                  <button
+                    onClick={() => {
+                      const nextState = !bgMusicEnabled;
+                      setBgMusicEnabled(nextState);
+                      toggleBackgroundMusic(nextState);
+                    }}
+                    className={`w-full h-full font-black text-[10px] py-1 px-2 border uppercase tracking-wider flex items-center justify-center gap-1 transition-all ${
+                      bgMusicEnabled
+                        ? "bg-[#a855f7] text-white border-white shadow-[0_0_8px_#a855f7]"
+                        : "bg-slate-800 text-slate-400 border-slate-700"
+                    }`}
+                  >
+                    <Music size={12} /> {bgMusicEnabled ? "MÚSICA ON" : "MÚSICA OFF"}
+                  </button>
                 </div>
               </div>
 

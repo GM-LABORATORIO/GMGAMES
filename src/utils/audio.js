@@ -1,5 +1,5 @@
 /**
- * Módulo de Audio de Alta Emoción con Locución Femenina Latina y Seguimiento de Líderes por Nombre
+ * Módulo de Audio y Locución Natural con Selector Libre de Voces y Música de Fondo Casino
  */
 
 let ambientAudioCtx = null;
@@ -9,24 +9,22 @@ let isMusicPlaying = false;
 let isAudioUnlocked = false;
 
 const SHORT_NUMBER_JOKES = {
-  1: "¡Arrancamos con toda la vibra!",
+  1: "¡Arrancamos con toda la actitud!",
   7: "¡Número de la buena suerte!",
-  13: "¡Sin miedo a nada, familia!",
-  15: "¡La niña bonita del bingo!",
-  22: "¡Los dos patitos al agua!",
+  13: "¡Sin miedo!",
+  15: "¡La niña bonita!",
+  22: "¡Los dos patitos!",
   33: "¡La edad de Cristo!",
-  48: "¡Esto se está calentando!",
-  69: "¡El favorito de la casa, ay caramba!",
-  75: "¡La última balota de la noche!"
+  48: "¡Está caliente!",
+  69: "¡El favorito, ay caramba!",
+  75: "¡La última balota!"
 };
 
 const HUMOROUS_COMMENTS = [
-  "¡Revisen bien esos cartones!",
-  "¡Atentos todos en la sala!",
-  "¡Tensión total, familia!",
-  "¡Se viene el bingo ya!",
-  "¡No disimulen la emoción!",
-  "¡Casi casi cantamos bingo!"
+  "¡Revisen bien el cartón!",
+  "¡Atentos en la sala!",
+  "¡Se viene el bingo!",
+  "¡No se dejen coger la ventaja!"
 ];
 
 /**
@@ -60,13 +58,22 @@ export function unlockTVAudio() {
 }
 
 /**
- * Locución Femenina Latina Eufórica con Comentarios del Líder en Vivo
+ * Obtiene la lista completa de voces en español disponibles en el dispositivo/navegador
+ */
+export function getAvailableSpanishVoices() {
+  if (!("speechSynthesis" in window)) return [];
+  const voices = window.speechSynthesis.getVoices();
+  return voices.filter((v) => v.lang.startsWith("es") || v.lang.includes("es-"));
+}
+
+/**
+ * Locución Natural Humana con Voz Seleccionable por el Usuario
  * @param {string} letter - Letra (B, I, N, G, O)
  * @param {number|string} number - Número cantado
- * @param {string} selectedVoiceLang - Idioma/Acento de voz
+ * @param {string} selectedVoiceURI - URI de la voz específica elegida por el usuario
  * @param {Object} leaderInfo - Información del líder { name: "Bruno", hits: 4 }
  */
-export function speakBallNumber(letter, number, selectedVoiceLang = "es-MX", leaderInfo = null) {
+export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInfo = null) {
   if (!letter || !number) return "";
 
   if (!isAudioUnlocked) {
@@ -91,57 +98,46 @@ export function speakBallNumber(letter, number, selectedVoiceLang = "es-MX", lea
     const numVal = Number(number);
     let textToSpeak = `Letra ${letterPhonetic}, ${numVal}.`;
 
-    // 1. Prioridad a dichos especiales por número
+    // 1. Dichos especiales por número famoso
     if (SHORT_NUMBER_JOKES[numVal]) {
       textToSpeak += ` ${SHORT_NUMBER_JOKES[numVal]}`;
     } 
-    // 2. Mención de PRESIÓN al líder actual si tiene 2 o más aciertos
-    else if (leaderInfo && leaderInfo.name && leaderInfo.hits >= 2 && Math.random() < 0.45) {
+    // 2. Mención de PRESIÓN AL LÍDER (Solamente 15% de probabilidad para no saturar)
+    else if (leaderInfo && leaderInfo.name && leaderInfo.hits >= 3 && Math.random() < 0.15) {
       const pressurePhrases = [
-        `¡Atención familia, ${leaderInfo.name} lleva la delantera con ${leaderInfo.hits} aciertos!`,
-        `¡Sientan la presión, ${leaderInfo.name} va liderando el tablero!`,
-        `¡Miren a ${leaderInfo.name}, está apretando el paso con ${leaderInfo.hits} números!`,
-        `¡Ojo con ${leaderInfo.name}, se acerca peligrosamente al bingo!`
+        `¡${leaderInfo.name} lleva la delantera!`,
+        `¡${leaderInfo.name} va liderando!`,
+        `¡Ojo con ${leaderInfo.name}!`
       ];
       const selectedPressure = pressurePhrases[Math.floor(Math.random() * pressurePhrases.length)];
       textToSpeak += ` ${selectedPressure}`;
     } 
-    // 3. Comentario humorístico general
-    else if (Math.random() < 0.3) {
+    // 3. Comentario humorístico general ocasional (15%)
+    else if (Math.random() < 0.15) {
       const randomShort = HUMOROUS_COMMENTS[Math.floor(Math.random() * HUMOROUS_COMMENTS.length)];
       textToSpeak += ` ${randomShort}`;
     }
 
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
 
-    // Voces Femeninas Latinas
+    // Asignar voz seleccionada por el usuario si existe
     const voices = window.speechSynthesis.getVoices();
-    const femaleVoice = voices.find((v) =>
-      v.lang.startsWith("es") &&
-      (v.name.toLowerCase().includes("female") ||
-       v.name.toLowerCase().includes("paulina") ||
-       v.name.toLowerCase().includes("mia") ||
-       v.name.toLowerCase().includes("sabina") ||
-       v.name.toLowerCase().includes("lupe") ||
-       v.name.toLowerCase().includes("dalia") ||
-       v.name.toLowerCase().includes("monica") ||
-       v.name.toLowerCase().includes("victoria") ||
-       v.name.toLowerCase().includes("helena") ||
-       v.name.toLowerCase().includes("zira"))
-    ) || voices.find((v) => v.lang.includes(selectedVoiceLang)) || voices.find((v) => v.lang.startsWith("es"));
-
-    if (femaleVoice) {
-      utterance.voice = femaleVoice;
+    if (selectedVoiceURI) {
+      const chosenVoice = voices.find((v) => v.voiceURI === selectedVoiceURI);
+      if (chosenVoice) utterance.voice = chosenVoice;
+    } else {
+      const defaultEsVoice = voices.find((v) => v.lang.startsWith("es"));
+      if (defaultEsVoice) utterance.voice = defaultEsVoice;
     }
 
-    utterance.lang = selectedVoiceLang;
-    utterance.rate = 1.15;  // Velocidad ágil
-    utterance.pitch = 1.25; // Tono femenino eufórico
+    utterance.lang = utterance.voice?.lang || "es-MX";
+    utterance.rate = 1.05;  // Velocidad natural de conversación humana
+    utterance.pitch = 1.0;  // Tono de voz humano natural (evita sonar como Alexa o robótico)
 
     window.speechSynthesis.speak(utterance);
     return textToSpeak;
   } catch (err) {
-    console.error("Error en locución de presión:", err);
+    console.error("Error en locución natural:", err);
     playBallPingSound();
     return `Letra ${letter}, ${number}`;
   }
@@ -174,12 +170,12 @@ export function playPopSound() {
     osc.start();
     osc.stop(ctx.currentTime + 0.08);
   } catch (err) {
-    // Ignorar si el navegador bloquea audio
+    // Ignorar
   }
 }
 
 /**
- * Efecto de sonido SFX al salir una balota (Ping de bombo)
+ * Efecto de sonido SFX al salir una balota
  */
 export function playBallPingSound() {
   try {
@@ -210,7 +206,7 @@ export function playBallPingSound() {
 }
 
 /**
- * Música de Fondo Casino Arcade de Alta Emoción
+ * Música de Fondo Casino Arcade Garantizada (Web Audio API)
  */
 export function toggleBackgroundMusic(enable = true) {
   try {
@@ -218,8 +214,6 @@ export function toggleBackgroundMusic(enable = true) {
     if (!AudioContext) return;
 
     if (enable) {
-      if (isMusicPlaying) return;
-
       if (!ambientAudioCtx) {
         ambientAudioCtx = new AudioContext();
       }
@@ -228,33 +222,42 @@ export function toggleBackgroundMusic(enable = true) {
         ambientAudioCtx.resume();
       }
 
+      // Detener osciladores previos si estaban activos
+      if (ambientOsc1) {
+        try { ambientOsc1.stop(); } catch (e) {}
+      }
+      if (ambientOsc2) {
+        try { ambientOsc2.stop(); } catch (e) {}
+      }
+
+      // Armonía de bajo arcade suave y audible
       ambientOsc1 = ambientAudioCtx.createOscillator();
       ambientOsc2 = ambientAudioCtx.createOscillator();
-      const gain1 = ambientAudioCtx.createGain();
+      const gainNode = ambientAudioCtx.createGain();
 
-      ambientOsc1.type = "sawtooth";
-      ambientOsc1.frequency.setValueAtTime(130.81, ambientAudioCtx.currentTime);
+      ambientOsc1.type = "sine";
+      ambientOsc1.frequency.setValueAtTime(220, ambientAudioCtx.currentTime); // A3
 
-      ambientOsc2.type = "sine";
-      ambientOsc2.frequency.setValueAtTime(261.63, ambientAudioCtx.currentTime);
+      ambientOsc2.type = "triangle";
+      ambientOsc2.frequency.setValueAtTime(329.63, ambientAudioCtx.currentTime); // E4
 
-      gain1.gain.setValueAtTime(0.025, ambientAudioCtx.currentTime);
+      gainNode.gain.setValueAtTime(0.08, ambientAudioCtx.currentTime); // Volumen audible suave (8%)
 
-      ambientOsc1.connect(gain1);
-      ambientOsc2.connect(gain1);
-      gain1.connect(ambientAudioCtx.destination);
+      ambientOsc1.connect(gainNode);
+      ambientOsc2.connect(gainNode);
+      gainNode.connect(ambientAudioCtx.destination);
 
       ambientOsc1.start();
       ambientOsc2.start();
       isMusicPlaying = true;
     } else {
       if (ambientOsc1) {
-        ambientOsc1.stop();
-        ambientOsc1.disconnect();
+        try { ambientOsc1.stop(); } catch (e) {}
+        ambientOsc1 = null;
       }
       if (ambientOsc2) {
-        ambientOsc2.stop();
-        ambientOsc2.disconnect();
+        try { ambientOsc2.stop(); } catch (e) {}
+        ambientOsc2 = null;
       }
       isMusicPlaying = false;
     }
