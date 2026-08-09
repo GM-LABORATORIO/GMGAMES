@@ -23,7 +23,7 @@ export default function GameRoom({ session, onLeaveRoom }) {
   const [connectionMode, setConnectionMode] = useState("local");
   const [viewMode, setViewMode] = useState(isHost ? "tv" : "mobile");
   const [claimMessage, setClaimMessage] = useState(null);
-  const [isSelectingTable, setIsSelectingTable] = useState(!isHost);
+  const [isSelectingTable, setIsSelectingTable] = useState(false);
 
   // Escuchar la sala en tiempo real en Firebase
   useEffect(() => {
@@ -57,8 +57,8 @@ export default function GameRoom({ session, onLeaveRoom }) {
   const drawnBalls = roomData.drawnBalls || [];
   const availableNumbers = roomData.availableNumbers || [];
 
-  // Pantalla de selección de Tabla #1 a #10 si no ha seleccionado una
-  if (!isHost && isSelectingTable) {
+  // Mostrar modal de selección solo si el jugador NO viene del Player Journey o no posee cartón asignado
+  if (!isHost && (!myPlayer || !myPlayer.card) && isSelectingTable) {
     return (
       <TableSelectorModal
         initialTableId={myPlayer?.tableId || 1}
