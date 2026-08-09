@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { createRoomProvider, joinRoomProvider } from "../utils/realtimeProvider";
-import { generateAvailableNumbers, generateBingoCard } from "../utils/bingoLogic";
+import { generateAvailableNumbers } from "../utils/bingoLogic";
 import PlayerJourney from "./PlayerJourney";
-import { Users, Sparkles, Play, LogIn, Tv, Gamepad2, ShieldCheck } from "lucide-react";
+import { Users, Play, LogIn, Tv, Gamepad2, ShieldCheck, TestTube } from "lucide-react";
 
 export default function Lobby({ onJoinRoom }) {
   const [playerName, setPlayerName] = useState("");
   const [roomCode, setRoomCode] = useState("");
-  const [maxPlayers, setMaxPlayers] = useState(4);
-  const [isQrJoined, setIsQrJoined] = useState(false);
+  const [maxPlayers, setMaxPlayers] = useState(1); // 1 jugador por defecto para pruebas rápidas
   const [showPlayerJourney, setShowPlayerJourney] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -18,7 +17,6 @@ export default function Lobby({ onJoinRoom }) {
     const roomParam = params.get("room");
     if (roomParam) {
       setRoomCode(roomParam.trim().toUpperCase());
-      setIsQrJoined(true);
       setShowPlayerJourney(true);
     }
   }, []);
@@ -27,52 +25,40 @@ export default function Lobby({ onJoinRoom }) {
     return "BINGO-" + Math.floor(1000 + Math.random() * 9000);
   };
 
+  /**
+   * Crear Sala Host TV (El TV es un Bot Transmisor, NO consume cupo de jugador)
+   */
   const handleCreateRoom = async (e) => {
     e.preventDefault();
-    if (!playerName.trim()) {
-      setError("POR FAVOR INGRESA TU NOMBRE DE HOST.");
-      return;
-    }
     setLoading(true);
     setError("");
 
     try {
       const newRoomId = generateRoomId();
-      const playerId = "player_" + Math.random().toString(36).substr(2, 9);
-      const initialCard = generateBingoCard();
+      const hostBotId = "bot_host_tv";
       const initialAvailable = generateAvailableNumbers();
 
       const newRoomData = {
         roomId: newRoomId,
         status: "waiting",
-        hostId: playerId,
+        hostId: hostBotId,
         maxPlayers: Number(maxPlayers),
         currentBall: null,
         drawnBalls: [],
         availableNumbers: initialAvailable,
+        victoryMode: "line",
         createdAt: Date.now(),
         winner: null,
-        players: {
-          [playerId]: {
-            id: playerId,
-            name: playerName.trim(),
-            isHost: true,
-            joinedAt: Date.now(),
-            card: initialCard,
-            tableName: "Tabla #1",
-            tableId: 1,
-            confirmedNumbers: []
-          }
-        }
+        players: {} // La sala nace sin jugadores; el TV es un Bot Transmisor
       };
 
       const res = await createRoomProvider(newRoomId, newRoomData);
 
       onJoinRoom({
         roomId: newRoomId,
-        playerId,
+        playerId: hostBotId,
         isHost: true,
-        playerName: playerName.trim(),
+        playerName: "TV Locutor Bot",
         connectionMode: res.mode
       });
     } catch (err) {
@@ -166,26 +152,11 @@ export default function Lobby({ onJoinRoom }) {
 
           <div className="flex items-center gap-4">
             <div className="bg-[#120a26]/90 border-2 border-[#00f3ff] px-6 py-3 text-center arcade-glow-cyan">
-              <span className="text-[10px] text-[#00f3ff] font-black uppercase tracking-widest block">TRANSMISIÓN FAMILIAR</span>
-              <span className="text-xl font-black text-[#ffb700] font-space">TV 4K REALTIME</span>
+              <span className="text-[10px] text-[#00f3ff] font-black uppercase tracking-widest block">TV BOT TRANSMISOR</span>
+              <span className="text-xl font-black text-[#ffb700] font-space">AUTOMÁTICO 4K</span>
             </div>
           </div>
         </header>
-
-        {/* Input de Nombre Global */}
-        <div className="arcade-card-glass p-6 border-2 border-[#a855f7] max-w-2xl mx-auto">
-          <label className="block text-xs font-black text-[#00f3ff] uppercase tracking-wider mb-2 flex items-center gap-2">
-            <Users size={18} /> TU NOMBRE DE INTEGRANTE DE LA FAMILIA / HOST
-          </label>
-          <input
-            type="text"
-            className="w-full bg-[#090514] border-2 border-[#a855f7] focus:border-[#00f3ff] text-white px-5 py-4 font-black text-xl focus:outline-none uppercase"
-            placeholder="EJ: BRUNO LOAIZA SILLE"
-            value={playerName}
-            onChange={(e) => setPlayerName(e.target.value)}
-            maxLength={25}
-          />
-        </div>
 
         {error && (
           <div className="bg-[#ff0055] text-white font-black text-sm p-4 border-2 border-black max-w-2xl mx-auto uppercase tracking-wider text-center animate-bounce">
@@ -196,36 +167,37 @@ export default function Lobby({ onJoinRoom }) {
         {/* Widescreen 2-Column TV Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
           
-          {/* Columna 1: CREAR SALA (HOST TV) */}
+          {/* Columna 1: CREAR SALA (TV BOT LOCUTOR AUTOMÁTICO) */}
           <div className="arcade-card-glass p-8 border-4 border-[#ff007f] arcade-glow-magenta flex flex-col justify-between space-y-6">
             <div>
               <div className="flex justify-between items-center border-b-2 border-slate-800 pb-3 mb-4">
                 <h3 className="text-2xl font-black text-[#ff007f] uppercase flex items-center gap-3">
-                  <Tv size={28} /> CREAR SALA (HOST TV)
+                  <Tv size={28} /> CREAR SALA (TV BOT AUTOMÁTICO)
                 </h3>
                 <span className="bg-[#ff007f] text-white font-black text-xs px-3 py-1 uppercase border border-white">
-                  TRANSMISIÓN EN TV
+                  MODO TRANSMISIÓN
                 </span>
               </div>
 
               <p className="text-sm text-slate-300 font-bold mb-6">
-                Inicia la balotera animada en la TV con locución latina, música de fondo y QR gigante para que toda la familia se una desde su celular.
+                El TV actúa como un <span className="text-[#00f3ff]">Bot Locutor Automático</span> con voz latina y temporizador de balotas. <span className="text-[#ffb700]">Tú y toda la familia escanean el QR para jugar.</span>
               </p>
 
               <div>
                 <label className="block text-xs font-black text-[#00f3ff] uppercase tracking-wider mb-2">
-                  CUPO DE JUGADORES DE LA FAMILIA:
+                  SELECCIONA NÚMERO DE JUGADORES ESPERADOS:
                 </label>
                 <select
                   value={maxPlayers}
                   onChange={(e) => setMaxPlayers(Number(e.target.value))}
                   className="w-full bg-[#090514] text-[#ffb700] font-black border-2 border-[#00f3ff] px-4 py-3 text-base uppercase focus:outline-none"
                 >
-                  <option value={2}>2 INTEGRANTES (DUELO FAMILIAR)</option>
-                  <option value={4}>4 INTEGRANTES (ESTÁNDAR)</option>
-                  <option value={6}>6 INTEGRANTES (MEDIO)</option>
-                  <option value={8}>8 INTEGRANTES (GRANDE)</option>
-                  <option value={10}>10 INTEGRANTES (GRAN FAMILIA MÁXIMO)</option>
+                  <option value={1}>🧪 1 JUGADOR (MODO PRUEBAS SOLO)</option>
+                  <option value={2}>2 JUGADORES (DUELO FAMILIAR)</option>
+                  <option value={4}>4 JUGADORES (ESTÁNDAR)</option>
+                  <option value={6}>6 JUGADORES (MEDIO)</option>
+                  <option value={8}>8 JUGADORES (GRANDE)</option>
+                  <option value={10}>10 JUGADORES (GRAN FAMILIA MÁXIMO)</option>
                 </select>
               </div>
             </div>
@@ -235,7 +207,7 @@ export default function Lobby({ onJoinRoom }) {
               disabled={loading}
               className="w-full bg-gradient-to-r from-[#ff007f] to-[#a855f7] hover:opacity-90 text-white font-black text-2xl py-5 border-4 border-black uppercase tracking-wider arcade-glow-magenta active:translate-x-1 active:translate-y-1 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
             >
-              <Play size={24} fill="currentColor" /> {loading ? "CREANDO SALA..." : "INICIAR BINGO DE LA FAMILIA"}
+              <Play size={24} fill="currentColor" /> {loading ? "CREANDO SALA..." : "INICIAR TV BOT Y CÓDIGO QR"}
             </button>
           </div>
 
@@ -244,7 +216,7 @@ export default function Lobby({ onJoinRoom }) {
             <div>
               <div className="flex justify-between items-center border-b-2 border-slate-800 pb-3 mb-4">
                 <h3 className="text-2xl font-black text-[#00f3ff] uppercase flex items-center gap-3">
-                  <LogIn size={28} /> UNIRSE A LA SALA (CELULAR)
+                  <LogIn size={28} /> UNIRSE A LA SALA (MÓVIL)
                 </h3>
                 <span className="bg-[#00f3ff] text-black font-black text-xs px-3 py-1 uppercase border border-black">
                   PLAYER JOURNEY (4 PASOS)
@@ -281,9 +253,11 @@ export default function Lobby({ onJoinRoom }) {
         {/* Footer */}
         <footer className="border-t-2 border-slate-800 pt-4 flex flex-wrap justify-between items-center text-xs text-slate-400 font-bold uppercase tracking-widest gap-4">
           <span className="flex items-center gap-2 text-[#00f3ff]">
-            <ShieldCheck size={16} /> EL BINGO DE LA FAMILIA LOAIZA SILLE // TV 4K REALTIME
+            <ShieldCheck size={16} /> EL BINGO DE LA FAMILIA LOAIZA SILLE // TV BOT AUTOMÁTICO
           </span>
-          <span>EDICIÓN ESPECIAL HACKATHON FAMILIAR</span>
+          <span className="flex items-center gap-1 text-[#ffb700]">
+            <TestTube size={14} /> MODO 1 JUGADOR DE PRUEBAS DISPONIBLE
+          </span>
         </footer>
       </div>
     </div>

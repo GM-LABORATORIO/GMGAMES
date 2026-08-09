@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getLetterForNumber } from "../utils/bingoLogic";
 import { speakBallNumber, toggleBackgroundMusic } from "../utils/audio";
-import { Play, RotateCcw, Sparkles, Tv, QrCode, X, Copy, Check, Users, LayoutGrid, Volume2, Music, Gamepad2 } from "lucide-react";
+import { Play, Pause, RotateCcw, Sparkles, Tv, QrCode, X, Copy, Check, Users, LayoutGrid, Volume2, Music, Gamepad2, Timer, Trophy } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import PlayersTVGrid from "./PlayersTVGrid";
 
@@ -10,7 +10,7 @@ export default function HostTVView({
   drawnBalls = [],
   availableNumbers = [],
   players = {},
-  maxPlayers = 4,
+  maxPlayers = 1,
   status = "waiting",
   victoryMode = "line",
   isHost = true,
@@ -22,8 +22,9 @@ export default function HostTVView({
   const drawnSet = new Set(drawnBalls);
   const currentLetter = getLetterForNumber(currentBall);
 
-  const [autoDraw, setAutoDraw] = useState(false);
-  const [speedSec, setSpeedSec] = useState(4);
+  const [autoDraw, setAutoDraw] = useState(true); // Auto-extracción activada por defecto
+  const [speedSec, setSpeedSec] = useState(5); // 5 segundos por balota por defecto
+  const [timerCountdown, setTimerCountdown] = useState(5);
   const [showLargeQR, setShowLargeQR] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [tvRightTab, setTvRightTab] = useState("board");
@@ -32,6 +33,7 @@ export default function HostTVView({
 
   const playersList = Object.values(players || {});
   const joinUrl = `${window.location.origin}/?room=${roomId}`;
+  const isRoomFull = playersList.length >= maxPlayers;
 
   // Música de fondo ambiental
   useEffect(() => {
@@ -41,25 +43,40 @@ export default function HostTVView({
     };
   }, [bgMusicEnabled]);
 
-  // Fonética de Voz Nativa Latina
+  // Fonética de Voz Nativa Latina sin errores de pronunciación
   useEffect(() => {
     if (currentBall) {
       speakBallNumber(currentLetter, currentBall, voiceLang);
     }
   }, [currentBall, currentLetter, voiceLang]);
 
-  // Auto-extracción de balotas
+  // Temporizador de Cuenta Regresiva Visual Animada para Auto-Extracción
   useEffect(() => {
-    let timer = null;
-    if (autoDraw && availableNumbers.length > 0) {
-      timer = setInterval(() => {
-        onDrawNextBall();
-      }, speedSec * 1000);
+    let interval = null;
+
+    if (autoDraw && status === "playing" && availableNumbers.length > 0) {
+      interval = setInterval(() => {
+        setTimerCountdown((prev) => {
+          if (prev <= 1) {
+            onDrawNextBall();
+            return speedSec;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      setTimerCountdown(speedSec);
     }
+
     return () => {
-      if (timer) clearInterval(timer);
+      if (interval) clearInterval(interval);
     };
-  }, [autoDraw, availableNumbers, speedSec, onDrawNextBall]);
+  }, [autoDraw, status, availableNumbers.length, speedSec, onDrawNextBall]);
+
+  // Reiniciar contador visual al cambiar la velocidad
+  useEffect(() => {
+    setTimerCountdown(speedSec);
+  }, [speedSec]);
 
   const copyJoinLink = () => {
     navigator.clipboard.writeText(joinUrl);
@@ -74,8 +91,6 @@ export default function HostTVView({
     { letter: "G", color: "#00ff88", range: [46, 60] },
     { letter: "O", color: "#a855f7", range: [61, 75] }
   ];
-
-  const isRoomFull = playersList.length >= maxPlayers;
 
   return (
     <div className="min-h-screen bg-[#090514] text-white p-6 md:p-8 font-syne flex flex-col justify-between select-none relative overflow-hidden">
@@ -98,18 +113,18 @@ export default function HostTVView({
             )}
 
             <div className="inline-flex items-center gap-2 bg-[#ff007f] text-white font-black px-4 py-1 text-xs tracking-widest border border-white mb-4 uppercase">
-              <Gamepad2 size={16} /> CASINO ARCADE BINGO // TV LOBBY
+              <Gamepad2 size={16} /> CASINO ARCADE BINGO // TV BOT TRANSMISOR
             </div>
 
             <h2 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tight mb-2">
               SALA <span className="text-[#00f3ff]">{roomId}</span>
             </h2>
 
-            {/* Contador de Cupos */}
+            {/* Contador de Cupos de la Sala */}
             <div className="bg-[#090514] border-2 border-[#00f3ff] py-2 px-6 inline-block mb-6 arcade-glow-cyan">
-              <span className="text-[10px] text-[#00f3ff] font-black uppercase block">CUPO DE SALA EN TV</span>
+              <span className="text-[10px] text-[#00f3ff] font-black uppercase block">JUGADORES EN LA SALA</span>
               <span className="text-3xl font-black text-[#ffb700] font-space">
-                {playersList.length} / {maxPlayers} JUGADORES
+                {playersList.length} / {maxPlayers} JUGADORES CONECTADOS
               </span>
             </div>
 
@@ -119,7 +134,7 @@ export default function HostTVView({
             </div>
 
             <p className="text-slate-200 font-bold text-sm uppercase tracking-wider mb-6">
-              ESCANEA EL CÓDIGO QR CON TU MÓVIL PARA ELEGIR TU COLOR Y TABLA
+              ESCANEA EL CÓDIGO QR CON TU MÓVIL PARA ELEGIR TU COLOR Y TABLA Y EMPEZAR A JUGAR
             </p>
 
             {/* Lista de Jugadores Conectados */}
@@ -140,7 +155,7 @@ export default function HostTVView({
                 onClick={onDrawNextBall}
                 className="w-full bg-[#00ff88] text-black font-black text-2xl py-5 border-4 border-black uppercase tracking-wider arcade-glow-cyan animate-bounce"
               >
-                ¡CUPO COMPLETO! EMPEZAR BINGO AHORA 🎮
+                ¡LISTOS! INICIAR PARTIDA CON {playersList.length} JUGADOR(ES) 🎮
               </button>
             )}
           </div>
@@ -195,7 +210,7 @@ export default function HostTVView({
       {/* Grid Principal TV 16:9 */}
       <main className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch flex-1 relative z-10">
         
-        {/* Panel Izquierdo: Última Balota Cantada */}
+        {/* Panel Izquierdo: Última Balota Cantada & Temporizador */}
         <section className="lg:col-span-5 arcade-card-glass border-4 border-[#ff007f] p-8 flex flex-col justify-between arcade-glow-magenta">
           <div className="flex justify-between items-center border-b-2 border-slate-800 pb-3">
             <span className="text-xs font-black uppercase text-slate-300 tracking-widest flex items-center gap-2">
@@ -208,7 +223,24 @@ export default function HostTVView({
             )}
           </div>
 
-          <div className="my-auto text-center py-6">
+          {/* Temporizador de Extracción Automático */}
+          <div className="bg-[#090514] border-2 border-[#00f3ff] p-3 my-4 arcade-glow-cyan text-center">
+            <div className="flex items-center justify-between text-xs font-black text-[#00f3ff] uppercase mb-1">
+              <span className="flex items-center gap-1">
+                <Timer size={16} /> TEMPORIZADOR AUTOMÁTICO
+              </span>
+              <span>{autoDraw ? `SIGUIENTE EN ${timerCountdown}s` : "PAUSADO"}</span>
+            </div>
+            {/* Barra de progreso animada */}
+            <div className="w-full bg-[#120a26] h-3 border border-slate-700 overflow-hidden">
+              <div
+                style={{ width: `${(timerCountdown / speedSec) * 100}%` }}
+                className="bg-gradient-to-r from-[#ff007f] via-[#00f3ff] to-[#00ff88] h-full transition-all duration-1000 ease-linear"
+              />
+            </div>
+          </div>
+
+          <div className="my-auto text-center py-4">
             {currentBall ? (
               <div className="flex flex-col items-center justify-center">
                 <div className="text-5xl md:text-7xl font-black text-[#00f3ff] tracking-widest mb-2 font-space">
@@ -219,7 +251,7 @@ export default function HostTVView({
                 </div>
               </div>
             ) : (
-              <div className="py-20 text-slate-500 font-black text-3xl uppercase tracking-wider border-4 border-dashed border-slate-800">
+              <div className="py-16 text-slate-500 font-black text-3xl uppercase tracking-wider border-4 border-dashed border-slate-800">
                 ESPERANDO BALOTA
               </div>
             )}
@@ -227,69 +259,70 @@ export default function HostTVView({
 
           {isHost && (
             <div className="border-t-4 border-slate-800 pt-6 space-y-3">
-              <button
-                onClick={onDrawNextBall}
-                disabled={availableNumbers.length === 0}
-                className="w-full bg-gradient-to-r from-[#ff007f] to-[#ffb700] hover:opacity-90 text-white font-black text-xl py-4 border-4 border-black uppercase tracking-wider arcade-glow-magenta active:translate-x-1 active:translate-y-1 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
-              >
-                <Play size={24} fill="currentColor" />
-                {availableNumbers.length === 0 ? "SIN BALOTAS RESTANTES" : "SACAR SIGUIENTE BALOTA"}
-              </button>
-
-              {/* Opciones de Modo de Victoria, Voz Nativa & Música */}
               <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={onDrawNextBall}
+                  disabled={availableNumbers.length === 0}
+                  className="bg-gradient-to-r from-[#ff007f] to-[#ffb700] hover:opacity-90 text-white font-black text-base py-3 border-2 border-black uppercase tracking-wider arcade-glow-magenta flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  <Play size={18} fill="currentColor" /> SACAR BALOTA
+                </button>
+
+                <button
+                  onClick={() => setAutoDraw(!autoDraw)}
+                  className={`font-black text-base py-3 border-2 border-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all ${
+                    autoDraw
+                      ? "bg-[#00ff88] text-black border-black shadow-[0_0_12px_#00ff88]"
+                      : "bg-slate-800 text-slate-300 border-slate-700"
+                  }`}
+                >
+                  {autoDraw ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
+                  {autoDraw ? "PAUSAR AUTO" : "AUTO EXTRACCIÓN"}
+                </button>
+              </div>
+
+              {/* Controles de Velocidad, Regla & Voz Nativa */}
+              <div className="grid grid-cols-3 gap-2">
                 <div className="bg-[#090514] border border-slate-700 p-2">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase block mb-1 flex items-center gap-1">
-                    <Trophy size={12} className="text-[#ffb700]" /> REGLA DE GANADOR
-                  </span>
+                  <span className="text-[9px] text-slate-400 font-bold uppercase block mb-1">VELOCIDAD</span>
+                  <select
+                    value={speedSec}
+                    onChange={(e) => setSpeedSec(Number(e.target.value))}
+                    className="w-full bg-[#120a26] text-[#00f3ff] font-black border border-slate-700 text-xs px-1 py-1 uppercase focus:outline-none"
+                  >
+                    <option value={3}>3s RÁPIDO</option>
+                    <option value={5}>5s NORMAL</option>
+                    <option value={8}>8s LENTO</option>
+                    <option value={10}>10s PAUSADO</option>
+                  </select>
+                </div>
+
+                <div className="bg-[#090514] border border-slate-700 p-2">
+                  <span className="text-[9px] text-slate-400 font-bold uppercase block mb-1">REGLA GANADOR</span>
                   <select
                     value={victoryMode}
                     onChange={(e) => onUpdateVictoryMode && onUpdateVictoryMode(e.target.value)}
-                    className="w-full bg-[#120a26] text-[#ffb700] font-black border border-slate-700 text-xs px-2 py-1 uppercase focus:outline-none"
+                    className="w-full bg-[#120a26] text-[#ffb700] font-black border border-slate-700 text-xs px-1 py-1 uppercase focus:outline-none"
                   >
-                    <option value="line">LÍNEA DE 5 (HORIZ/VERT/DIAG)</option>
-                    <option value="fullhouse">CARTÓN LLENO (FULL HOUSE)</option>
+                    <option value="line">LÍNEA DE 5</option>
+                    <option value="fullhouse">CARTÓN LLENO</option>
                   </select>
                 </div>
 
                 <div className="bg-[#090514] border border-slate-700 p-2">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase block mb-1 flex items-center gap-1">
-                    <Volume2 size={12} /> LOCUTOR LATINO
-                  </span>
+                  <span className="text-[9px] text-slate-400 font-bold uppercase block mb-1">LOCUTOR</span>
                   <select
                     value={voiceLang}
                     onChange={(e) => setVoiceLang(e.target.value)}
-                    className="w-full bg-[#120a26] text-[#00f3ff] font-black border border-slate-700 text-xs px-2 py-1 uppercase focus:outline-none"
+                    className="w-full bg-[#120a26] text-[#00f3ff] font-black border border-slate-700 text-xs px-1 py-1 uppercase focus:outline-none"
                   >
-                    <option value="es-MX">MÉXICO (LATINO)</option>
-                    <option value="es-CO">COLOMBIA (LATINO)</option>
-                    <option value="es-AR">ARGENTINA (LATINO)</option>
-                    <option value="es-US">EE.UU (LATINO)</option>
+                    <option value="es-MX">MÉXICO</option>
+                    <option value="es-CO">COLOMBIA</option>
+                    <option value="es-AR">ARGENTINA</option>
+                    <option value="es-US">EE.UU</option>
                     <option value="es-ES">ESPAÑA</option>
                   </select>
                 </div>
-              </div>
-
-              <div className="flex items-center justify-between bg-[#090514] border border-slate-700 p-2">
-                <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-200">
-                  <input
-                    type="checkbox"
-                    checked={autoDraw}
-                    onChange={(e) => setAutoDraw(e.target.checked)}
-                    className="w-4 h-4 accent-[#00f3ff]"
-                  />
-                  <span>AUTO-EXTRACCIÓN ({speedSec}s)</span>
-                </label>
-                <select
-                  value={speedSec}
-                  onChange={(e) => setSpeedSec(Number(e.target.value))}
-                  disabled={autoDraw}
-                  className="bg-[#120a26] text-[#00f3ff] font-black border border-slate-700 px-2 py-0.5 text-xs focus:outline-none"
-                >
-                  <option value={3}>3s</option>
-                  <option value={4}>4s</option>
-                  <option value={6}>6s</option>
-                </select>
               </div>
 
               <button

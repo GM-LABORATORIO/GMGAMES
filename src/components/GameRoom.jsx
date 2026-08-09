@@ -223,7 +223,7 @@ export default function GameRoom({ session, onLeaveRoom }) {
                 : "text-slate-400 hover:text-white"
             }`}
           >
-            <Tv size={14} /> Vista TV (Host)
+            <Tv size={14} /> TV Bot Locutor
           </button>
           <button
             onClick={() => setViewMode("mobile")}
@@ -233,7 +233,7 @@ export default function GameRoom({ session, onLeaveRoom }) {
                 : "text-slate-400 hover:text-white"
             }`}
           >
-            <Smartphone size={14} /> Vista Móvil (Jugador)
+            <Smartphone size={14} /> Jugar en esta Pantalla
           </button>
         </div>
       </nav>
