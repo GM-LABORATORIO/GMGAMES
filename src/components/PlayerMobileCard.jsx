@@ -1,6 +1,7 @@
 import React from "react";
-import { Star, Trophy, Check } from "lucide-react";
+import { Star, Trophy, Check, Crown } from "lucide-react";
 import confetti from "canvas-confetti";
+import { getPlayerNeonTheme } from "../utils/themeEngine";
 import { playPopSound } from "../utils/audio";
 
 export default function PlayerMobileCard({
@@ -10,16 +11,33 @@ export default function PlayerMobileCard({
   playerColor = { hex: "#00ff88", text: "#000000" },
   currentBall,
   drawnBalls = [],
+  players = {},
+  playerId,
   onToggleCell,
   onClaimBingo
 }) {
   if (!card || card.length === 0) return null;
 
+  // Paquete de Tema Neón Personalizado del Jugador
+  const theme = getPlayerNeonTheme(playerColor);
   const drawnNumbersSet = new Set((drawnBalls || []).map((b) => Number(b)));
+
+  // Calcular si este jugador es el Líder de la Partida
+  const playersList = Object.values(players || {});
+  const leaderPlayer = playersList.reduce((top, p) => {
+    const pCount = (p.confirmedNumbers || []).length;
+    const topCount = (top?.confirmedNumbers || []).length;
+    return pCount > topCount ? p : top;
+  }, null);
+
+  const isCurrentPlayerLeader =
+    leaderPlayer &&
+    leaderPlayer.id === playerId &&
+    (leaderPlayer.confirmedNumbers || []).length > 0;
 
   const handleBingoClick = () => {
     confetti({
-      particleCount: 250,
+      particleCount: 260,
       spread: 120,
       origin: { y: 0.6 }
     });
@@ -27,25 +45,51 @@ export default function PlayerMobileCard({
   };
 
   const columns = [
-    { letter: "B", color: "#00ff88", text: "#000000" },
+    { letter: "B", color: theme.hex, text: theme.text },
     { letter: "I", color: "#00f3ff", text: "#000000" },
     { letter: "N", color: "#a855f7", text: "#ffffff" },
     { letter: "G", color: "#ff007f", text: "#ffffff" },
-    { letter: "O", color: "#00ff88", text: "#000000" }
+    { letter: "O", color: theme.hex, text: theme.text }
   ];
 
   return (
     <div className="w-full max-w-sm sm:max-w-md mx-auto bg-[#06070d] text-white font-syne p-2 sm:p-4 flex flex-col justify-between gap-3 select-none relative transition-all duration-300">
       
-      {/* Header Compacto Cyber Glass */}
-      <div className="glass-panel border border-white/20 p-3 rounded-2xl flex justify-between items-center shadow-[0_0_20px_rgba(0,0,0,0.4)]">
+      {/* Badge Vivo de Líder de la Partida */}
+      {isCurrentPlayerLeader && (
+        <div className="bg-[#00ff88] text-black font-black text-xs py-1.5 px-3 rounded-xl border border-black uppercase text-center flex items-center justify-center gap-2 animate-bounce shadow-[0_0_20px_#00ff88]">
+          <Crown size={16} fill="currentColor" /> 👑 ¡ERES EL LÍDER DE LA PARTIDA!
+        </div>
+      )}
+
+      {/* Header Compacto Neón Personalizado */}
+      <div
+        style={{
+          borderColor: theme.borderColor,
+          boxShadow: theme.glow
+        }}
+        className="glass-panel border-2 p-3 rounded-2xl flex justify-between items-center transition-all duration-300"
+      >
         <div className="flex items-center gap-3">
-          {/* Avatar Neón Electrizante */}
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00ff88] to-[#00f3ff] text-black font-black text-xl flex items-center justify-center border border-white/40 shadow-[0_0_15px_rgba(0,255,136,0.4)] shrink-0">
+          {/* Avatar con Color Personalizado */}
+          <div
+            style={{
+              backgroundColor: theme.hex,
+              color: theme.text,
+              boxShadow: theme.glowStrong
+            }}
+            className="w-10 h-10 rounded-xl font-black text-xl flex items-center justify-center border border-black shrink-0"
+          >
             {playerName ? playerName.charAt(0).toUpperCase() : "J"}
           </div>
           <div>
-            <span className="bg-[#00ff88] text-black font-black text-[9px] px-2 py-0.5 uppercase rounded-full font-space">
+            <span
+              style={{
+                backgroundColor: theme.hex,
+                color: theme.text
+              }}
+              className="font-black text-[9px] px-2 py-0.5 uppercase rounded-full font-space inline-block"
+            >
               {tableName}
             </span>
             <h2 className="text-base sm:text-lg font-black text-white uppercase leading-tight mt-0.5">{playerName}</h2>
@@ -54,18 +98,26 @@ export default function PlayerMobileCard({
 
         {/* Última Balota Cantada */}
         <div className="text-right">
-          <span className="text-[9px] font-black text-[#00ff88] uppercase tracking-wider block">
+          <span
+            style={{ color: theme.hex }}
+            className="text-[9px] font-black uppercase tracking-wider block"
+          >
             ÚLTIMA BALOTA
           </span>
-          <div className="text-2xl sm:text-3xl font-black text-white font-space leading-none drop-shadow-[0_0_10px_rgba(0,255,136,0.6)]">
+          <div className="text-2xl sm:text-3xl font-black text-white font-space leading-none drop-shadow-[0_0_10px_rgba(255,255,255,0.6)]">
             {currentBall ? currentBall : "--"}
           </div>
         </div>
       </div>
 
-      {/* Cartón 5x5 Cyber Glass */}
-      <div className="glass-panel border border-white/20 p-2 sm:p-3 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-        
+      {/* Cartón 5x5 Neón Personalizado */}
+      <div
+        style={{
+          borderColor: theme.borderColor,
+          boxShadow: theme.glow
+        }}
+        className="glass-panel border-2 p-2 sm:p-3 rounded-2xl transition-all duration-300"
+      >
         {/* Cabecera B-I-N-G-O */}
         <div className="grid grid-cols-5 gap-1 sm:gap-1.5 mb-1.5">
           {columns.map((col) => (
@@ -79,7 +131,7 @@ export default function PlayerMobileCard({
           ))}
         </div>
 
-        {/* Grilla 5x5 con Casillas Neón en Vidrio Esmerilado */}
+        {/* Grilla 5x5 con Casillas Reactivas al Tema del Jugador */}
         <div className="grid grid-cols-5 gap-1 sm:gap-1.5">
           {card.map((row, rIdx) =>
             row.map((cell, cIdx) => {
@@ -98,30 +150,30 @@ export default function PlayerMobileCard({
                   }}
                   style={{
                     backgroundColor: isFree
-                      ? "#00ff88"
+                      ? theme.hex
                       : isMarked
-                      ? "#00ff88"
+                      ? theme.markedBg
                       : "#0f111c",
                     color: isFree
-                      ? "#000000"
+                      ? theme.text
                       : isMarked
-                      ? "#000000"
+                      ? theme.markedText
                       : isDrawn
-                      ? "#00ff88"
+                      ? theme.hex
                       : "#ffffff",
                     borderColor: isFree
-                      ? "#00ff88"
+                      ? theme.borderColor
                       : isMarked
-                      ? "#00ff88"
+                      ? theme.borderColor
                       : isDrawn
-                      ? "#00ff88"
+                      ? theme.borderColor
                       : "rgba(255, 255, 255, 0.15)",
                     boxShadow: isFree
-                      ? "0 0 15px rgba(0, 255, 136, 0.6)"
+                      ? theme.glowStrong
                       : isMarked
-                      ? "0 0 20px rgba(0, 255, 136, 0.7)"
+                      ? theme.glowStrong
                       : isDrawn
-                      ? "0 0 12px rgba(0, 255, 136, 0.4)"
+                      ? theme.glow
                       : "none"
                   }}
                   className={`aspect-square flex flex-col items-center justify-center relative font-black text-base sm:text-xl transition-all duration-150 cursor-pointer rounded-xl active:scale-95 ${
@@ -133,7 +185,7 @@ export default function PlayerMobileCard({
                   }`}
                 >
                   {isFree ? (
-                    <div className="flex flex-col items-center justify-center leading-none text-black">
+                    <div className="flex flex-col items-center justify-center leading-none" style={{ color: theme.text }}>
                       <Star size={16} fill="currentColor" />
                       <span className="text-[8px] font-black tracking-tighter mt-0.5">FREE</span>
                     </div>
@@ -141,7 +193,7 @@ export default function PlayerMobileCard({
                     <>
                       <span className="font-space font-black">{cell.val}</span>
                       {isMarked && (
-                        <Check size={16} className="absolute top-0.5 right-0.5 stroke-[4] text-black" />
+                        <Check size={16} className="absolute top-0.5 right-0.5 stroke-[4]" style={{ color: theme.markedText }} />
                       )}
                     </>
                   )}
@@ -152,11 +204,16 @@ export default function PlayerMobileCard({
         </div>
       </div>
 
-      {/* Botón Masivo de Acción: ¡CANTAR BINGO! Neón Electrizante */}
+      {/* Botón Masivo de Acción con Gradiente Neón Personalizado */}
       <button
         id="player-claim-bingo-btn"
         onClick={handleBingoClick}
-        className="w-full bg-gradient-to-r from-[#00ff88] via-[#00f3ff] to-[#a855f7] hover:opacity-95 text-black font-black text-2xl py-4 rounded-2xl uppercase tracking-wider active:scale-95 transition-all flex items-center justify-center gap-3 border border-white/40 shadow-[0_0_30px_rgba(0,255,136,0.5)] cursor-pointer"
+        style={{
+          background: `linear-gradient(90deg, ${theme.hex}, #00f3ff)`,
+          color: "#000000",
+          boxShadow: theme.glowStrong
+        }}
+        className="w-full font-black text-2xl py-4 rounded-2xl uppercase tracking-wider active:scale-95 transition-all flex items-center justify-center gap-3 border border-white/40 cursor-pointer"
       >
         <Trophy size={26} className="stroke-[3]" /> ¡CANTAR BINGO!
       </button>

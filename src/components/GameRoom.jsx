@@ -275,6 +275,8 @@ export default function GameRoom({ session, onLeaveRoom }) {
               playerColor={myPlayer?.playerColor}
               currentBall={roomData.currentBall}
               drawnBalls={drawnBalls}
+              players={roomData.players}
+              playerId={playerId}
               onToggleCell={handleToggleCell}
               onClaimBingo={handleClaimBingo}
             />
