@@ -1,44 +1,44 @@
 /**
- * Módulo Avanzado de Audio para el Bingo Multijugador con Locución Humorística Latina
+ * Módulo Avanzado de Audio para el Bingo Multijugador con Locución Latina Conmovedora y Punchy
  */
 
 let ambientAudioCtx = null;
 let ambientOsc1 = null;
 let isMusicPlaying = false;
 
-// Dichos populares tradicionales de Bingo por número específico
-const SPECIAL_NUMBER_JOKES = {
-  1: "¡El número 1, arrancamos motores con toda la actitud!",
-  7: "¡El 7, el número de la buena suerte!",
-  13: "¡El 13, que no le dé miedo a nadie!",
-  15: "¡El 15, la niña bonita!",
-  22: "¡El 22, los dos patitos en el agua!",
-  33: "¡El 33, la edad de Cristo!",
-  48: "¡El 48, agarren sus cartones que esto está bien caliente!",
-  69: "¡El 69, el favorito de la casa, ay caramba!",
-  75: "¡El 75, la última balota del tablero!"
+// Dichos populares ultra-cortos (2 a 4 palabras máximo) para garantizar locución rápida
+const SHORT_NUMBER_JOKES = {
+  1: "¡Arrancamos con toda!",
+  7: "¡Número de la suerte!",
+  13: "¡Sin miedo a nada!",
+  15: "¡La niña bonita!",
+  22: "¡Los dos patitos!",
+  33: "¡La edad de Cristo!",
+  48: "¡Esto está caliente!",
+  69: "¡El favorito, ay caramba!",
+  75: "¡La última balota!"
 };
 
-// Comentarios divertidos e interjecciones humorísticas aleatorias
-const HUMOROUS_COMMENTS = [
-  "¡Atención Familia Loaiza Sille, alguien está a punto de cantar bingo!",
-  "¡Ese número le faltaba a más de uno, no disimulen!",
-  "¡Madre mía, esta partida está de puro infarto!",
-  "¡Preparen la garganta para gritar BINGO bien fuerte!",
-  "¡Ay ay ay, se siente la emoción en toda la sala!",
-  "¡Miren bien el cartón, no dejen pasar ese número!",
-  "¡El premio se acerca, mantengan la calma!"
+// Comentarios graciosos ultra-cortos para no saturar la locución
+const SHORT_HUMOROUS_COMMENTS = [
+  "¡Revisen bien!",
+  "¡Atentos en la sala!",
+  "¡Tensión total!",
+  "¡Se viene el bingo!",
+  "¡No disimulen!",
+  "¡Casi bingo!"
 ];
 
 /**
- * Fonética optimizada y comentarios humorísticos del locutor latino
+ * Fonética optimizada y locución ultrarrápida que NUNCA se corta
  */
 export function speakBallNumber(letter, number, selectedVoiceLang = "es-MX") {
   if (!("speechSynthesis" in window) || !letter || !number) return "";
 
+  // Cancelar locuciones pasadas para dar prioridad a la balota actual
   window.speechSynthesis.cancel();
 
-  // Mapeo fonético estricto
+  // Mapeo fonético estricto y conciso
   let letterPhonetic = letter;
   if (letter === "I") letterPhonetic = "i latina";
   if (letter === "B") letterPhonetic = "Bé";
@@ -47,15 +47,16 @@ export function speakBallNumber(letter, number, selectedVoiceLang = "es-MX") {
   if (letter === "O") letterPhonetic = "Ó";
 
   const numVal = Number(number);
-  let textToSpeak = `Letra ${letterPhonetic}, número ${numVal}.`;
+  
+  // El número SIEMPRE se canta primero de forma prioritaria y ultra-clara
+  let textToSpeak = `Letra ${letterPhonetic}, ${numVal}.`;
 
-  // Comentario especial si es un número famoso
-  if (SPECIAL_NUMBER_JOKES[numVal]) {
-    textToSpeak += ` ${SPECIAL_NUMBER_JOKES[numVal]}`;
-  } else if (Math.random() < 0.35) {
-    // 35% de probabilidad de añadir un comentario gracioso aleatorio
-    const randomJoke = HUMOROUS_COMMENTS[Math.floor(Math.random() * HUMOROUS_COMMENTS.length)];
-    textToSpeak += ` ${randomJoke}`;
+  // Añadir un comentario ultra-corto opcional de 2 palabras máximo
+  if (SHORT_NUMBER_JOKES[numVal]) {
+    textToSpeak += ` ${SHORT_NUMBER_JOKES[numVal]}`;
+  } else if (Math.random() < 0.3) {
+    const randomShort = SHORT_HUMOROUS_COMMENTS[Math.floor(Math.random() * SHORT_HUMOROUS_COMMENTS.length)];
+    textToSpeak += ` ${randomShort}`;
   }
 
   const utterance = new SpeechSynthesisUtterance(textToSpeak);
@@ -76,7 +77,7 @@ export function speakBallNumber(letter, number, selectedVoiceLang = "es-MX") {
   }
 
   utterance.lang = selectedVoiceLang;
-  utterance.rate = 0.95;  // Velocidad óptima de locución
+  utterance.rate = 1.15;  // Velocidad ágil (1.15x) para locución en <1.5s
   utterance.pitch = 1.05; // Tono alegre y dinámico
 
   window.speechSynthesis.speak(utterance);
