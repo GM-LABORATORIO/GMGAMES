@@ -43,10 +43,13 @@ export default function HostTVView({
     };
   }, [bgMusicEnabled]);
 
-  // Fonética de Voz Nativa Latina sin errores de pronunciación
+  // Fonética de Voz Nativa Latina con Comentarios Humorísticos
   useEffect(() => {
     if (currentBall) {
-      speakBallNumber(currentLetter, currentBall, voiceLang);
+      const text = speakBallNumber(currentLetter, currentBall, voiceLang);
+      setAnnouncerSubtitle(text);
+    } else {
+      setAnnouncerSubtitle("");
     }
   }, [currentBall, currentLetter, voiceLang]);
 
@@ -249,6 +252,13 @@ export default function HostTVView({
                 <div className="text-[10rem] md:text-[14rem] font-black text-white leading-none tracking-tighter font-syne drop-shadow-[0_4px_16px_rgba(0,243,255,0.6)]">
                   {currentBall}
                 </div>
+
+                {announcerSubtitle && (
+                  <div className="mt-3 bg-[#120a26] border-2 border-[#ff007f] p-2.5 text-[#ffb700] font-black text-xs uppercase tracking-wider arcade-glow-magenta animate-fadeIn flex items-center justify-center gap-2 max-w-md mx-auto">
+                    <Volume2 size={16} className="text-[#00f3ff] shrink-0" />
+                    <span>🎙️ LOCUTOR: "{announcerSubtitle}"</span>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="py-16 text-slate-500 font-black text-3xl uppercase tracking-wider border-4 border-dashed border-slate-800">

@@ -1,17 +1,40 @@
 /**
- * Módulo Avanzado de Audio para el Bingo Multijugador
+ * Módulo Avanzado de Audio para el Bingo Multijugador con Locución Humorística Latina
  */
 
 let ambientAudioCtx = null;
 let ambientOsc1 = null;
-let ambientOsc2 = null;
 let isMusicPlaying = false;
 
+// Dichos populares tradicionales de Bingo por número específico
+const SPECIAL_NUMBER_JOKES = {
+  1: "¡El número 1, arrancamos motores con toda la actitud!",
+  7: "¡El 7, el número de la buena suerte!",
+  13: "¡El 13, que no le dé miedo a nadie!",
+  15: "¡El 15, la niña bonita!",
+  22: "¡El 22, los dos patitos en el agua!",
+  33: "¡El 33, la edad de Cristo!",
+  48: "¡El 48, agarren sus cartones que esto está bien caliente!",
+  69: "¡El 69, el favorito de la casa, ay caramba!",
+  75: "¡El 75, la última balota del tablero!"
+};
+
+// Comentarios divertidos e interjecciones humorísticas aleatorias
+const HUMOROUS_COMMENTS = [
+  "¡Atención Familia Loaiza Sille, alguien está a punto de cantar bingo!",
+  "¡Ese número le faltaba a más de uno, no disimulen!",
+  "¡Madre mía, esta partida está de puro infarto!",
+  "¡Preparen la garganta para gritar BINGO bien fuerte!",
+  "¡Ay ay ay, se siente la emoción en toda la sala!",
+  "¡Miren bien el cartón, no dejen pasar ese número!",
+  "¡El premio se acerca, mantengan la calma!"
+];
+
 /**
- * Fonética optimizada para evitar errores del sintetizador de voz (ej: evitar "letra primera" con la I)
+ * Fonética optimizada y comentarios humorísticos del locutor latino
  */
 export function speakBallNumber(letter, number, selectedVoiceLang = "es-MX") {
-  if (!("speechSynthesis" in window) || !letter || !number) return;
+  if (!("speechSynthesis" in window) || !letter || !number) return "";
 
   window.speechSynthesis.cancel();
 
@@ -23,10 +46,21 @@ export function speakBallNumber(letter, number, selectedVoiceLang = "es-MX") {
   if (letter === "G") letterPhonetic = "Gé";
   if (letter === "O") letterPhonetic = "Ó";
 
-  const textToSpeak = `Letra ${letterPhonetic}, número ${number}`;
+  const numVal = Number(number);
+  let textToSpeak = `Letra ${letterPhonetic}, número ${numVal}.`;
+
+  // Comentario especial si es un número famoso
+  if (SPECIAL_NUMBER_JOKES[numVal]) {
+    textToSpeak += ` ${SPECIAL_NUMBER_JOKES[numVal]}`;
+  } else if (Math.random() < 0.35) {
+    // 35% de probabilidad de añadir un comentario gracioso aleatorio
+    const randomJoke = HUMOROUS_COMMENTS[Math.floor(Math.random() * HUMOROUS_COMMENTS.length)];
+    textToSpeak += ` ${randomJoke}`;
+  }
+
   const utterance = new SpeechSynthesisUtterance(textToSpeak);
 
-  // Buscar voces latinas disponibles en el navegador
+  // Buscar voces latinas disponibles
   const voices = window.speechSynthesis.getVoices();
   const latinVoice = voices.find((v) =>
     v.lang.includes(selectedVoiceLang) ||
@@ -42,10 +76,11 @@ export function speakBallNumber(letter, number, selectedVoiceLang = "es-MX") {
   }
 
   utterance.lang = selectedVoiceLang;
-  utterance.rate = 0.95;  // Velocidad óptima
-  utterance.pitch = 1.05; // Tono con energía y emoción
+  utterance.rate = 0.95;  // Velocidad óptima de locución
+  utterance.pitch = 1.05; // Tono alegre y dinámico
 
   window.speechSynthesis.speak(utterance);
+  return textToSpeak;
 }
 
 /**
@@ -59,7 +94,6 @@ export function getSpanishVoices() {
 
 /**
  * Música de Fondo Ambiental Neón (Web Audio API)
- * Crea una atmósfera envolvente suave (bajos neón) que NO opaca la voz del locutor.
  */
 export function toggleBackgroundMusic(enable = true) {
   try {
@@ -70,15 +104,13 @@ export function toggleBackgroundMusic(enable = true) {
       if (isMusicPlaying) return;
 
       ambientAudioCtx = new AudioContext();
-      
-      // Oscilador 1: Bajo suave neón
       ambientOsc1 = ambientAudioCtx.createOscillator();
       const gain1 = ambientAudioCtx.createGain();
 
       ambientOsc1.type = "sine";
-      ambientOsc1.frequency.setValueAtTime(110, ambientAudioCtx.currentTime); // A2 (110Hz)
+      ambientOsc1.frequency.setValueAtTime(110, ambientAudioCtx.currentTime);
 
-      gain1.gain.setValueAtTime(0.04, ambientAudioCtx.currentTime); // Volumen sutil (4%)
+      gain1.gain.setValueAtTime(0.04, ambientAudioCtx.currentTime);
 
       ambientOsc1.connect(gain1);
       gain1.connect(ambientAudioCtx.destination);
