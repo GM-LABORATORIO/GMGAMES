@@ -1,15 +1,13 @@
 /**
- * Módulo de Audio de Alta Emoción con Voz Femenina Latina, Efectos de Sonido SFX y Música Arcade
+ * Módulo de Audio de Alta Emoción con Locución Femenina Latina y Seguimiento de Líderes por Nombre
  */
 
 let ambientAudioCtx = null;
 let ambientOsc1 = null;
 let ambientOsc2 = null;
-let ambientInterval = null;
 let isMusicPlaying = false;
 let isAudioUnlocked = false;
 
-// Dichos populares ultra-cortos con toque femenino y eufórico
 const SHORT_NUMBER_JOKES = {
   1: "¡Arrancamos con toda la vibra!",
   7: "¡Número de la buena suerte!",
@@ -22,7 +20,7 @@ const SHORT_NUMBER_JOKES = {
   75: "¡La última balota de la noche!"
 };
 
-const SHORT_HUMOROUS_COMMENTS = [
+const HUMOROUS_COMMENTS = [
   "¡Revisen bien esos cartones!",
   "¡Atentos todos en la sala!",
   "¡Tensión total, familia!",
@@ -62,9 +60,13 @@ export function unlockTVAudio() {
 }
 
 /**
- * Locución Latina Femenina Eufórica de Alta Emoción
+ * Locución Femenina Latina Eufórica con Comentarios del Líder en Vivo
+ * @param {string} letter - Letra (B, I, N, G, O)
+ * @param {number|string} number - Número cantado
+ * @param {string} selectedVoiceLang - Idioma/Acento de voz
+ * @param {Object} leaderInfo - Información del líder { name: "Bruno", hits: 4 }
  */
-export function speakBallNumber(letter, number, selectedVoiceLang = "es-MX") {
+export function speakBallNumber(letter, number, selectedVoiceLang = "es-MX", leaderInfo = null) {
   if (!letter || !number) return "";
 
   if (!isAudioUnlocked) {
@@ -89,16 +91,30 @@ export function speakBallNumber(letter, number, selectedVoiceLang = "es-MX") {
     const numVal = Number(number);
     let textToSpeak = `Letra ${letterPhonetic}, ${numVal}.`;
 
+    // 1. Prioridad a dichos especiales por número
     if (SHORT_NUMBER_JOKES[numVal]) {
       textToSpeak += ` ${SHORT_NUMBER_JOKES[numVal]}`;
-    } else if (Math.random() < 0.35) {
-      const randomShort = SHORT_HUMOROUS_COMMENTS[Math.floor(Math.random() * SHORT_HUMOROUS_COMMENTS.length)];
+    } 
+    // 2. Mención de PRESIÓN al líder actual si tiene 2 o más aciertos
+    else if (leaderInfo && leaderInfo.name && leaderInfo.hits >= 2 && Math.random() < 0.45) {
+      const pressurePhrases = [
+        `¡Atención familia, ${leaderInfo.name} lleva la delantera con ${leaderInfo.hits} aciertos!`,
+        `¡Sientan la presión, ${leaderInfo.name} va liderando el tablero!`,
+        `¡Miren a ${leaderInfo.name}, está apretando el paso con ${leaderInfo.hits} números!`,
+        `¡Ojo con ${leaderInfo.name}, se acerca peligrosamente al bingo!`
+      ];
+      const selectedPressure = pressurePhrases[Math.floor(Math.random() * pressurePhrases.length)];
+      textToSpeak += ` ${selectedPressure}`;
+    } 
+    // 3. Comentario humorístico general
+    else if (Math.random() < 0.3) {
+      const randomShort = HUMOROUS_COMMENTS[Math.floor(Math.random() * HUMOROUS_COMMENTS.length)];
       textToSpeak += ` ${randomShort}`;
     }
 
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
 
-    // Buscar voces FEMENINAS latinas en el navegador (ej: Paulina, Mia, Sabina, Dalia, Lupe, Monica, etc.)
+    // Voces Femeninas Latinas
     const voices = window.speechSynthesis.getVoices();
     const femaleVoice = voices.find((v) =>
       v.lang.startsWith("es") &&
@@ -119,20 +135,20 @@ export function speakBallNumber(letter, number, selectedVoiceLang = "es-MX") {
     }
 
     utterance.lang = selectedVoiceLang;
-    utterance.rate = 1.15;  // Velocidad ágil eufórica
-    utterance.pitch = 1.25; // Tono femenino brillante y emocionado
+    utterance.rate = 1.15;  // Velocidad ágil
+    utterance.pitch = 1.25; // Tono femenino eufórico
 
     window.speechSynthesis.speak(utterance);
     return textToSpeak;
   } catch (err) {
-    console.error("Error en locución femenina:", err);
+    console.error("Error en locución de presión:", err);
     playBallPingSound();
     return `Letra ${letter}, ${number}`;
   }
 }
 
 /**
- * Efecto de sonido SFX de marcado táctil de celda (Arcade Pop)
+ * Efecto de sonido SFX de marcado táctil (Arcade Pop)
  */
 export function playPopSound() {
   try {
@@ -177,8 +193,8 @@ export function playBallPingSound() {
     const gain = ctx.createGain();
 
     osc.type = "triangle";
-    osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
-    osc.frequency.exponentialRampToValueAtTime(1046.50, ctx.currentTime + 0.15); // C6
+    osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1046.50, ctx.currentTime + 0.15);
 
     gain.gain.setValueAtTime(0.3, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
@@ -189,12 +205,12 @@ export function playBallPingSound() {
     osc.start();
     osc.stop(ctx.currentTime + 0.15);
   } catch (err) {
-    // Ignorar si bloquea
+    // Ignorar
   }
 }
 
 /**
- * Música de Fondo Casino Arcade de Alta Emoción (Libre de derechos sintetizada nativamente)
+ * Música de Fondo Casino Arcade de Alta Emoción
  */
 export function toggleBackgroundMusic(enable = true) {
   try {
@@ -212,16 +228,15 @@ export function toggleBackgroundMusic(enable = true) {
         ambientAudioCtx.resume();
       }
 
-      // Bajo rítmico pulsante
       ambientOsc1 = ambientAudioCtx.createOscillator();
       ambientOsc2 = ambientAudioCtx.createOscillator();
       const gain1 = ambientAudioCtx.createGain();
 
       ambientOsc1.type = "sawtooth";
-      ambientOsc1.frequency.setValueAtTime(130.81, ambientAudioCtx.currentTime); // C3
+      ambientOsc1.frequency.setValueAtTime(130.81, ambientAudioCtx.currentTime);
 
       ambientOsc2.type = "sine";
-      ambientOsc2.frequency.setValueAtTime(261.63, ambientAudioCtx.currentTime); // C4
+      ambientOsc2.frequency.setValueAtTime(261.63, ambientAudioCtx.currentTime);
 
       gain1.gain.setValueAtTime(0.025, ambientAudioCtx.currentTime);
 

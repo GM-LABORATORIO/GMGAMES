@@ -43,6 +43,17 @@ export default function HostTVView({
     setIsTvAudioActivated(true);
   };
 
+  // Calcular el líder actual de la partida
+  const leaderPlayer = playersList.reduce((top, p) => {
+    const pCount = (p.confirmedNumbers || []).length;
+    const topCount = (top?.confirmedNumbers || []).length;
+    return pCount > topCount ? p : top;
+  }, null);
+
+  const leaderInfo = leaderPlayer && (leaderPlayer.confirmedNumbers || []).length > 0
+    ? { name: leaderPlayer.name, hits: leaderPlayer.confirmedNumbers.length, color: leaderPlayer.playerColor }
+    : null;
+
   // Música de fondo ambiental
   useEffect(() => {
     toggleBackgroundMusic(bgMusicEnabled);
@@ -51,10 +62,10 @@ export default function HostTVView({
     };
   }, [bgMusicEnabled]);
 
-  // Fonética de Voz Nativa Latina con Comentarios Humorísticos
+  // Fonética de Voz Nativa Latina con Comentarios Humorísticos y Presión al Líder
   useEffect(() => {
     if (currentBall) {
-      const text = speakBallNumber(currentLetter, currentBall, voiceLang);
+      const text = speakBallNumber(currentLetter, currentBall, voiceLang, leaderInfo);
       setAnnouncerSubtitle(text);
     } else {
       setAnnouncerSubtitle("");
@@ -227,6 +238,23 @@ export default function HostTVView({
           <VolumeX size={24} className="animate-pulse" />
           <span>🔊 HAZ CLICK AQUÍ EN EL TV PARA ACTIVAR EL SONIDO Y LA VOZ EN VIVO</span>
         </button>
+      )}
+
+      {/* Banner de Presión al Líder Actual en la TV */}
+      {leaderInfo && (
+        <div className="bg-[#120a26] border-2 border-[#ffb700] p-3 mb-6 arcade-glow-gold flex flex-wrap justify-between items-center z-20 animate-fadeIn">
+          <div className="flex items-center gap-2">
+            <span className="bg-[#ffb700] text-black font-black text-xs px-3 py-1 uppercase border border-black flex items-center gap-1 shadow-[2px_2px_0px_0px_#000]">
+              👑 LÍDER DE LA PARTIDA
+            </span>
+            <span className="font-black text-lg text-white uppercase tracking-tight">
+              {leaderInfo.name}
+            </span>
+          </div>
+          <span className="text-xs font-black text-[#00f3ff] font-space uppercase tracking-wider bg-[#090514] border border-[#00f3ff] px-3 py-1">
+            🔥 {leaderInfo.hits} ACIERTOS MARCADOS
+          </span>
+        </div>
       )}
 
       {/* Grid Principal TV 16:9 */}
