@@ -112,19 +112,15 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
   try {
     window.speechSynthesis.cancel();
 
-    // Mapeo fonético de letras con pausa breve
-    let letterPhonetic = letter;
-    if (letter === "I") letterPhonetic = "i latina";
-    if (letter === "B") letterPhonetic = "Bé";
-    if (letter === "N") letterPhonetic = "Ene";
-    if (letter === "G") letterPhonetic = "Gé";
-    if (letter === "O") letterPhonetic = "Ó";
+    // Diccionario fonético estricto para letras
+    const fonetica = { B: 'Bé', I: 'I', N: 'Éne', G: 'Ge', O: 'O' };
+    const letterPhonetic = fonetica[letter] || letter;
 
     const numVal = Number(number);
     const numWord = NUMBER_WORDS[numVal] || numVal.toString();
 
-    // Pausa fonética limpia: "Letra Bé, número veintidós."
-    let textToSpeak = `Letra ${letterPhonetic}, ${numWord}.`;
+    // Texto de locución perfecto: "Letra Bé, número 22."
+    let textToSpeak = `Letra ${letterPhonetic}, número ${numWord}.`;
 
     // 1. Dichos especiales por número famoso
     if (SHORT_NUMBER_JOKES[numVal]) {
@@ -142,7 +138,7 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
 
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
 
-    // Asignar la voz elegida por el usuario
+    // Asignar la voz elegida por el usuario o forzar idioma español (es-ES / es-US / es-MX)
     const voices = window.speechSynthesis.getVoices();
     if (selectedVoiceURI) {
       const chosenVoice = voices.find((v) => v.voiceURI === selectedVoiceURI);
@@ -152,7 +148,7 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
       if (defaultEsVoice) utterance.voice = defaultEsVoice;
     }
 
-    utterance.lang = utterance.voice?.lang || "es-MX";
+    utterance.lang = utterance.voice?.lang || "es-ES";
     utterance.rate = 0.95;  // Ritmo pausado y modulado para articulación 100% clara
     utterance.pitch = 1.0;  // Tono de voz humano natural de alta dicción
 
