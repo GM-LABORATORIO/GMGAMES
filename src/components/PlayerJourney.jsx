@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import { getPresetCard } from "../utils/bingoLogic";
 import { getPlayerNeonTheme, NEON_THEMES } from "../utils/themeEngine";
-import { Sparkles, ArrowRight, Check, Trophy, Heart, Shield, RefreshCw } from "lucide-react";
+import { Sparkles, ArrowRight, Check, Trophy, Heart, Lock, AlertTriangle } from "lucide-react";
 
 export const NEON_COLORS = Object.values(NEON_THEMES);
 
-export default function PlayerJourney({ initialRoomCode = "", onCompleteJourney }) {
+export default function PlayerJourney({
+  initialRoomCode = "",
+  occupiedTables = {}, // Mapa { [tableId]: "Nombre del Jugador" }
+  onCompleteJourney
+}) {
   const [step, setStep] = useState(1);
   const [playerName, setPlayerName] = useState("");
   const [selectedColor, setSelectedColor] = useState(NEON_COLORS[0]);
@@ -14,6 +18,10 @@ export default function PlayerJourney({ initialRoomCode = "", onCompleteJourney 
   const activeTheme = getPlayerNeonTheme(selectedColor);
   const cardMatrixPreview = getPresetCard(selectedTableId);
 
+  // Verificar si la tabla seleccionada ya está ocupada por otro jugador
+  const isCurrentTableOccupied = Boolean(occupiedTables[selectedTableId]);
+  const occupiedByName = occupiedTables[selectedTableId] || "";
+
   const handleNextFromStep1 = (e) => {
     e.preventDefault();
     if (!playerName.trim()) return;
@@ -21,6 +29,8 @@ export default function PlayerJourney({ initialRoomCode = "", onCompleteJourney 
   };
 
   const handleFinishJourney = () => {
+    if (isCurrentTableOccupied) return;
+
     onCompleteJourney({
       playerName: playerName.trim(),
       playerColor: selectedColor,
@@ -37,7 +47,7 @@ export default function PlayerJourney({ initialRoomCode = "", onCompleteJourney 
 
       <div className="max-w-xl w-full mx-auto relative z-10">
         
-        {/* Barra de Progreso del Journey (4 Escenas) */}
+        {/* Barra de Progreso del Journey */}
         <div className="flex items-center justify-between mb-6 bg-[#120a26] border-2 border-slate-800 p-2 brutal-shadow-white">
           {[
             { id: 1, label: "NOMBRE" },
@@ -105,7 +115,7 @@ export default function PlayerJourney({ initialRoomCode = "", onCompleteJourney 
           </div>
         )}
 
-        {/* ESCENA 2: ELECCIÓN DE COLOR NEÓN CON PREVISUALIZACIÓN DE TEMA EN TIEMPO REAL */}
+        {/* ESCENA 2: ELECCIÓN DE COLOR NEÓN */}
         {step === 2 && (
           <div
             style={{
@@ -124,12 +134,8 @@ export default function PlayerJourney({ initialRoomCode = "", onCompleteJourney 
               <h2 className="text-3xl font-black text-white uppercase tracking-tight">
                 ELIGE TU COLOR NEÓN
               </h2>
-              <p className="text-xs text-slate-300 font-bold mt-1 uppercase">
-                TU CARTÓN Y TU INTERFAZ ADOPTARÁN ESTE COLOR
-              </p>
             </div>
 
-            {/* Grid de Colores Neón */}
             <div className="grid grid-cols-3 gap-3">
               {NEON_COLORS.map((color) => {
                 const isSelected = selectedColor.id === color.id;
@@ -155,25 +161,6 @@ export default function PlayerJourney({ initialRoomCode = "", onCompleteJourney 
               })}
             </div>
 
-            {/* Previsualización del Tema Neón */}
-            <div className="bg-[#090514] border-2 border-slate-700 p-4 text-center">
-              <span className="text-[10px] text-slate-400 font-bold uppercase block mb-2">VISTA PREVIA DE TU TEMA</span>
-              <div className="flex items-center justify-center gap-3">
-                <span
-                  style={{ backgroundColor: activeTheme.hex, color: activeTheme.text }}
-                  className="font-black text-xs px-3 py-1 uppercase border border-black font-space"
-                >
-                  {playerName}
-                </span>
-                <span
-                  style={{ borderColor: activeTheme.borderColor, color: activeTheme.hex }}
-                  className="font-black text-xs px-3 py-1 border-2 uppercase"
-                >
-                  CARTÓN TEMA NEÓN
-                </span>
-              </div>
-            </div>
-
             <div className="flex gap-3">
               <button
                 onClick={() => setStep(1)}
@@ -196,18 +183,18 @@ export default function PlayerJourney({ initialRoomCode = "", onCompleteJourney 
           </div>
         )}
 
-        {/* ESCENA 3: SELECCIÓN DE CARTÓN 1 AL 10 CON MATRIZ PREVIA */}
+        {/* ESCENA 3: SELECCIÓN DE CARTÓN 1 AL 10 CON EXCLUSIVIDAD */}
         {step === 3 && (
           <div
             style={{
-              borderColor: activeTheme.borderColor,
-              boxShadow: activeTheme.glow
+              borderColor: isCurrentTableOccupied ? "#ff0055" : activeTheme.borderColor,
+              boxShadow: isCurrentTableOccupied ? "0 0 25px #ff0055" : activeTheme.glow
             }}
             className="arcade-card-glass border-4 p-8 animate-fadeIn space-y-6 transition-all duration-300"
           >
             <div className="text-center">
               <span
-                style={{ backgroundColor: activeTheme.hex, color: activeTheme.text }}
+                style={{ backgroundColor: isCurrentTableOccupied ? "#ff0055" : activeTheme.hex, color: isCurrentTableOccupied ? "#fff" : activeTheme.text }}
                 className="font-black px-3 py-1 text-xs uppercase tracking-widest border border-black inline-block mb-3"
               >
                 PASO 3 DE 4 // SELECCIÓN DE TABLA
@@ -225,12 +212,21 @@ export default function PlayerJourney({ initialRoomCode = "", onCompleteJourney 
               >
                 ◄ ANTERIOR
               </button>
-              <span
-                style={{ color: activeTheme.hex }}
-                className="font-black text-xl font-space"
-              >
-                TABLA #{selectedTableId}
-              </span>
+
+              <div className="text-center">
+                <span
+                  style={{ color: isCurrentTableOccupied ? "#ff0055" : activeTheme.hex }}
+                  className="font-black text-xl font-space block"
+                >
+                  TABLA #{selectedTableId}
+                </span>
+                {isCurrentTableOccupied && (
+                  <span className="text-[10px] bg-[#ff0055] text-white px-2 py-0.5 font-black uppercase inline-flex items-center gap-1 border border-black">
+                    <Lock size={10} /> OCUPADA POR {occupiedByName}
+                  </span>
+                )}
+              </div>
+
               <button
                 onClick={() => setSelectedTableId((prev) => (prev < 10 ? prev + 1 : 1))}
                 className="bg-slate-800 text-white font-black px-4 py-2 border border-slate-600 text-sm"
@@ -238,6 +234,14 @@ export default function PlayerJourney({ initialRoomCode = "", onCompleteJourney 
                 SIGUIENTE ►
               </button>
             </div>
+
+            {/* Banner de Advertencia si está ocupada */}
+            {isCurrentTableOccupied && (
+              <div className="bg-[#ff0055] text-white font-black p-3 border-2 border-black text-center text-xs uppercase tracking-wider animate-bounce flex items-center justify-center gap-2">
+                <AlertTriangle size={18} />
+                <span>ESTA TABLA YA FUE ELEGIDA POR {occupiedByName}. POR FAVOR ELIGE OTRA.</span>
+              </div>
+            )}
 
             {/* Previsualización 5x5 de la Tabla Elegida */}
             <div className="bg-[#120a26] border-2 border-slate-700 p-3">
@@ -249,7 +253,7 @@ export default function PlayerJourney({ initialRoomCode = "", onCompleteJourney 
                 <div className="bg-[#a855f7] text-white py-0.5 border border-black">O</div>
               </div>
 
-              <div className="grid grid-cols-5 gap-1">
+              <div className="grid grid-cols-5 gap-1 opacity-90">
                 {cardMatrixPreview.map((row, rIdx) =>
                   row.map((cell, cIdx) => (
                     <div
@@ -276,15 +280,16 @@ export default function PlayerJourney({ initialRoomCode = "", onCompleteJourney 
                 ATRÁS
               </button>
               <button
-                onClick={() => setStep(4)}
+                onClick={() => !isCurrentTableOccupied && setStep(4)}
+                disabled={isCurrentTableOccupied}
                 style={{
-                  boxShadow: activeTheme.glowStrong,
-                  backgroundColor: activeTheme.hex,
-                  color: activeTheme.text
+                  boxShadow: isCurrentTableOccupied ? "none" : activeTheme.glowStrong,
+                  backgroundColor: isCurrentTableOccupied ? "#475569" : activeTheme.hex,
+                  color: isCurrentTableOccupied ? "#94a3b8" : activeTheme.text
                 }}
-                className="w-2/3 font-black text-xl py-4 border-4 border-black uppercase tracking-wider flex items-center justify-center gap-2"
+                className="w-2/3 font-black text-xl py-4 border-4 border-black uppercase tracking-wider flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                CONFIRMAR TABLA <ArrowRight size={20} />
+                {isCurrentTableOccupied ? "TABLA OCUPADA" : "CONFIRMAR TABLA"} <ArrowRight size={20} />
               </button>
             </div>
           </div>

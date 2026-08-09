@@ -2,6 +2,7 @@ import React from "react";
 import { Star, Trophy, Check } from "lucide-react";
 import confetti from "canvas-confetti";
 import { getPlayerNeonTheme } from "../utils/themeEngine";
+import { playPopSound } from "../utils/audio";
 
 export default function PlayerMobileCard({
   card,
@@ -120,7 +121,10 @@ export default function PlayerMobileCard({
                 <button
                   key={`${rIdx}-${cIdx}`}
                   id={`cell-${rIdx}-${cIdx}`}
-                  onClick={() => onToggleCell(rIdx, cIdx)}
+                  onClick={() => {
+                    playPopSound();
+                    onToggleCell(rIdx, cIdx);
+                  }}
                   style={{
                     backgroundColor: isFree
                       ? "#ffb700"

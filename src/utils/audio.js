@@ -1,36 +1,38 @@
 /**
- * Módulo Avanzado de Audio y Desbloqueo Nativo para Navegadores de Smart TVs
+ * Módulo de Audio de Alta Emoción con Voz Femenina Latina, Efectos de Sonido SFX y Música Arcade
  */
 
 let ambientAudioCtx = null;
 let ambientOsc1 = null;
+let ambientOsc2 = null;
+let ambientInterval = null;
 let isMusicPlaying = false;
 let isAudioUnlocked = false;
 
-// Dichos populares ultra-cortos (2 a 4 palabras máximo)
+// Dichos populares ultra-cortos con toque femenino y eufórico
 const SHORT_NUMBER_JOKES = {
-  1: "¡Arrancamos con toda!",
-  7: "¡Número de la suerte!",
-  13: "¡Sin miedo a nada!",
-  15: "¡La niña bonita!",
-  22: "¡Los dos patitos!",
+  1: "¡Arrancamos con toda la vibra!",
+  7: "¡Número de la buena suerte!",
+  13: "¡Sin miedo a nada, familia!",
+  15: "¡La niña bonita del bingo!",
+  22: "¡Los dos patitos al agua!",
   33: "¡La edad de Cristo!",
-  48: "¡Esto está caliente!",
-  69: "¡El favorito, ay caramba!",
-  75: "¡La última balota!"
+  48: "¡Esto se está calentando!",
+  69: "¡El favorito de la casa, ay caramba!",
+  75: "¡La última balota de la noche!"
 };
 
 const SHORT_HUMOROUS_COMMENTS = [
-  "¡Revisen bien!",
-  "¡Atentos en la sala!",
-  "¡Tensión total!",
-  "¡Se viene el bingo!",
-  "¡No disimulen!",
-  "¡Casi bingo!"
+  "¡Revisen bien esos cartones!",
+  "¡Atentos todos en la sala!",
+  "¡Tensión total, familia!",
+  "¡Se viene el bingo ya!",
+  "¡No disimulen la emoción!",
+  "¡Casi casi cantamos bingo!"
 ];
 
 /**
- * Desbloquea las políticas de Autoplay de Smart TVs (LG webOS, Samsung Tizen, Chrome TV)
+ * Desbloquea el contexto de audio en Smart TVs y celulares
  */
 export function unlockTVAudio() {
   try {
@@ -46,7 +48,6 @@ export function unlockTVAudio() {
 
     if ("speechSynthesis" in window) {
       window.speechSynthesis.resume();
-      // Reproducir locución silenciosa para desbloquear el motor de voz del TV
       const silentUtterance = new SpeechSynthesisUtterance("");
       silentUtterance.volume = 0;
       window.speechSynthesis.speak(silentUtterance);
@@ -55,32 +56,29 @@ export function unlockTVAudio() {
     isAudioUnlocked = true;
     return true;
   } catch (err) {
-    console.warn("Error al desbloquear audio en TV:", err);
+    console.warn("Error al desbloquear audio:", err);
     return false;
   }
 }
 
 /**
- * Fonética optimizada y locución ultrarrápida compatible con Smart TVs
+ * Locución Latina Femenina Eufórica de Alta Emoción
  */
 export function speakBallNumber(letter, number, selectedVoiceLang = "es-MX") {
   if (!letter || !number) return "";
 
-  // Intentar desbloquear audio si aún no se ha hecho clic
   if (!isAudioUnlocked) {
     unlockTVAudio();
   }
 
-  // Si el TV no soporta speechSynthesis, reproducimos un tono sintetizado de respaldo
   if (!("speechSynthesis" in window)) {
-    playSynthesizedChime();
+    playBallPingSound();
     return `Letra ${letter}, ${number}`;
   }
 
   try {
     window.speechSynthesis.cancel();
 
-    // Mapeo fonético estricto y conciso
     let letterPhonetic = letter;
     if (letter === "I") letterPhonetic = "i latina";
     if (letter === "B") letterPhonetic = "Bé";
@@ -93,77 +91,110 @@ export function speakBallNumber(letter, number, selectedVoiceLang = "es-MX") {
 
     if (SHORT_NUMBER_JOKES[numVal]) {
       textToSpeak += ` ${SHORT_NUMBER_JOKES[numVal]}`;
-    } else if (Math.random() < 0.3) {
+    } else if (Math.random() < 0.35) {
       const randomShort = SHORT_HUMOROUS_COMMENTS[Math.floor(Math.random() * SHORT_HUMOROUS_COMMENTS.length)];
       textToSpeak += ` ${randomShort}`;
     }
 
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
 
+    // Buscar voces FEMENINAS latinas en el navegador (ej: Paulina, Mia, Sabina, Dalia, Lupe, Monica, etc.)
     const voices = window.speechSynthesis.getVoices();
-    const latinVoice = voices.find((v) =>
-      v.lang.includes(selectedVoiceLang) ||
-      v.lang.includes("es-MX") ||
-      v.lang.includes("es-US") ||
-      v.lang.includes("es-CO") ||
-      v.lang.includes("es-AR") ||
-      v.lang.includes("es-419")
-    ) || voices.find((v) => v.lang.startsWith("es"));
+    const femaleVoice = voices.find((v) =>
+      v.lang.startsWith("es") &&
+      (v.name.toLowerCase().includes("female") ||
+       v.name.toLowerCase().includes("paulina") ||
+       v.name.toLowerCase().includes("mia") ||
+       v.name.toLowerCase().includes("sabina") ||
+       v.name.toLowerCase().includes("lupe") ||
+       v.name.toLowerCase().includes("dalia") ||
+       v.name.toLowerCase().includes("monica") ||
+       v.name.toLowerCase().includes("victoria") ||
+       v.name.toLowerCase().includes("helena") ||
+       v.name.toLowerCase().includes("zira"))
+    ) || voices.find((v) => v.lang.includes(selectedVoiceLang)) || voices.find((v) => v.lang.startsWith("es"));
 
-    if (latinVoice) {
-      utterance.voice = latinVoice;
+    if (femaleVoice) {
+      utterance.voice = femaleVoice;
     }
 
     utterance.lang = selectedVoiceLang;
-    utterance.rate = 1.15;  // Velocidad de voz ágil para TV
-    utterance.pitch = 1.05;
+    utterance.rate = 1.15;  // Velocidad ágil eufórica
+    utterance.pitch = 1.25; // Tono femenino brillante y emocionado
 
     window.speechSynthesis.speak(utterance);
     return textToSpeak;
   } catch (err) {
-    console.error("Error en speechSynthesis TV:", err);
-    playSynthesizedChime();
+    console.error("Error en locución femenina:", err);
+    playBallPingSound();
     return `Letra ${letter}, ${number}`;
   }
 }
 
 /**
- * Tono sintetizado de respaldo para TVs que no tienen síntesis de voz instalada
+ * Efecto de sonido SFX de marcado táctil de celda (Arcade Pop)
  */
-export function playSynthesizedChime() {
+export function playPopSound() {
   try {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     if (!AudioContext) return;
 
-    if (!ambientAudioCtx) {
-      ambientAudioCtx = new AudioContext();
-    }
+    const ctx = ambientAudioCtx || new AudioContext();
+    if (ctx.state === "suspended") ctx.resume();
 
-    if (ambientAudioCtx.state === "suspended") {
-      ambientAudioCtx.resume();
-    }
-
-    const osc = ambientAudioCtx.createOscillator();
-    const gain = ambientAudioCtx.createGain();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
 
     osc.type = "sine";
-    osc.frequency.setValueAtTime(587.33, ambientAudioCtx.currentTime); // D5
+    osc.frequency.setValueAtTime(800, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1400, ctx.currentTime + 0.08);
 
-    gain.gain.setValueAtTime(0.2, ambientAudioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ambientAudioCtx.currentTime + 0.4);
+    gain.gain.setValueAtTime(0.25, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
 
     osc.connect(gain);
-    gain.connect(ambientAudioCtx.destination);
+    gain.connect(ctx.destination);
 
     osc.start();
-    osc.stop(ambientAudioCtx.currentTime + 0.4);
+    osc.stop(ctx.currentTime + 0.08);
   } catch (err) {
-    console.warn("Chime sintetizado no disponible:", err);
+    // Ignorar si el navegador bloquea audio
   }
 }
 
 /**
- * Música de Fondo Ambiental Neón (Web Audio API)
+ * Efecto de sonido SFX al salir una balota (Ping de bombo)
+ */
+export function playBallPingSound() {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+
+    const ctx = ambientAudioCtx || new AudioContext();
+    if (ctx.state === "suspended") ctx.resume();
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+    osc.frequency.exponentialRampToValueAtTime(1046.50, ctx.currentTime + 0.15); // C6
+
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + 0.15);
+  } catch (err) {
+    // Ignorar si bloquea
+  }
+}
+
+/**
+ * Música de Fondo Casino Arcade de Alta Emoción (Libre de derechos sintetizada nativamente)
  */
 export function toggleBackgroundMusic(enable = true) {
   try {
@@ -181,23 +212,34 @@ export function toggleBackgroundMusic(enable = true) {
         ambientAudioCtx.resume();
       }
 
+      // Bajo rítmico pulsante
       ambientOsc1 = ambientAudioCtx.createOscillator();
+      ambientOsc2 = ambientAudioCtx.createOscillator();
       const gain1 = ambientAudioCtx.createGain();
 
-      ambientOsc1.type = "sine";
-      ambientOsc1.frequency.setValueAtTime(110, ambientAudioCtx.currentTime);
+      ambientOsc1.type = "sawtooth";
+      ambientOsc1.frequency.setValueAtTime(130.81, ambientAudioCtx.currentTime); // C3
 
-      gain1.gain.setValueAtTime(0.03, ambientAudioCtx.currentTime);
+      ambientOsc2.type = "sine";
+      ambientOsc2.frequency.setValueAtTime(261.63, ambientAudioCtx.currentTime); // C4
+
+      gain1.gain.setValueAtTime(0.025, ambientAudioCtx.currentTime);
 
       ambientOsc1.connect(gain1);
+      ambientOsc2.connect(gain1);
       gain1.connect(ambientAudioCtx.destination);
 
       ambientOsc1.start();
+      ambientOsc2.start();
       isMusicPlaying = true;
     } else {
       if (ambientOsc1) {
         ambientOsc1.stop();
         ambientOsc1.disconnect();
+      }
+      if (ambientOsc2) {
+        ambientOsc2.stop();
+        ambientOsc2.disconnect();
       }
       isMusicPlaying = false;
     }
@@ -210,15 +252,7 @@ export function toggleBackgroundMusic(enable = true) {
  * Audio de Victoria al cantar BINGO
  */
 export function playVictoryAudio(audioUrl = "/audio/victory.mp3") {
-  const audio = new Audio(audioUrl);
-  audio.volume = 0.9;
-  const playPromise = audio.play();
-
-  if (playPromise !== undefined) {
-    playPromise.catch(() => {
-      playSynthesizedFanfare();
-    });
-  }
+  playSynthesizedFanfare();
 }
 
 /**
@@ -236,7 +270,7 @@ export function playSynthesizedFanfare() {
       { freq: 523.25, time: 0.00, duration: 0.15 },
       { freq: 659.25, time: 0.15, duration: 0.15 },
       { freq: 783.99, time: 0.30, duration: 0.15 },
-      { freq: 1046.50, time: 0.45, duration: 0.60 }
+      { freq: 1046.50, time: 0.45, duration: 0.70 }
     ];
 
     notes.forEach(({ freq, time, duration }) => {
@@ -246,7 +280,7 @@ export function playSynthesizedFanfare() {
       osc.type = "triangle";
       osc.frequency.setValueAtTime(freq, ctx.currentTime + time);
 
-      gain.gain.setValueAtTime(0.3, ctx.currentTime + time);
+      gain.gain.setValueAtTime(0.35, ctx.currentTime + time);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + time + duration);
 
       osc.connect(gain);
