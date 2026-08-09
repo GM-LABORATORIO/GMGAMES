@@ -183,6 +183,28 @@ export default function HostTVView({
         </div>
       )}
 
+      {/* Banner Hero QR Gigante de Bienvenida en Estado de Espera */}
+      {status === "waiting" && (
+        <div className="bg-[#111c3a] border-4 border-[#ffe600] p-6 mb-6 brutal-shadow-white text-center z-20 animate-fadeIn">
+          <div className="flex flex-col sm:flex-row items-center justify-around gap-6">
+            <div className="bg-white p-3 border-4 border-black brutal-shadow-black inline-block">
+              <QRCodeSVG value={joinUrl} size={140} level="H" />
+            </div>
+            <div className="text-center sm:text-left space-y-2">
+              <span className="bg-[#ffe600] text-black font-black px-3 py-1 text-xs uppercase border border-black inline-block">
+                📱 ESCANEA EL QR PARA UNIRTE DESDE TU CELULAR
+              </span>
+              <h2 className="text-2xl sm:text-4xl font-black text-white uppercase">
+                CÓDIGO DE SALA: <span className="text-[#ffe600] font-space">{roomId}</span>
+              </h2>
+              <p className="text-xs text-slate-300 font-bold uppercase">
+                {playersList.length} DE {maxPlayers} JUGADORES CONECTADOS
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main TV Layout */}
       <main className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch flex-1 relative z-10">
         
