@@ -30,6 +30,7 @@ export default function HostTVView({
   const [tvRightTab, setTvRightTab] = useState("board");
   const [voiceLang, setVoiceLang] = useState("es-MX");
   const [bgMusicEnabled, setBgMusicEnabled] = useState(true);
+  const [announcerSubtitle, setAnnouncerSubtitle] = useState("");
 
   const playersList = Object.values(players || {});
   const joinUrl = `${window.location.origin}/?room=${roomId}`;
