@@ -2,11 +2,7 @@
  * Lógica central para el Bingo Multijugador en Tiempo Real
  */
 
-/**
- * 10 Matrices de cartones de Bingo válidos y pre-generados (Tabla #1 a Tabla #10)
- */
 export const PRESET_TABLES = [
-  // Tabla #1
   {
     id: 1,
     name: "Tabla #1",
@@ -18,7 +14,6 @@ export const PRESET_TABLES = [
       [{ val: 9, marked: false }, { val: 17, marked: false }, { val: 44, marked: false }, { val: 50, marked: false }, { val: 68, marked: false }]
     ]
   },
-  // Tabla #2
   {
     id: 2,
     name: "Tabla #2",
@@ -30,7 +25,6 @@ export const PRESET_TABLES = [
       [{ val: 11, marked: false }, { val: 27, marked: false }, { val: 43, marked: false }, { val: 54, marked: false }, { val: 73, marked: false }]
     ]
   },
-  // Tabla #3
   {
     id: 3,
     name: "Tabla #3",
@@ -42,7 +36,6 @@ export const PRESET_TABLES = [
       [{ val: 6, marked: false }, { val: 23, marked: false }, { val: 45, marked: false }, { val: 56, marked: false }, { val: 67, marked: false }]
     ]
   },
-  // Tabla #4
   {
     id: 4,
     name: "Tabla #4",
@@ -54,7 +47,6 @@ export const PRESET_TABLES = [
       [{ val: 12, marked: false }, { val: 22, marked: false }, { val: 40, marked: false }, { val: 47, marked: false }, { val: 68, marked: false }]
     ]
   },
-  // Tabla #5
   {
     id: 5,
     name: "Tabla #5",
@@ -66,7 +58,6 @@ export const PRESET_TABLES = [
       [{ val: 8, marked: false }, { val: 24, marked: false }, { val: 39, marked: false }, { val: 58, marked: false }, { val: 69, marked: false }]
     ]
   },
-  // Tabla #6
   {
     id: 6,
     name: "Tabla #6",
@@ -78,7 +69,6 @@ export const PRESET_TABLES = [
       [{ val: 7, marked: false }, { val: 22, marked: false }, { val: 38, marked: false }, { val: 56, marked: false }, { val: 63, marked: false }]
     ]
   },
-  // Tabla #7
   {
     id: 7,
     name: "Tabla #7",
@@ -90,7 +80,6 @@ export const PRESET_TABLES = [
       [{ val: 14, marked: false }, { val: 28, marked: false }, { val: 42, marked: false }, { val: 58, marked: false }, { val: 75, marked: false }]
     ]
   },
-  // Tabla #8
   {
     id: 8,
     name: "Tabla #8",
@@ -102,7 +91,6 @@ export const PRESET_TABLES = [
       [{ val: 11, marked: false }, { val: 25, marked: false }, { val: 41, marked: false }, { val: 60, marked: false }, { val: 73, marked: false }]
     ]
   },
-  // Tabla #9
   {
     id: 9,
     name: "Tabla #9",
@@ -114,7 +102,6 @@ export const PRESET_TABLES = [
       [{ val: 2, marked: false }, { val: 19, marked: false }, { val: 40, marked: false }, { val: 54, marked: false }, { val: 64, marked: false }]
     ]
   },
-  // Tabla #10
   {
     id: 10,
     name: "Tabla #10",
@@ -128,18 +115,12 @@ export const PRESET_TABLES = [
   }
 ];
 
-/**
- * Obtiene la matriz clonada de una tabla pre-generada por su ID (1-10)
- */
 export function getPresetCard(tableId = 1) {
   const index = Math.max(0, Math.min(9, tableId - 1));
   const preset = PRESET_TABLES[index];
   return JSON.parse(JSON.stringify(preset.card));
 }
 
-/**
- * Genera un cartón de Bingo 5x5 dinámico si se requiere
- */
 export function generateBingoCard() {
   const getUniqueRandoms = (min, max, count) => {
     const nums = new Set();
@@ -200,15 +181,64 @@ export function drawRandomBall(availableNumbers = []) {
   return { ball, remaining };
 }
 
-export function checkBingoVictory(cardMatrix, drawnBalls = []) {
-  const drawnSet = new Set(drawnBalls);
+/**
+ * Evaluación estricta de victorias en Bingo:
+ * @param {Array} cardMatrix - Matriz 5x5 del cartón
+ * @param {Array} drawnBalls - Arreglo de balotas cantadas
+ * @param {string} victoryMode - Modo de victoria: "line" (Línea de 5) o "fullhouse" (Cartón Lleno de 25)
+ */
+export function checkBingoVictory(cardMatrix, drawnBalls = [], victoryMode = "line") {
+  if (!cardMatrix || cardMatrix.length !== 5) {
+    return { hasBingo: false, type: null, reason: "Cartón no válido" };
+  }
 
+  // Normalizar array de balotas cantadas a un Set de números estrictos
+  const drawnSet = new Set((drawnBalls || []).map((num) => Number(num)));
+
+  // Helper para verificar si una celda es efectivamente válida (FREE o marcada y cantada)
   const isCellValid = (cell) => {
     if (!cell) return false;
     if (cell.val === "FREE") return true;
-    return cell.marked && drawnSet.has(cell.val);
+    const cellNum = Number(cell.val);
+    return Boolean(cell.marked) && drawnSet.has(cellNum);
   };
 
+  // Contar cuántos aciertos válidos reales tiene el jugador
+  let validCount = 0;
+  for (let r = 0; r < 5; r++) {
+    for (let c = 0; c < 5; c++) {
+      if (isCellValid(cardMatrix[r][c])) {
+        validCount++;
+      }
+    }
+  }
+
+  // 1. Verificación de Cartón Lleno (Full House: 25 celdas válidas)
+  let fullHouse = true;
+  for (let r = 0; r < 5; r++) {
+    for (let c = 0; c < 5; c++) {
+      if (!isCellValid(cardMatrix[r][c])) {
+        fullHouse = false;
+        break;
+      }
+    }
+    if (!fullHouse) break;
+  }
+
+  if (fullHouse) {
+    return { hasBingo: true, type: "¡CARTÓN LLENO! (Full House 25/25)", validCount };
+  }
+
+  if (victoryMode === "fullhouse") {
+    return {
+      hasBingo: false,
+      type: null,
+      reason: `⚠️ MODO CARTÓN LLENO: Tienes ${validCount - 1} números de 24 requeridos.`,
+      validCount
+    };
+  }
+
+  // 2. Verificación de Líneas Horizontales (5 celdas en fila)
   for (let r = 0; r < 5; r++) {
     let rowWon = true;
     for (let c = 0; c < 5; c++) {
@@ -218,10 +248,11 @@ export function checkBingoVictory(cardMatrix, drawnBalls = []) {
       }
     }
     if (rowWon) {
-      return { hasBingo: true, type: `Línea Horizontal (Fila ${r + 1})` };
+      return { hasBingo: true, type: `Línea Horizontal (Fila ${r + 1})`, validCount };
     }
   }
 
+  // 3. Verificación de Líneas Verticales (5 celdas en columna)
   const letters = ["B", "I", "N", "G", "O"];
   for (let c = 0; c < 5; c++) {
     let colWon = true;
@@ -232,10 +263,11 @@ export function checkBingoVictory(cardMatrix, drawnBalls = []) {
       }
     }
     if (colWon) {
-      return { hasBingo: true, type: `Línea Vertical (Columna ${letters[c]})` };
+      return { hasBingo: true, type: `Línea Vertical (Columna ${letters[c]})`, validCount };
     }
   }
 
+  // 4. Diagonal Principal (\)
   let diag1Won = true;
   for (let i = 0; i < 5; i++) {
     if (!isCellValid(cardMatrix[i][i])) {
@@ -244,9 +276,10 @@ export function checkBingoVictory(cardMatrix, drawnBalls = []) {
     }
   }
   if (diag1Won) {
-    return { hasBingo: true, type: "Diagonal Principal (\\)" };
+    return { hasBingo: true, type: "Diagonal Principal (\\)", validCount };
   }
 
+  // 5. Diagonal Secundaria (/)
   let diag2Won = true;
   for (let i = 0; i < 5; i++) {
     if (!isCellValid(cardMatrix[i][4 - i])) {
@@ -255,21 +288,13 @@ export function checkBingoVictory(cardMatrix, drawnBalls = []) {
     }
   }
   if (diag2Won) {
-    return { hasBingo: true, type: "Diagonal Secundaria (/)" };
+    return { hasBingo: true, type: "Diagonal Secundaria (/)", validCount };
   }
 
-  let fullHouse = true;
-  for (let r = 0; r < 5; r++) {
-    for (let c = 0; c < 5; c++) {
-      if (!isCellValid(cardMatrix[r][c])) {
-        fullHouse = false;
-        break;
-      }
-    }
-  }
-  if (fullHouse) {
-    return { hasBingo: true, type: "¡CARTÓN LLENO! (Full House)" };
-  }
-
-  return { hasBingo: false, type: null };
+  return {
+    hasBingo: false,
+    type: null,
+    reason: `⚠️ AÚN NO TIENES BINGO: Tienes ${validCount - 1} números cantados marcados de 5 necesarios para una línea.`,
+    validCount
+  };
 }

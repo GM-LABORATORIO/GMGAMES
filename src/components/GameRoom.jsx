@@ -162,7 +162,8 @@ export default function GameRoom({ session, onLeaveRoom }) {
   const handleClaimBingo = async () => {
     if (!myPlayer || !myPlayer.card) return;
 
-    const result = checkBingoVictory(myPlayer.card, drawnBalls);
+    const victoryMode = roomData.victoryMode || "line";
+    const result = checkBingoVictory(myPlayer.card, drawnBalls, victoryMode);
 
     if (result.hasBingo) {
       confetti({
@@ -184,9 +185,16 @@ export default function GameRoom({ session, onLeaveRoom }) {
         winner: winnerInfo
       });
     } else {
-      setClaimMessage("AÚN NO TIENES UNA LÍNEA O CARTÓN COMPLETO CANTADO.");
-      setTimeout(() => setClaimMessage(null), 3000);
+      setClaimMessage(result.reason || "AÚN NO COMPLETAS LA COMBINACIÓN GANADORA.");
+      setTimeout(() => setClaimMessage(null), 3500);
     }
+  };
+
+  const handleUpdateVictoryMode = async (newMode) => {
+    if (!isHost) return;
+    await updateRoomProvider(roomId, {
+      victoryMode: newMode
+    });
   };
 
   return (
@@ -271,9 +279,11 @@ export default function GameRoom({ session, onLeaveRoom }) {
             players={roomData.players}
             maxPlayers={roomData.maxPlayers || 4}
             status={roomData.status || "waiting"}
+            victoryMode={roomData.victoryMode || "line"}
             isHost={isHost}
             onDrawNextBall={handleDrawNextBall}
             onResetGame={handleResetGame}
+            onUpdateVictoryMode={handleUpdateVictoryMode}
             roomId={roomId}
           />
         ) : (

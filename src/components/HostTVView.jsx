@@ -12,9 +12,11 @@ export default function HostTVView({
   players = {},
   maxPlayers = 4,
   status = "waiting",
+  victoryMode = "line",
   isHost = true,
   onDrawNextBall,
   onResetGame,
+  onUpdateVictoryMode,
   roomId = "BINGO-88"
 }) {
   const drawnSet = new Set(drawnBalls);
@@ -234,8 +236,22 @@ export default function HostTVView({
                 {availableNumbers.length === 0 ? "SIN BALOTAS RESTANTES" : "SACAR SIGUIENTE BALOTA"}
               </button>
 
-              {/* Controles de Voz & Música */}
+              {/* Opciones de Modo de Victoria, Voz Nativa & Música */}
               <div className="grid grid-cols-2 gap-2">
+                <div className="bg-[#090514] border border-slate-700 p-2">
+                  <span className="text-[10px] text-slate-400 font-bold uppercase block mb-1 flex items-center gap-1">
+                    <Trophy size={12} className="text-[#ffb700]" /> REGLA DE GANADOR
+                  </span>
+                  <select
+                    value={victoryMode}
+                    onChange={(e) => onUpdateVictoryMode && onUpdateVictoryMode(e.target.value)}
+                    className="w-full bg-[#120a26] text-[#ffb700] font-black border border-slate-700 text-xs px-2 py-1 uppercase focus:outline-none"
+                  >
+                    <option value="line">LÍNEA DE 5 (HORIZ/VERT/DIAG)</option>
+                    <option value="fullhouse">CARTÓN LLENO (FULL HOUSE)</option>
+                  </select>
+                </div>
+
                 <div className="bg-[#090514] border border-slate-700 p-2">
                   <span className="text-[10px] text-slate-400 font-bold uppercase block mb-1 flex items-center gap-1">
                     <Volume2 size={12} /> LOCUTOR LATINO
@@ -251,20 +267,6 @@ export default function HostTVView({
                     <option value="es-US">EE.UU (LATINO)</option>
                     <option value="es-ES">ESPAÑA</option>
                   </select>
-                </div>
-
-                <div className="bg-[#090514] border border-slate-700 p-2 flex items-center justify-between">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase flex items-center gap-1">
-                    <Music size={12} /> MÚSICA FONDO
-                  </span>
-                  <button
-                    onClick={() => setBgMusicEnabled(!bgMusicEnabled)}
-                    className={`px-2 py-1 text-xs font-black uppercase border ${
-                      bgMusicEnabled ? "bg-[#00f3ff] text-black border-black" : "bg-slate-800 text-slate-400 border-slate-700"
-                    }`}
-                  >
-                    {bgMusicEnabled ? "ON" : "OFF"}
-                  </button>
                 </div>
               </div>
 
