@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getLetterForNumber } from "../utils/bingoLogic";
-import { speakBallNumber, toggleBackgroundMusic } from "../utils/audio";
-import { Play, Pause, RotateCcw, Sparkles, Tv, QrCode, X, Copy, Check, Users, LayoutGrid, Volume2, Music, Gamepad2, Timer, Trophy } from "lucide-react";
+import { speakBallNumber, toggleBackgroundMusic, unlockTVAudio } from "../utils/audio";
+import { Play, Pause, RotateCcw, Sparkles, Tv, QrCode, X, Copy, Check, Users, LayoutGrid, Volume2, Music, Gamepad2, Timer, Trophy, VolumeX, Zap } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import PlayersTVGrid from "./PlayersTVGrid";
 
@@ -22,8 +22,8 @@ export default function HostTVView({
   const drawnSet = new Set(drawnBalls);
   const currentLetter = getLetterForNumber(currentBall);
 
-  const [autoDraw, setAutoDraw] = useState(true); // Auto-extracción activada por defecto
-  const [speedSec, setSpeedSec] = useState(5); // 5 segundos por balota por defecto
+  const [autoDraw, setAutoDraw] = useState(true);
+  const [speedSec, setSpeedSec] = useState(5);
   const [timerCountdown, setTimerCountdown] = useState(5);
   const [showLargeQR, setShowLargeQR] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
@@ -31,10 +31,17 @@ export default function HostTVView({
   const [voiceLang, setVoiceLang] = useState("es-MX");
   const [bgMusicEnabled, setBgMusicEnabled] = useState(true);
   const [announcerSubtitle, setAnnouncerSubtitle] = useState("");
+  const [isTvAudioActivated, setIsTvAudioActivated] = useState(false);
+  const [tvPerformanceMode, setTvPerformanceMode] = useState(true); // Alto rendimiento activado por defecto
 
   const playersList = Object.values(players || {});
   const joinUrl = `${window.location.origin}/?room=${roomId}`;
   const isRoomFull = playersList.length >= maxPlayers;
+
+  const handleActivateAudio = () => {
+    unlockTVAudio();
+    setIsTvAudioActivated(true);
+  };
 
   // Música de fondo ambiental
   useEffect(() => {
@@ -210,6 +217,17 @@ export default function HostTVView({
           </button>
         </div>
       </header>
+
+      {/* Banner de Desbloqueo de Audio para Smart TVs (LG webOS / Samsung Tizen / Android TV) */}
+      {!isTvAudioActivated && (
+        <button
+          onClick={handleActivateAudio}
+          className="w-full bg-[#ffb700] hover:bg-yellow-300 text-black font-black text-lg sm:text-xl py-3 px-6 border-4 border-black uppercase tracking-wider arcade-glow-gold animate-bounce mb-6 flex items-center justify-center gap-3 cursor-pointer z-30"
+        >
+          <VolumeX size={24} className="animate-pulse" />
+          <span>🔊 HAZ CLICK AQUÍ EN EL TV PARA ACTIVAR EL SONIDO Y LA VOZ EN VIVO</span>
+        </button>
+      )}
 
       {/* Grid Principal TV 16:9 */}
       <main className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch flex-1 relative z-10">

@@ -1,12 +1,13 @@
 /**
- * Módulo Avanzado de Audio para el Bingo Multijugador con Locución Latina Conmovedora y Punchy
+ * Módulo Avanzado de Audio y Desbloqueo Nativo para Navegadores de Smart TVs
  */
 
 let ambientAudioCtx = null;
 let ambientOsc1 = null;
 let isMusicPlaying = false;
+let isAudioUnlocked = false;
 
-// Dichos populares ultra-cortos (2 a 4 palabras máximo) para garantizar locución rápida
+// Dichos populares ultra-cortos (2 a 4 palabras máximo)
 const SHORT_NUMBER_JOKES = {
   1: "¡Arrancamos con toda!",
   7: "¡Número de la suerte!",
@@ -19,7 +20,6 @@ const SHORT_NUMBER_JOKES = {
   75: "¡La última balota!"
 };
 
-// Comentarios graciosos ultra-cortos para no saturar la locución
 const SHORT_HUMOROUS_COMMENTS = [
   "¡Revisen bien!",
   "¡Atentos en la sala!",
@@ -30,67 +30,136 @@ const SHORT_HUMOROUS_COMMENTS = [
 ];
 
 /**
- * Fonética optimizada y locución ultrarrápida que NUNCA se corta
+ * Desbloquea las políticas de Autoplay de Smart TVs (LG webOS, Samsung Tizen, Chrome TV)
  */
-export function speakBallNumber(letter, number, selectedVoiceLang = "es-MX") {
-  if (!("speechSynthesis" in window) || !letter || !number) return "";
+export function unlockTVAudio() {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (AudioContext) {
+      if (!ambientAudioCtx) {
+        ambientAudioCtx = new AudioContext();
+      }
+      if (ambientAudioCtx.state === "suspended") {
+        ambientAudioCtx.resume();
+      }
+    }
 
-  // Cancelar locuciones pasadas para dar prioridad a la balota actual
-  window.speechSynthesis.cancel();
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.resume();
+      // Reproducir locución silenciosa para desbloquear el motor de voz del TV
+      const silentUtterance = new SpeechSynthesisUtterance("");
+      silentUtterance.volume = 0;
+      window.speechSynthesis.speak(silentUtterance);
+    }
 
-  // Mapeo fonético estricto y conciso
-  let letterPhonetic = letter;
-  if (letter === "I") letterPhonetic = "i latina";
-  if (letter === "B") letterPhonetic = "Bé";
-  if (letter === "N") letterPhonetic = "Ene";
-  if (letter === "G") letterPhonetic = "Gé";
-  if (letter === "O") letterPhonetic = "Ó";
-
-  const numVal = Number(number);
-  
-  // El número SIEMPRE se canta primero de forma prioritaria y ultra-clara
-  let textToSpeak = `Letra ${letterPhonetic}, ${numVal}.`;
-
-  // Añadir un comentario ultra-corto opcional de 2 palabras máximo
-  if (SHORT_NUMBER_JOKES[numVal]) {
-    textToSpeak += ` ${SHORT_NUMBER_JOKES[numVal]}`;
-  } else if (Math.random() < 0.3) {
-    const randomShort = SHORT_HUMOROUS_COMMENTS[Math.floor(Math.random() * SHORT_HUMOROUS_COMMENTS.length)];
-    textToSpeak += ` ${randomShort}`;
+    isAudioUnlocked = true;
+    return true;
+  } catch (err) {
+    console.warn("Error al desbloquear audio en TV:", err);
+    return false;
   }
-
-  const utterance = new SpeechSynthesisUtterance(textToSpeak);
-
-  // Buscar voces latinas disponibles
-  const voices = window.speechSynthesis.getVoices();
-  const latinVoice = voices.find((v) =>
-    v.lang.includes(selectedVoiceLang) ||
-    v.lang.includes("es-MX") ||
-    v.lang.includes("es-US") ||
-    v.lang.includes("es-CO") ||
-    v.lang.includes("es-AR") ||
-    v.lang.includes("es-419")
-  ) || voices.find((v) => v.lang.startsWith("es"));
-
-  if (latinVoice) {
-    utterance.voice = latinVoice;
-  }
-
-  utterance.lang = selectedVoiceLang;
-  utterance.rate = 1.15;  // Velocidad ágil (1.15x) para locución en <1.5s
-  utterance.pitch = 1.05; // Tono alegre y dinámico
-
-  window.speechSynthesis.speak(utterance);
-  return textToSpeak;
 }
 
 /**
- * Obtiene la lista de voces en español disponibles en el navegador
+ * Fonética optimizada y locución ultrarrápida compatible con Smart TVs
  */
-export function getSpanishVoices() {
-  if (!("speechSynthesis" in window)) return [];
-  const voices = window.speechSynthesis.getVoices();
-  return voices.filter((v) => v.lang.startsWith("es"));
+export function speakBallNumber(letter, number, selectedVoiceLang = "es-MX") {
+  if (!letter || !number) return "";
+
+  // Intentar desbloquear audio si aún no se ha hecho clic
+  if (!isAudioUnlocked) {
+    unlockTVAudio();
+  }
+
+  // Si el TV no soporta speechSynthesis, reproducimos un tono sintetizado de respaldo
+  if (!("speechSynthesis" in window)) {
+    playSynthesizedChime();
+    return `Letra ${letter}, ${number}`;
+  }
+
+  try {
+    window.speechSynthesis.cancel();
+
+    // Mapeo fonético estricto y conciso
+    let letterPhonetic = letter;
+    if (letter === "I") letterPhonetic = "i latina";
+    if (letter === "B") letterPhonetic = "Bé";
+    if (letter === "N") letterPhonetic = "Ene";
+    if (letter === "G") letterPhonetic = "Gé";
+    if (letter === "O") letterPhonetic = "Ó";
+
+    const numVal = Number(number);
+    let textToSpeak = `Letra ${letterPhonetic}, ${numVal}.`;
+
+    if (SHORT_NUMBER_JOKES[numVal]) {
+      textToSpeak += ` ${SHORT_NUMBER_JOKES[numVal]}`;
+    } else if (Math.random() < 0.3) {
+      const randomShort = SHORT_HUMOROUS_COMMENTS[Math.floor(Math.random() * SHORT_HUMOROUS_COMMENTS.length)];
+      textToSpeak += ` ${randomShort}`;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+
+    const voices = window.speechSynthesis.getVoices();
+    const latinVoice = voices.find((v) =>
+      v.lang.includes(selectedVoiceLang) ||
+      v.lang.includes("es-MX") ||
+      v.lang.includes("es-US") ||
+      v.lang.includes("es-CO") ||
+      v.lang.includes("es-AR") ||
+      v.lang.includes("es-419")
+    ) || voices.find((v) => v.lang.startsWith("es"));
+
+    if (latinVoice) {
+      utterance.voice = latinVoice;
+    }
+
+    utterance.lang = selectedVoiceLang;
+    utterance.rate = 1.15;  // Velocidad de voz ágil para TV
+    utterance.pitch = 1.05;
+
+    window.speechSynthesis.speak(utterance);
+    return textToSpeak;
+  } catch (err) {
+    console.error("Error en speechSynthesis TV:", err);
+    playSynthesizedChime();
+    return `Letra ${letter}, ${number}`;
+  }
+}
+
+/**
+ * Tono sintetizado de respaldo para TVs que no tienen síntesis de voz instalada
+ */
+export function playSynthesizedChime() {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+
+    if (!ambientAudioCtx) {
+      ambientAudioCtx = new AudioContext();
+    }
+
+    if (ambientAudioCtx.state === "suspended") {
+      ambientAudioCtx.resume();
+    }
+
+    const osc = ambientAudioCtx.createOscillator();
+    const gain = ambientAudioCtx.createGain();
+
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(587.33, ambientAudioCtx.currentTime); // D5
+
+    gain.gain.setValueAtTime(0.2, ambientAudioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ambientAudioCtx.currentTime + 0.4);
+
+    osc.connect(gain);
+    gain.connect(ambientAudioCtx.destination);
+
+    osc.start();
+    osc.stop(ambientAudioCtx.currentTime + 0.4);
+  } catch (err) {
+    console.warn("Chime sintetizado no disponible:", err);
+  }
 }
 
 /**
@@ -104,14 +173,21 @@ export function toggleBackgroundMusic(enable = true) {
     if (enable) {
       if (isMusicPlaying) return;
 
-      ambientAudioCtx = new AudioContext();
+      if (!ambientAudioCtx) {
+        ambientAudioCtx = new AudioContext();
+      }
+
+      if (ambientAudioCtx.state === "suspended") {
+        ambientAudioCtx.resume();
+      }
+
       ambientOsc1 = ambientAudioCtx.createOscillator();
       const gain1 = ambientAudioCtx.createGain();
 
       ambientOsc1.type = "sine";
       ambientOsc1.frequency.setValueAtTime(110, ambientAudioCtx.currentTime);
 
-      gain1.gain.setValueAtTime(0.04, ambientAudioCtx.currentTime);
+      gain1.gain.setValueAtTime(0.03, ambientAudioCtx.currentTime);
 
       ambientOsc1.connect(gain1);
       gain1.connect(ambientAudioCtx.destination);
@@ -122,9 +198,6 @@ export function toggleBackgroundMusic(enable = true) {
       if (ambientOsc1) {
         ambientOsc1.stop();
         ambientOsc1.disconnect();
-      }
-      if (ambientAudioCtx) {
-        ambientAudioCtx.close();
       }
       isMusicPlaying = false;
     }
@@ -156,7 +229,9 @@ export function playSynthesizedFanfare() {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     if (!AudioContext) return;
 
-    const ctx = new AudioContext();
+    const ctx = ambientAudioCtx || new AudioContext();
+    if (ctx.state === "suspended") ctx.resume();
+
     const notes = [
       { freq: 523.25, time: 0.00, duration: 0.15 },
       { freq: 659.25, time: 0.15, duration: 0.15 },
