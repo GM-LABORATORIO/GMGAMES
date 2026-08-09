@@ -7,7 +7,7 @@ export default function PlayerMobileCard({
   card,
   playerName = "Jugador",
   tableName = "Tabla #1",
-  playerColor = { hex: "#ffe600", text: "#000000" },
+  playerColor = { hex: "#00ff88", text: "#000000" },
   currentBall,
   drawnBalls = [],
   onToggleCell,
@@ -27,25 +27,25 @@ export default function PlayerMobileCard({
   };
 
   const columns = [
-    { letter: "B", color: "#ffe600", text: "#000000" },
-    { letter: "I", color: "#ffffff", text: "#000000" },
-    { letter: "N", color: "#ffe600", text: "#000000" },
-    { letter: "G", color: "#ffffff", text: "#000000" },
-    { letter: "O", color: "#ffe600", text: "#000000" }
+    { letter: "B", color: "#00ff88", text: "#000000" },
+    { letter: "I", color: "#00f3ff", text: "#000000" },
+    { letter: "N", color: "#a855f7", text: "#ffffff" },
+    { letter: "G", color: "#ff007f", text: "#ffffff" },
+    { letter: "O", color: "#00ff88", text: "#000000" }
   ];
 
   return (
-    <div className="w-full max-w-sm sm:max-w-md mx-auto bg-[#0a1128] text-white font-syne p-2 sm:p-4 flex flex-col justify-between gap-3 select-none relative transition-all duration-300">
+    <div className="w-full max-w-sm sm:max-w-md mx-auto bg-[#06070d] text-white font-syne p-2 sm:p-4 flex flex-col justify-between gap-3 select-none relative transition-all duration-300">
       
-      {/* Header Compacto Lujo Brutalista */}
-      <div className="bg-[#111c3a] border-4 border-white p-3 flex justify-between items-center brutal-shadow-yellow">
+      {/* Header Compacto Cyber Glass */}
+      <div className="glass-panel border border-white/20 p-3 rounded-2xl flex justify-between items-center shadow-[0_0_20px_rgba(0,0,0,0.4)]">
         <div className="flex items-center gap-3">
-          {/* Avatar Amarillo Vibrante */}
-          <div className="w-10 h-10 rounded-none bg-[#ffe600] text-black font-black text-xl flex items-center justify-center border-2 border-black brutal-shadow-black shrink-0">
+          {/* Avatar Neón Electrizante */}
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00ff88] to-[#00f3ff] text-black font-black text-xl flex items-center justify-center border border-white/40 shadow-[0_0_15px_rgba(0,255,136,0.4)] shrink-0">
             {playerName ? playerName.charAt(0).toUpperCase() : "J"}
           </div>
           <div>
-            <span className="bg-[#ffe600] text-black font-black text-[9px] px-2 py-0.5 uppercase border border-black font-space">
+            <span className="bg-[#00ff88] text-black font-black text-[9px] px-2 py-0.5 uppercase rounded-full font-space">
               {tableName}
             </span>
             <h2 className="text-base sm:text-lg font-black text-white uppercase leading-tight mt-0.5">{playerName}</h2>
@@ -54,17 +54,17 @@ export default function PlayerMobileCard({
 
         {/* Última Balota Cantada */}
         <div className="text-right">
-          <span className="text-[9px] font-black text-[#ffe600] uppercase tracking-wider block">
+          <span className="text-[9px] font-black text-[#00ff88] uppercase tracking-wider block">
             ÚLTIMA BALOTA
           </span>
-          <div className="text-2xl sm:text-3xl font-black text-white font-space leading-none drop-shadow-[2px_2px_0px_#000]">
+          <div className="text-2xl sm:text-3xl font-black text-white font-space leading-none drop-shadow-[0_0_10px_rgba(0,255,136,0.6)]">
             {currentBall ? currentBall : "--"}
           </div>
         </div>
       </div>
 
-      {/* Cartón 5x5 Lujo Brutalista */}
-      <div className="bg-[#111c3a] border-4 border-white p-2 sm:p-3 brutal-shadow-yellow">
+      {/* Cartón 5x5 Cyber Glass */}
+      <div className="glass-panel border border-white/20 p-2 sm:p-3 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)]">
         
         {/* Cabecera B-I-N-G-O */}
         <div className="grid grid-cols-5 gap-1 sm:gap-1.5 mb-1.5">
@@ -72,14 +72,14 @@ export default function PlayerMobileCard({
             <div
               key={col.letter}
               style={{ backgroundColor: col.color, color: col.text }}
-              className="font-black text-lg sm:text-2xl py-1 text-center border-2 border-black uppercase font-syne brutal-shadow-black"
+              className="font-black text-lg sm:text-2xl py-1 text-center rounded-xl uppercase font-syne shadow-md"
             >
               {col.letter}
             </div>
           ))}
         </div>
 
-        {/* Grilla 5x5 con Bordes Duros y Acentos en Amarillo Vibrante */}
+        {/* Grilla 5x5 con Casillas Neón en Vidrio Esmerilado */}
         <div className="grid grid-cols-5 gap-1 sm:gap-1.5">
           {card.map((row, rIdx) =>
             row.map((cell, cIdx) => {
@@ -98,31 +98,38 @@ export default function PlayerMobileCard({
                   }}
                   style={{
                     backgroundColor: isFree
-                      ? "#ffe600"
+                      ? "#00ff88"
                       : isMarked
-                      ? "#ffe600"
-                      : "#0a1128",
+                      ? "#00ff88"
+                      : "#0f111c",
                     color: isFree
                       ? "#000000"
                       : isMarked
                       ? "#000000"
                       : isDrawn
-                      ? "#ffe600"
+                      ? "#00ff88"
                       : "#ffffff",
                     borderColor: isFree
-                      ? "#000000"
+                      ? "#00ff88"
                       : isMarked
-                      ? "#000000"
+                      ? "#00ff88"
                       : isDrawn
-                      ? "#ffe600"
-                      : "#334155"
+                      ? "#00ff88"
+                      : "rgba(255, 255, 255, 0.15)",
+                    boxShadow: isFree
+                      ? "0 0 15px rgba(0, 255, 136, 0.6)"
+                      : isMarked
+                      ? "0 0 20px rgba(0, 255, 136, 0.7)"
+                      : isDrawn
+                      ? "0 0 12px rgba(0, 255, 136, 0.4)"
+                      : "none"
                   }}
-                  className={`aspect-square flex flex-col items-center justify-center relative font-black text-base sm:text-xl transition-all duration-100 cursor-pointer active:scale-95 ${
+                  className={`aspect-square flex flex-col items-center justify-center relative font-black text-base sm:text-xl transition-all duration-150 cursor-pointer rounded-xl active:scale-95 ${
                     isFree || isMarked
-                      ? "border-4 border-black scale-[0.98] brutal-shadow-black"
+                      ? "border-2 scale-[0.98]"
                       : isDrawn
-                      ? "border-4 border-[#ffe600]"
-                      : "border-2 hover:border-white"
+                      ? "border-2 animate-pulse"
+                      : "border hover:border-white/50"
                   }`}
                 >
                   {isFree ? (
@@ -145,11 +152,11 @@ export default function PlayerMobileCard({
         </div>
       </div>
 
-      {/* Botón Masivo de Acción: ¡CANTAR BINGO! en Amarillo Vibrante */}
+      {/* Botón Masivo de Acción: ¡CANTAR BINGO! Neón Electrizante */}
       <button
         id="player-claim-bingo-btn"
         onClick={handleBingoClick}
-        className="w-full bg-[#ffe600] hover:bg-yellow-300 text-black font-black text-2xl py-4 border-4 border-black uppercase tracking-wider active:translate-x-1 active:translate-y-1 transition-all flex items-center justify-center gap-3 brutal-shadow-white"
+        className="w-full bg-gradient-to-r from-[#00ff88] via-[#00f3ff] to-[#a855f7] hover:opacity-95 text-black font-black text-2xl py-4 rounded-2xl uppercase tracking-wider active:scale-95 transition-all flex items-center justify-center gap-3 border border-white/40 shadow-[0_0_30px_rgba(0,255,136,0.5)] cursor-pointer"
       >
         <Trophy size={26} className="stroke-[3]" /> ¡CANTAR BINGO!
       </button>

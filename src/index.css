@@ -3,16 +3,21 @@
 
 @layer base {
   :root {
-    --bg-brand-night: #090d16;
-    --accent-gold: #ffcc00;
-    --accent-green: #00ff88;
-    --accent-purple: #a855f7;
+    --bg-obsidian: #06070d;
+    --card-glass: rgba(15, 17, 28, 0.85);
+    --neon-green: #00ff88;
+    --neon-cyan: #00f3ff;
+    --neon-purple: #a855f7;
+    --neon-magenta: #ff007f;
     --text-white: #ffffff;
-    --border-dark: #000000;
   }
 
   body {
-    background-color: #090d16;
+    background-color: #06070d;
+    background-image: 
+      radial-gradient(circle at 15% 15%, rgba(0, 255, 136, 0.08) 0%, transparent 45%),
+      radial-gradient(circle at 85% 85%, rgba(168, 85, 247, 0.08) 0%, transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(0, 243, 255, 0.05) 0%, transparent 60%);
     color: #ffffff;
     font-family: 'Syne', 'Space Grotesk', sans-serif;
     font-weight: 800;
@@ -32,32 +37,40 @@
   font-family: 'Space Grotesk', sans-serif;
 }
 
-/* Sombras y Bordes Duros de Marca JUNTOS JUGAMOS */
-.brutal-card-dark {
-  background-color: #101726;
-  border: 4px solid #ffffff;
-  box-shadow: 6px 6px 0px 0px #ffcc00;
+/* Glassmorphism & Cyber Glows Ultra Modernos */
+.glass-panel {
+  background: rgba(15, 17, 28, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-.brutal-card-gold {
-  background-color: #ffcc00;
-  color: #000000;
-  border: 4px solid #000000;
-  box-shadow: 6px 6px 0px 0px #ffffff;
+.glass-panel-interactive {
+  background: rgba(15, 17, 28, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.brutal-shadow-gold {
-  box-shadow: 4px 4px 0px 0px #ffcc00;
+.glass-panel-interactive:hover {
+  border-color: #00ff88;
+  box-shadow: 0 0 25px rgba(0, 255, 136, 0.3);
+  transform: translateY(-2px);
 }
 
-.brutal-shadow-green {
-  box-shadow: 4px 4px 0px 0px #00ff88;
+.glow-green {
+  box-shadow: 0 0 25px rgba(0, 255, 136, 0.35);
 }
 
-.brutal-shadow-black {
-  box-shadow: 4px 4px 0px 0px #000000;
+.glow-cyan {
+  box-shadow: 0 0 25px rgba(0, 243, 255, 0.35);
 }
 
-.brutal-shadow-white {
-  box-shadow: 4px 4px 0px 0px #ffffff;
+.glow-purple {
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.35);
+}
+
+.glow-magenta {
+  box-shadow: 0 0 25px rgba(255, 0, 127, 0.35);
 }
