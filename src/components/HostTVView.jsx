@@ -395,11 +395,14 @@ export default function HostTVView({
                     onChange={(e) => setSelectedVoiceURI(e.target.value)}
                     className="w-full bg-[#120a26] text-[#00f3ff] font-black border border-slate-700 text-xs px-1 py-1 uppercase focus:outline-none"
                   >
-                    {availableVoices.map((v) => (
-                      <option key={v.voiceURI} value={v.voiceURI}>
-                        🗣️ {v.name} ({v.lang})
-                      </option>
-                    ))}
+                    {availableVoices.map((v) => {
+                      const isNeural = v.name.toLowerCase().includes("google") || v.name.toLowerCase().includes("natural") || v.name.toLowerCase().includes("neural") || v.name.toLowerCase().includes("premium");
+                      return (
+                        <option key={v.voiceURI} value={v.voiceURI}>
+                          {isNeural ? "⭐ " : "🗣️ "} {v.name} ({v.lang})
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
 

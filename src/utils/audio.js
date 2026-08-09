@@ -1,5 +1,5 @@
 /**
- * Módulo de Audio y Locución Natural con Selector Libre de Voces y Música de Fondo Casino
+ * Módulo de Audio con Diccionario Fonético de Alta Claridad y Selección de Voces Neurales
  */
 
 let ambientAudioCtx = null;
@@ -8,15 +8,34 @@ let ambientOsc2 = null;
 let isMusicPlaying = false;
 let isAudioUnlocked = false;
 
+// Mapeo fonético estricto de números a palabras escritas para dicción cristalina
+const NUMBER_WORDS = {
+  1: "uno", 2: "dos", 3: "tres", 4: "cuatro", 5: "cinco",
+  6: "seis", 7: "siete", 8: "ocho", 9: "nueve", 10: "diez",
+  11: "once", 12: "doce", 13: "trece", 14: "catorce", 15: "quince",
+  16: "dieciséis", 17: "diecisiete", 18: "dieciocho", 19: "diecinueve", 20: "veinte",
+  21: "veintiuno", 22: "veintidós", 23: "veintitrés", 24: "veinticuatro", 25: "veinticinco",
+  26: "veintiséis", 27: "veintisiete", 28: "veintiocho", 29: "veintinueve", 30: "treinta",
+  31: "treinta y uno", 32: "treinta y dos", 33: "treinta y tres", 34: "treinta y cuatro", 35: "treinta y cinco",
+  36: "treinta y seis", 37: "treinta y siete", 38: "treinta y ocho", 39: "treinta y nueve", 40: "cuarenta",
+  41: "cuarenta y uno", 42: "cuarenta y dos", 43: "cuarenta y tres", 44: "cuarenta y cuatro", 45: "cuarenta y cinco",
+  46: "cuarenta y seis", 47: "cuarenta y siete", 48: "cuarenta y ocho", 49: "cuarenta y nueve", 50: "cincuenta",
+  51: "cincuenta y uno", 52: "cincuenta y dos", 53: "cincuenta y tres", 54: "cincuenta y cuatro", 55: "cincuenta y cinco",
+  56: "cincuenta y seis", 57: "cincuenta y siete", 58: "cincuenta y ocho", 59: "cincuenta y nueve", 60: "sesenta",
+  61: "sesenta y uno", 62: "sesenta y dos", 63: "sesenta y tres", 64: "sesenta y cuatro", 65: "sesenta y cinco",
+  66: "sesenta y seis", 67: "sesenta y siete", 68: "sesenta y ocho", 69: "sesenta y nueve", 70: "setenta",
+  71: "setenta y uno", 72: "setenta y dos", 73: "setenta y tres", 74: "setenta y cuatro", 75: "setenta y cinco"
+};
+
 const SHORT_NUMBER_JOKES = {
-  1: "¡Arrancamos con toda la actitud!",
-  7: "¡Número de la buena suerte!",
+  1: "¡Arrancamos con toda!",
+  7: "¡Número de la suerte!",
   13: "¡Sin miedo!",
   15: "¡La niña bonita!",
   22: "¡Los dos patitos!",
   33: "¡La edad de Cristo!",
   48: "¡Está caliente!",
-  69: "¡El favorito, ay caramba!",
+  69: "¡El favorito de la casa!",
   75: "¡La última balota!"
 };
 
@@ -58,20 +77,25 @@ export function unlockTVAudio() {
 }
 
 /**
- * Obtiene la lista completa de voces en español disponibles en el dispositivo/navegador
+ * Obtiene la lista ordenada de voces en español disponibles, priorizando voces Neurales / HD
  */
 export function getAvailableSpanishVoices() {
   if (!("speechSynthesis" in window)) return [];
   const voices = window.speechSynthesis.getVoices();
-  return voices.filter((v) => v.lang.startsWith("es") || v.lang.includes("es-"));
+  const esVoices = voices.filter((v) => v.lang.startsWith("es") || v.lang.includes("es-"));
+
+  // Priorizar voces Google, Natural, Neural y Apple en la parte superior
+  return esVoices.sort((a, b) => {
+    const aIsNeural = a.name.toLowerCase().includes("google") || a.name.toLowerCase().includes("natural") || a.name.toLowerCase().includes("neural") || a.name.toLowerCase().includes("premium");
+    const bIsNeural = b.name.toLowerCase().includes("google") || b.name.toLowerCase().includes("natural") || b.name.toLowerCase().includes("neural") || b.name.toLowerCase().includes("premium");
+    if (aIsNeural && !bIsNeural) return -1;
+    if (!aIsNeural && bIsNeural) return 1;
+    return a.name.localeCompare(b.name);
+  });
 }
 
 /**
- * Locución Natural Humana con Voz Seleccionable por el Usuario
- * @param {string} letter - Letra (B, I, N, G, O)
- * @param {number|string} number - Número cantado
- * @param {string} selectedVoiceURI - URI de la voz específica elegida por el usuario
- * @param {Object} leaderInfo - Información del líder { name: "Bruno", hits: 4 }
+ * Locución con Pronunciación y Dicción Perfeccionada
  */
 export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInfo = null) {
   if (!letter || !number) return "";
@@ -88,6 +112,7 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
   try {
     window.speechSynthesis.cancel();
 
+    // Mapeo fonético de letras con pausa breve
     let letterPhonetic = letter;
     if (letter === "I") letterPhonetic = "i latina";
     if (letter === "B") letterPhonetic = "Bé";
@@ -96,21 +121,18 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
     if (letter === "O") letterPhonetic = "Ó";
 
     const numVal = Number(number);
-    let textToSpeak = `Letra ${letterPhonetic}, ${numVal}.`;
+    const numWord = NUMBER_WORDS[numVal] || numVal.toString();
+
+    // Pausa fonética limpia: "Letra Bé, número veintidós."
+    let textToSpeak = `Letra ${letterPhonetic}, ${numWord}.`;
 
     // 1. Dichos especiales por número famoso
     if (SHORT_NUMBER_JOKES[numVal]) {
       textToSpeak += ` ${SHORT_NUMBER_JOKES[numVal]}`;
     } 
-    // 2. Mención de PRESIÓN AL LÍDER (Solamente 15% de probabilidad para no saturar)
+    // 2. Mención de PRESIÓN AL LÍDER (15% de probabilidad)
     else if (leaderInfo && leaderInfo.name && leaderInfo.hits >= 3 && Math.random() < 0.15) {
-      const pressurePhrases = [
-        `¡${leaderInfo.name} lleva la delantera!`,
-        `¡${leaderInfo.name} va liderando!`,
-        `¡Ojo con ${leaderInfo.name}!`
-      ];
-      const selectedPressure = pressurePhrases[Math.floor(Math.random() * pressurePhrases.length)];
-      textToSpeak += ` ${selectedPressure}`;
+      textToSpeak += ` ¡Ojo con ${leaderInfo.name}!`;
     } 
     // 3. Comentario humorístico general ocasional (15%)
     else if (Math.random() < 0.15) {
@@ -120,7 +142,7 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
 
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
 
-    // Asignar voz seleccionada por el usuario si existe
+    // Asignar la voz elegida por el usuario
     const voices = window.speechSynthesis.getVoices();
     if (selectedVoiceURI) {
       const chosenVoice = voices.find((v) => v.voiceURI === selectedVoiceURI);
@@ -131,13 +153,13 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
     }
 
     utterance.lang = utterance.voice?.lang || "es-MX";
-    utterance.rate = 1.05;  // Velocidad natural de conversación humana
-    utterance.pitch = 1.0;  // Tono de voz humano natural (evita sonar como Alexa o robótico)
+    utterance.rate = 0.95;  // Ritmo pausado y modulado para articulación 100% clara
+    utterance.pitch = 1.0;  // Tono de voz humano natural de alta dicción
 
     window.speechSynthesis.speak(utterance);
     return textToSpeak;
   } catch (err) {
-    console.error("Error en locución natural:", err);
+    console.error("Error en locución perfeccionada:", err);
     playBallPingSound();
     return `Letra ${letter}, ${number}`;
   }
@@ -222,7 +244,6 @@ export function toggleBackgroundMusic(enable = true) {
         ambientAudioCtx.resume();
       }
 
-      // Detener osciladores previos si estaban activos
       if (ambientOsc1) {
         try { ambientOsc1.stop(); } catch (e) {}
       }
@@ -230,18 +251,17 @@ export function toggleBackgroundMusic(enable = true) {
         try { ambientOsc2.stop(); } catch (e) {}
       }
 
-      // Armonía de bajo arcade suave y audible
       ambientOsc1 = ambientAudioCtx.createOscillator();
       ambientOsc2 = ambientAudioCtx.createOscillator();
       const gainNode = ambientAudioCtx.createGain();
 
       ambientOsc1.type = "sine";
-      ambientOsc1.frequency.setValueAtTime(220, ambientAudioCtx.currentTime); // A3
+      ambientOsc1.frequency.setValueAtTime(220, ambientAudioCtx.currentTime);
 
       ambientOsc2.type = "triangle";
-      ambientOsc2.frequency.setValueAtTime(329.63, ambientAudioCtx.currentTime); // E4
+      ambientOsc2.frequency.setValueAtTime(329.63, ambientAudioCtx.currentTime);
 
-      gainNode.gain.setValueAtTime(0.08, ambientAudioCtx.currentTime); // Volumen audible suave (8%)
+      gainNode.gain.setValueAtTime(0.08, ambientAudioCtx.currentTime);
 
       ambientOsc1.connect(gainNode);
       ambientOsc2.connect(gainNode);
