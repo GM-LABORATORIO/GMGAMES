@@ -44,8 +44,8 @@ export default function GameRoom({ session, onLeaveRoom }) {
 
   if (!roomData) {
     return (
-      <div className="min-h-screen bg-[#040914] text-white flex flex-col items-center justify-center p-6 font-syne">
-        <div className="text-2xl font-black text-[#ffe600] animate-pulse">
+      <div className="min-h-screen bg-[#090514] text-white flex flex-col items-center justify-center p-6 font-syne">
+        <div className="text-2xl font-black text-[#00f3ff] animate-pulse">
           CONECTANDO A SALA {roomId}...
         </div>
         <p className="text-slate-400 text-sm mt-2">Sincronizando estado del juego</p>
@@ -57,7 +57,7 @@ export default function GameRoom({ session, onLeaveRoom }) {
   const drawnBalls = roomData.drawnBalls || [];
   const availableNumbers = roomData.availableNumbers || [];
 
-  // Pantalla de selección de Tabla #1 a #10
+  // Pantalla de selección de Tabla #1 a #10 si no ha seleccionado una
   if (!isHost && isSelectingTable) {
     return (
       <TableSelectorModal
@@ -81,10 +81,10 @@ export default function GameRoom({ session, onLeaveRoom }) {
     const { ball, remaining } = drawRandomBall(availableNumbers);
     if (!ball) return;
 
-    const updatedDrawn = [...drawnBalls, ball];
+    const updatedDrawn = [...drawnBalls, Number(ball)];
 
     await updateRoomProvider(roomId, {
-      currentBall: ball,
+      currentBall: Number(ball),
       drawnBalls: updatedDrawn,
       availableNumbers: remaining,
       status: "playing"
@@ -118,9 +118,7 @@ export default function GameRoom({ session, onLeaveRoom }) {
   };
 
   /**
-   * Sincronización Móvil -> Firebase:
-   * Al hacer clic en un número del cartón, se verifica si ya está en drawnBalls (Rooms/calledNumbers).
-   * Si es así, se marca y se añade al array confirmedNumbers del jugador en Firebase.
+   * Sincronización Móvil -> Firebase (con parseo estricto a Number para arreglar el bug de balotas como la 37)
    */
   const handleToggleCell = async (rIdx, cIdx) => {
     if (!myPlayer || !myPlayer.card) return;
@@ -130,25 +128,26 @@ export default function GameRoom({ session, onLeaveRoom }) {
 
     if (targetCell.val === "FREE") return;
 
-    const targetNumber = targetCell.val;
-    const drawnSet = new Set(drawnBalls);
+    // Normalizar a número estricto
+    const targetNumber = Number(targetCell.val);
+    const drawnNumbersSet = new Set((drawnBalls || []).map((b) => Number(b)));
 
-    // Verificación en Firebase de si el número ha sido cantado en drawnBalls
-    if (!drawnSet.has(targetNumber)) {
+    // Verificación estricta en Firebase/Local
+    if (!drawnNumbersSet.has(targetNumber)) {
       setClaimMessage(`⚠️ ¡EL NÚMERO ${targetNumber} AÚN NO HA SIDO CANTADO POR EL HOST!`);
       setTimeout(() => setClaimMessage(null), 2500);
-      return; // No se añade a confirmedNumbers si no ha sido cantado
+      return;
     }
 
     // Alternar marcado
     targetCell.marked = !targetCell.marked;
 
-    // Extraer arreglo de números confirmados en la tabla del jugador
+    // Extraer arreglo de números confirmados en la tabla del jugador como números
     const confirmedNumbers = [];
     updatedCard.forEach((row) => {
       row.forEach((cell) => {
-        if (cell.marked && typeof cell.val === "number") {
-          confirmedNumbers.push(cell.val);
+        if (cell.marked && cell.val !== "FREE") {
+          confirmedNumbers.push(Number(cell.val));
         }
       });
     });
@@ -191,9 +190,9 @@ export default function GameRoom({ session, onLeaveRoom }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#040914] font-syne text-white flex flex-col">
+    <div className="min-h-screen bg-[#090514] font-syne text-white flex flex-col">
       {/* Barra de Control de Vistas */}
-      <nav className="bg-[#081021] border-b-4 border-slate-800 px-6 py-3 flex justify-between items-center">
+      <nav className="bg-[#120a26] border-b-4 border-[#ff007f] px-6 py-3 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <button
             onClick={onLeaveRoom}
@@ -201,18 +200,18 @@ export default function GameRoom({ session, onLeaveRoom }) {
           >
             <ArrowLeft size={16} /> SALIR
           </button>
-          <span className="text-xs bg-[#040914] border border-slate-700 text-[#ffe600] font-black px-2.5 py-1 uppercase tracking-wider hidden sm:inline-block">
+          <span className="text-xs bg-[#090514] border border-[#00f3ff] text-[#00f3ff] font-black px-2.5 py-1 uppercase tracking-wider hidden sm:inline-block">
             {connectionMode === "firebase" ? "🟢 Firebase DB" : "⚡ Modo Demo Local"}
           </span>
         </div>
 
         {/* Switcher de Vista */}
-        <div className="flex bg-[#040914] border-2 border-slate-700 p-1">
+        <div className="flex bg-[#090514] border-2 border-[#a855f7] p-1">
           <button
             onClick={() => setViewMode("tv")}
             className={`px-4 py-1 text-xs font-black uppercase flex items-center gap-2 transition-all ${
               viewMode === "tv"
-                ? "bg-[#ffe600] text-black border border-black"
+                ? "bg-[#ff007f] text-white border border-white"
                 : "text-slate-400 hover:text-white"
             }`}
           >
@@ -222,7 +221,7 @@ export default function GameRoom({ session, onLeaveRoom }) {
             onClick={() => setViewMode("mobile")}
             className={`px-4 py-1 text-xs font-black uppercase flex items-center gap-2 transition-all ${
               viewMode === "mobile"
-                ? "bg-[#ffe600] text-black border border-black"
+                ? "bg-[#00f3ff] text-black border border-black"
                 : "text-slate-400 hover:text-white"
             }`}
           >
@@ -232,7 +231,7 @@ export default function GameRoom({ session, onLeaveRoom }) {
       </nav>
 
       {claimMessage && (
-        <div className="bg-red-600 text-white font-black text-center py-2.5 px-4 text-xs border-b-2 border-black tracking-wider uppercase animate-bounce">
+        <div className="bg-[#ff0055] text-white font-black text-center py-2.5 px-4 text-xs border-b-2 border-black tracking-wider uppercase animate-bounce">
           {claimMessage}
         </div>
       )}
@@ -240,20 +239,20 @@ export default function GameRoom({ session, onLeaveRoom }) {
       {/* Overlay de Ganador */}
       {roomData.winner && (
         <div className="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-6">
-          <div className="bg-[#081021] border-4 border-[#ffe600] p-8 max-w-lg w-full text-center brutal-shadow-white">
-            <Trophy size={72} className="text-[#ffe600] mx-auto mb-4" />
+          <div className="arcade-card-glass border-4 border-[#ff007f] p-8 max-w-lg w-full text-center arcade-glow-magenta">
+            <Trophy size={72} className="text-[#ffb700] mx-auto mb-4" />
             <h1 className="text-4xl font-black text-white uppercase tracking-tight">¡BINGO CANTADO!</h1>
-            <h2 className="text-2xl font-black text-[#ffe600] mt-2 uppercase">
+            <h2 className="text-2xl font-black text-[#00f3ff] mt-2 uppercase">
               🏆 {roomData.winner.playerName} ({roomData.winner.tableName})
             </h2>
-            <p className="text-slate-300 font-bold mt-2 uppercase tracking-wide border-y border-slate-700 py-2">
+            <p className="text-slate-200 font-bold mt-2 uppercase tracking-wide border-y border-slate-700 py-2">
               {roomData.winner.bingoType}
             </p>
 
             {isHost && (
               <button
                 onClick={handleResetGame}
-                className="mt-6 w-full bg-[#ffe600] text-black font-black py-4 border-4 border-black uppercase tracking-wider brutal-shadow-white hover:bg-yellow-300"
+                className="mt-6 w-full bg-[#ffb700] hover:bg-yellow-300 text-black font-black py-4 border-4 border-black uppercase tracking-wider arcade-glow-gold"
               >
                 Reiniciar Partida
               </button>
@@ -283,6 +282,7 @@ export default function GameRoom({ session, onLeaveRoom }) {
               card={myPlayer ? myPlayer.card : []}
               playerName={playerName}
               tableName={myPlayer?.tableName || "Tabla #1"}
+              playerColor={myPlayer?.playerColor}
               currentBall={roomData.currentBall}
               drawnBalls={drawnBalls}
               onToggleCell={handleToggleCell}
