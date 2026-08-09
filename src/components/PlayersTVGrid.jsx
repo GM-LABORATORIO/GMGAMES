@@ -1,5 +1,6 @@
 import React from "react";
 import { User, Check, Sparkles } from "lucide-react";
+import { getPlayerNeonTheme } from "../utils/themeEngine";
 
 export default function PlayersTVGrid({ players = {} }) {
   const playersList = Object.values(players || {});
@@ -10,7 +11,7 @@ export default function PlayersTVGrid({ players = {} }) {
         <User size={48} className="mx-auto text-slate-600 mb-3" />
         <h3 className="text-xl font-black text-slate-400 uppercase">ESPERANDO JUGADORES...</h3>
         <p className="text-xs text-slate-500 font-bold mt-1 uppercase">
-          LOS JUGADORES Y SUS MINI-CARTONES APARECERÁN AQUÍ AL CONECTARSE
+          ESCANEA EL CÓDIGO QR PARA UNIRTE Y VER TU MINI-CARTÓN CON TU TEMA NEÓN AQUÍ
         </p>
       </div>
     );
@@ -23,27 +24,32 @@ export default function PlayersTVGrid({ players = {} }) {
           <Sparkles size={20} /> JUGADORES EN VIVO ({playersList.length})
         </h2>
         <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">
-          MONITOREO DE MINI-CARTONES EN TIEMPO REAL
+          MONITOREO DE MINI-CARTONES Y TEMAS NEÓN EN TIEMPO REAL
         </span>
       </div>
 
-      {/* Grid de Perfiles de Jugadores */}
+      {/* Grid de Perfiles de Jugadores con sus Temas Neón */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {playersList.map((player) => {
-          const confirmedSet = new Set(player.confirmedNumbers || []);
+          const theme = getPlayerNeonTheme(player.playerColor);
+          const confirmedSet = new Set((player.confirmedNumbers || []).map((n) => Number(n)));
           const cardMatrix = player.card || [];
 
           return (
             <div
               key={player.id}
-              className="bg-[#090514] border-4 border-slate-700 p-4 brutal-shadow-sm-white flex flex-col justify-between"
+              style={{
+                borderColor: theme.borderColor,
+                boxShadow: theme.glow
+              }}
+              className="bg-[#090514] border-4 p-4 flex flex-col justify-between transition-all duration-300"
             >
-              {/* Header de Perfil */}
+              {/* Header de Perfil con Tema Neón */}
               <div className="flex items-center justify-between border-b-2 border-slate-800 pb-3 mb-3">
                 <div className="flex items-center gap-3">
                   <div
-                    style={{ backgroundColor: player.playerColor?.hex || "#ff007f", color: player.playerColor?.text || "#fff" }}
-                    className="w-10 h-10 font-black text-lg flex items-center justify-center border-2 border-black rounded-full"
+                    style={{ backgroundColor: theme.hex, color: theme.text }}
+                    className="w-10 h-10 font-black text-lg flex items-center justify-center border-2 border-black rounded-full shadow-[0_0_10px_#ffffff]"
                   >
                     {player.name ? player.name.charAt(0).toUpperCase() : "J"}
                   </div>
@@ -51,7 +57,10 @@ export default function PlayersTVGrid({ players = {} }) {
                     <h3 className="text-base font-black text-white uppercase leading-tight">
                       {player.name}
                     </h3>
-                    <span className="text-[11px] font-black text-[#00f3ff] uppercase tracking-wider block">
+                    <span
+                      style={{ color: theme.hex }}
+                      className="text-[11px] font-black uppercase tracking-wider block"
+                    >
                       {player.tableName || "Tabla #1"}
                     </span>
                   </div>
@@ -59,13 +68,16 @@ export default function PlayersTVGrid({ players = {} }) {
 
                 <div className="text-right">
                   <span className="text-[10px] text-slate-400 font-bold uppercase block">ACIERTOS</span>
-                  <span className="bg-[#ffb700] text-black font-black text-xs px-2 py-0.5 border border-black inline-block font-space">
-                    {confirmedSet.size} NUMEROS
+                  <span
+                    style={{ backgroundColor: theme.hex, color: theme.text }}
+                    className="font-black text-xs px-2 py-0.5 border border-black inline-block font-space"
+                  >
+                    {confirmedSet.size} NÚMEROS
                   </span>
                 </div>
               </div>
 
-              {/* Mini-Cartón 5x5 */}
+              {/* Mini-Cartón 5x5 con Celdas Neón */}
               <div className="bg-[#120a26] border-2 border-slate-700 p-2">
                 <div className="grid grid-cols-5 gap-1 mb-1 text-center font-black text-xs">
                   <div className="bg-[#ff0055] text-white py-0.5 border border-black">B</div>
@@ -79,17 +91,32 @@ export default function PlayersTVGrid({ players = {} }) {
                   {cardMatrix.map((row, rIdx) =>
                     row.map((cell, cIdx) => {
                       const isFree = cell.val === "FREE";
-                      const isConfirmed = typeof cell.val === "number" && confirmedSet.has(cell.val);
+                      const cellNum = typeof cell.val === "number" ? cell.val : Number(cell.val);
+                      const isConfirmed = !isFree && confirmedSet.has(cellNum);
 
                       return (
                         <div
                           key={`${rIdx}-${cIdx}`}
+                          style={{
+                            backgroundColor: isFree
+                              ? "#ffb700"
+                              : isConfirmed
+                              ? theme.hex
+                              : "#090514",
+                            color: isFree
+                              ? "#000000"
+                              : isConfirmed
+                              ? theme.text
+                              : "#94a3b8",
+                            borderColor: isConfirmed ? "#ffffff" : "#1e293b",
+                            boxShadow: isConfirmed ? theme.glow : "none"
+                          }}
                           className={`aspect-square flex flex-col items-center justify-center relative font-black text-xs border transition-all ${
                             isFree
-                              ? "bg-[#ffb700] text-black border-black text-[9px]"
+                              ? "text-[9px]"
                               : isConfirmed
-                              ? "bg-[#00f3ff] text-black border-2 border-black shadow-[0_0_12px_#00f3ff] z-10 scale-105"
-                              : "bg-[#090514] text-slate-400 border-slate-800"
+                              ? "border-2 z-10 scale-105"
+                              : "border-slate-800"
                           }`}
                         >
                           {isFree ? (
@@ -100,7 +127,7 @@ export default function PlayersTVGrid({ players = {} }) {
                               {isConfirmed && (
                                 <Check
                                   size={10}
-                                  className="text-black stroke-[4] absolute top-0.5 right-0.5"
+                                  className="stroke-[4] absolute top-0.5 right-0.5"
                                 />
                               )}
                             </>

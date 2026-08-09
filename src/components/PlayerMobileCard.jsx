@@ -1,12 +1,13 @@
 import React from "react";
-import { Star, Trophy, Check, Sparkles } from "lucide-react";
+import { Star, Trophy, Check } from "lucide-react";
 import confetti from "canvas-confetti";
+import { getPlayerNeonTheme } from "../utils/themeEngine";
 
 export default function PlayerMobileCard({
   card,
   playerName = "Jugador",
   tableName = "Tabla #1",
-  playerColor = { hex: "#ff007f", text: "#ffffff" },
+  playerColor = { hex: "#00f3ff", text: "#000000" },
   currentBall,
   drawnBalls = [],
   onToggleCell,
@@ -14,13 +15,16 @@ export default function PlayerMobileCard({
 }) {
   if (!card || card.length === 0) return null;
 
-  // Normalización estricta a Number para corregir el bug de comparación entre Number y String (ej: 37 === "37")
+  // Obtener el paquete de diseño Neón dinámico según la elección del jugador
+  const theme = getPlayerNeonTheme(playerColor);
+
+  // Normalización estricta a Number para evitar problemas entre String y Number
   const drawnNumbersSet = new Set((drawnBalls || []).map((b) => Number(b)));
 
   const handleBingoClick = () => {
     confetti({
-      particleCount: 180,
-      spread: 100,
+      particleCount: 220,
+      spread: 110,
       origin: { y: 0.6 }
     });
     onClaimBingo();
@@ -35,22 +39,31 @@ export default function PlayerMobileCard({
   ];
 
   return (
-    <div className="w-full max-w-md mx-auto bg-[#090514] text-white font-syne p-4 flex flex-col gap-4 select-none relative">
+    <div className="w-full max-w-md mx-auto bg-[#090514] text-white font-syne p-4 flex flex-col gap-4 select-none relative transition-all duration-300">
       
-      {/* Header Jugador Cyber Arcade */}
-      <div className="arcade-card-glass border-4 border-[#ff007f] p-4 arcade-glow-magenta flex justify-between items-center">
+      {/* Header del Jugador con el Tema Neón Dinámico */}
+      <div
+        style={{
+          boxShadow: theme.glow,
+          borderColor: theme.borderColor
+        }}
+        className="arcade-card-glass border-4 p-4 flex justify-between items-center transition-all duration-300"
+      >
         <div className="flex items-center gap-3">
-          {/* Avatar con el color Neón elegido en el Journey */}
+          {/* Avatar con el color Neón elegido */}
           <div
-            style={{ backgroundColor: playerColor?.hex || "#ff007f", color: playerColor?.text || "#fff" }}
-            className="w-12 h-12 rounded-full font-black text-xl flex items-center justify-center border-2 border-black shadow-[0_0_12px_#ffffff]"
+            style={{ backgroundColor: theme.hex, color: theme.text }}
+            className="w-12 h-12 rounded-full font-black text-xl flex items-center justify-center border-2 border-black shadow-[0_0_15px_#ffffff]"
           >
             {playerName ? playerName.charAt(0).toUpperCase() : "J"}
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-slate-300 font-bold uppercase tracking-wider">JUGADOR</span>
-              <span className="bg-[#00f3ff] text-black font-black text-[10px] px-2 py-0.5 uppercase border border-black font-space">
+              <span className="text-[10px] text-slate-300 font-bold uppercase tracking-wider">JUGADORES</span>
+              <span
+                style={{ backgroundColor: theme.hex, color: theme.text }}
+                className="font-black text-[10px] px-2 py-0.5 uppercase border border-black font-space"
+              >
                 {tableName}
               </span>
             </div>
@@ -60,17 +73,28 @@ export default function PlayerMobileCard({
 
         {/* Última Balota Cantada */}
         <div className="text-right">
-          <span className="text-[10px] text-[#00f3ff] font-black uppercase tracking-wider block">ÚLTIMA BALOTA</span>
+          <span
+            style={{ color: theme.hex }}
+            className="text-[10px] font-black uppercase tracking-wider block"
+          >
+            ÚLTIMA BALOTA
+          </span>
           <div className="text-3xl font-black text-[#ffb700] font-space drop-shadow-[0_2px_8px_rgba(255,183,0,0.6)]">
             {currentBall ? currentBall : "--"}
           </div>
         </div>
       </div>
 
-      {/* Cartón 5x5 Cyber Arcade */}
-      <div className="arcade-card-glass border-4 border-[#00f3ff] p-3.5 arcade-glow-cyan">
+      {/* Cartón 5x5 Cyber Arcade enmarcado en el Tema Neón del Jugador */}
+      <div
+        style={{
+          boxShadow: theme.glow,
+          borderColor: theme.borderColor
+        }}
+        className="arcade-card-glass border-4 p-3.5 transition-all duration-300"
+      >
         
-        {/* Cabecera B-I-N-G-O con Colores Neón */}
+        {/* Cabecera B-I-N-G-O */}
         <div className="grid grid-cols-5 gap-2 mb-2">
           {columns.map((col) => (
             <div
@@ -83,7 +107,7 @@ export default function PlayerMobileCard({
           ))}
         </div>
 
-        {/* Grilla 5x5 Interactivas */}
+        {/* Grilla 5x5 Interactivas con Celdas Neón Dinámicas */}
         <div className="grid grid-cols-5 gap-2">
           {card.map((row, rIdx) =>
             row.map((cell, cIdx) => {
@@ -97,14 +121,36 @@ export default function PlayerMobileCard({
                   key={`${rIdx}-${cIdx}`}
                   id={`cell-${rIdx}-${cIdx}`}
                   onClick={() => onToggleCell(rIdx, cIdx)}
-                  className={`aspect-square flex flex-col items-center justify-center relative font-black text-2xl transition-all cursor-pointer ${
-                    isFree
-                      ? "bg-[#ffb700] text-black border-4 border-black shadow-[0_0_12px_#ffb700] scale-[0.98]"
+                  style={{
+                    backgroundColor: isFree
+                      ? "#ffb700"
                       : isMarked
-                      ? "bg-[#ff007f] text-white border-4 border-white shadow-[0_0_15px_#ff007f] scale-[0.98]"
+                      ? theme.markedBg
+                      : "#090514",
+                    color: isFree
+                      ? "#000000"
+                      : isMarked
+                      ? theme.markedText
                       : isDrawn
-                      ? "bg-[#120a26] text-[#00f3ff] border-4 border-[#00f3ff] shadow-[0_0_10px_#00f3ff] animate-pulse"
-                      : "bg-[#090514] text-white border-2 border-slate-700 hover:border-[#00f3ff]"
+                      ? theme.hex
+                      : "#ffffff",
+                    borderColor: isFree
+                      ? "#000000"
+                      : isMarked
+                      ? "#ffffff"
+                      : isDrawn
+                      ? theme.borderColor
+                      : "#334155",
+                    boxShadow: isFree
+                      ? "0 0 12px #ffb700"
+                      : isMarked
+                      ? theme.glowStrong
+                      : isDrawn
+                      ? theme.glow
+                      : "none"
+                  }}
+                  className={`aspect-square flex flex-col items-center justify-center relative font-black text-2xl transition-all duration-200 cursor-pointer active:scale-90 ${
+                    isFree || isMarked ? "border-4 scale-[0.98]" : isDrawn ? "border-4 animate-pulse" : "border-2 hover:border-white"
                   }`}
                 >
                   {isFree ? (
@@ -116,7 +162,7 @@ export default function PlayerMobileCard({
                     <>
                       <span className="font-space font-black">{cell.val}</span>
                       {isMarked && (
-                        <Check size={20} className="absolute top-1 right-1 stroke-[4] text-white" />
+                        <Check size={20} className="absolute top-1 right-1 stroke-[4]" />
                       )}
                     </>
                   )}
@@ -127,11 +173,15 @@ export default function PlayerMobileCard({
         </div>
       </div>
 
-      {/* Botón Masivo CANTAR BINGO en Oro Cyber */}
+      {/* Botón Masivo CANTAR BINGO en Tema Neón Personalizado */}
       <button
         id="player-claim-bingo-btn"
         onClick={handleBingoClick}
-        className="w-full bg-gradient-to-r from-[#ffb700] to-[#00ff88] hover:opacity-95 text-black font-black text-2xl py-4 border-4 border-black uppercase tracking-wider arcade-glow-gold active:translate-x-1 active:translate-y-1 transition-all flex items-center justify-center gap-3 mt-2"
+        style={{
+          boxShadow: theme.glowStrong,
+          borderColor: "#000000"
+        }}
+        className={`${theme.buttonBg} w-full font-black text-2xl py-4 border-4 uppercase tracking-wider active:translate-x-1 active:translate-y-1 transition-all flex items-center justify-center gap-3 mt-2`}
       >
         <Trophy size={28} className="stroke-[3]" /> ¡CANTAR BINGO!
       </button>
