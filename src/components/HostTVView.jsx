@@ -85,12 +85,12 @@ export default function HostTVView({
   // Fonética de Voz Nativa Latina con Comentarios Humorísticos y Presión al Líder
   useEffect(() => {
     if (currentBall) {
-      const text = speakBallNumber(currentLetter, currentBall, voiceLang, leaderInfo);
+      const text = speakBallNumber(currentLetter, currentBall, selectedVoiceURI, leaderInfo);
       setAnnouncerSubtitle(text);
     } else {
       setAnnouncerSubtitle("");
     }
-  }, [currentBall, currentLetter, voiceLang]);
+  }, [currentBall, currentLetter, selectedVoiceURI]);
 
   // Temporizador de Cuenta Regresiva Visual Animada para Auto-Extracción
   useEffect(() => {
