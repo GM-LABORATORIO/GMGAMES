@@ -5,11 +5,11 @@ export default function GameHub({ onSelectBingo }) {
   const [inCatalog, setInCatalog] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#06070d] text-white font-syne p-6 md:p-12 flex flex-col justify-between select-none relative overflow-hidden">
+    <div className="min-h-screen bg-[#000000] text-white font-syne p-6 md:p-12 flex flex-col justify-between select-none relative overflow-hidden">
       
-      {/* Luz Ambiental Nebulosa Sutil en Esquinas (Vida Orgánica al Fondo Negro) */}
-      <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#00ff88]/10 rounded-full blur-[120px] pointer-events-none animate-pulse" />
-      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#a855f7]/10 rounded-full blur-[120px] pointer-events-none animate-pulse" />
+      {/* Luz Ambiental Nebulosa Sutil en Esquinas (Mantiene el centro 100% negro puro para fusión total) */}
+      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-[#00ff88]/10 rounded-full blur-[140px] pointer-events-none animate-pulse" />
+      <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-[#a855f7]/10 rounded-full blur-[140px] pointer-events-none animate-pulse" />
 
       {/* Background Decorativo de Puntos en Catálogo */}
       {inCatalog && (
@@ -19,15 +19,15 @@ export default function GameHub({ onSelectBingo }) {
       )}
 
       {!inCatalog ? (
-        /* HERO INTRO OFICIAL DE LA MARCA: LA SALA (DISEÑO SENIOR ELEGANTE) */
+        /* HERO INTRO OFICIAL DE LA MARCA: LA SALA (FUSIÓN 100% INVISIBLE MIX-BLEND-SCREEN) */
         <div className="max-w-4xl w-full mx-auto my-auto text-center relative z-10 space-y-8 flex flex-col items-center">
           
-          {/* Logo Oficial LA SALA - Integración Absoluta al Fondo */}
+          {/* Logo Oficial LA SALA - Fusión Total sin Recuadros mediante mix-blend-screen */}
           <div className="w-full">
             <img
               src="/lasala_logo.jpg"
               alt="LA SALA - Plataforma // Juegos // Familia & Amigos"
-              className="w-72 sm:w-[460px] md:w-[540px] mx-auto h-auto object-contain pointer-events-none select-none block"
+              className="w-72 sm:w-[480px] md:w-[560px] mx-auto h-auto object-contain mix-blend-screen pointer-events-none select-none block"
             />
           </div>
 
@@ -53,7 +53,7 @@ export default function GameHub({ onSelectBingo }) {
               <img
                 src="/lasala_logo.jpg"
                 alt="LA SALA Logo"
-                className="w-24 sm:w-32 h-auto object-contain"
+                className="w-24 sm:w-32 h-auto object-contain mix-blend-screen"
               />
               <div>
                 <div className="inline-flex items-center gap-2 bg-[#00ff88] text-black font-black px-3 py-1 text-xs tracking-widest uppercase rounded-full mb-1">
