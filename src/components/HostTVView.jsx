@@ -23,8 +23,8 @@ export default function HostTVView({
   const currentLetter = getLetterForNumber(currentBall);
 
   const [autoDraw, setAutoDraw] = useState(true);
-  const [speedSec, setSpeedSec] = useState(10);
-  const [timerCountdown, setTimerCountdown] = useState(10);
+  const [speedSec, setSpeedSec] = useState(6);
+  const [timerCountdown, setTimerCountdown] = useState(6);
   const [showLargeQR, setShowLargeQR] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [bgMusicEnabled, setBgMusicEnabled] = useState(false);
@@ -329,10 +329,10 @@ export default function HostTVView({
                   }}
                   className="bg-[#151a2d] text-[#00ff88] font-black border border-white/20 text-xs px-2 py-1 uppercase rounded-lg focus:outline-none cursor-pointer"
                 >
-                  <option value={10}>10 SEGUNDOS (RECOMENDADO / FAMILIAR)</option>
-                  <option value={12}>12 SEGUNDOS (RELAJADO)</option>
-                  <option value={15}>15 SEGUNDOS (PAUSADO)</option>
+                  <option value={6}>6 SEGUNDOS (DINÁMICO / RECOMENDADO)</option>
                   <option value={8}>8 SEGUNDOS (RÁPIDO)</option>
+                  <option value={10}>10 SEGUNDOS (ESTÁNDAR FAMILIAR)</option>
+                  <option value={12}>12 SEGUNDOS (RELAJADO)</option>
                 </select>
               </div>
 
