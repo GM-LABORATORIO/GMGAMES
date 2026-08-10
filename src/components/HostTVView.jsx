@@ -23,8 +23,8 @@ export default function HostTVView({
   const currentLetter = getLetterForNumber(currentBall);
 
   const [autoDraw, setAutoDraw] = useState(true);
-  const [speedSec, setSpeedSec] = useState(5);
-  const [timerCountdown, setTimerCountdown] = useState(5);
+  const [speedSec, setSpeedSec] = useState(10);
+  const [timerCountdown, setTimerCountdown] = useState(10);
   const [showLargeQR, setShowLargeQR] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [bgMusicEnabled, setBgMusicEnabled] = useState(false);
@@ -313,6 +313,27 @@ export default function HostTVView({
                   {autoDraw ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
                   {autoDraw ? "PAUSAR AUTO" : "AUTO EXTRACCIÓN"}
                 </button>
+              </div>
+
+              {/* Selector de Tiempo entre Balotas */}
+              <div className="bg-[#06070d] border border-white/15 p-2 rounded-xl flex items-center justify-between">
+                <span className="text-[10px] text-slate-300 font-bold uppercase tracking-wider flex items-center gap-1">
+                  ⏱️ TIEMPO ENTRE BALOTAS:
+                </span>
+                <select
+                  value={speedSec}
+                  onChange={(e) => {
+                    const newSpeed = Number(e.target.value);
+                    setSpeedSec(newSpeed);
+                    setTimerCountdown(newSpeed);
+                  }}
+                  className="bg-[#151a2d] text-[#00ff88] font-black border border-white/20 text-xs px-2 py-1 uppercase rounded-lg focus:outline-none cursor-pointer"
+                >
+                  <option value={10}>10 SEGUNDOS (RECOMENDADO / FAMILIAR)</option>
+                  <option value={12}>12 SEGUNDOS (RELAJADO)</option>
+                  <option value={15}>15 SEGUNDOS (PAUSADO)</option>
+                  <option value={8}>8 SEGUNDOS (RÁPIDO)</option>
+                </select>
               </div>
 
               {/* Selector de Voces & Música */}
