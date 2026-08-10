@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { getLetterForNumber } from "../utils/bingoLogic";
 import { speakBallNumber, toggleBackgroundMusic, unlockTVAudio, getAvailableSpanishVoices } from "../utils/audio";
 import { Play, Pause, Tv, QrCode, Copy, Check, Volume2, Music, VolumeX, Mic, Sparkles } from "lucide-react";
@@ -95,9 +95,11 @@ export default function HostTVView({
     : null;
 
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const spokenBallRef = useRef(null);
 
   useEffect(() => {
-    if (currentBall) {
+    if (currentBall && spokenBallRef.current !== currentBall) {
+      spokenBallRef.current = currentBall;
       setIsSpeaking(true);
       const text = speakBallNumber(
         currentLetter,
@@ -111,7 +113,8 @@ export default function HostTVView({
         }
       );
       setAnnouncerSubtitle(text);
-    } else {
+    } else if (!currentBall) {
+      spokenBallRef.current = null;
       setAnnouncerSubtitle("");
       setIsSpeaking(false);
     }

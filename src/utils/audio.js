@@ -102,8 +102,11 @@ function duckBackgroundMusic(duck = true) {
   }
 }
 
+let activeUtterance = null;
+let speechFallbackTimer = null;
+
 /**
- * Locución Perfeccionada con Smart Audio Ducking
+ * Locución Perfeccionada con Smart Audio Ducking y Garantía de Finalización de Voz
  */
 export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInfo = null, underdogInfo = null, onSpeechEndCallback = null) {
   if (!letter || !number) return "";
@@ -119,6 +122,12 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
   }
 
   try {
+    // Cancelar temporizador previo de seguridad
+    if (speechFallbackTimer) {
+      clearTimeout(speechFallbackTimer);
+      speechFallbackTimer = null;
+    }
+
     window.speechSynthesis.cancel();
 
     const fonetica = { B: 'Bé', I: 'I', N: 'Éne', G: 'Ge', O: 'O' };
@@ -150,6 +159,7 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
     }
 
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
+    activeUtterance = utterance; // EVITAR GARBAGE COLLECTION EN SAFARI/CHROME MID-SPEECH
 
     const voices = window.speechSynthesis.getVoices();
     if (selectedVoiceURI) {
@@ -164,18 +174,30 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
     utterance.rate = 0.95;
     utterance.pitch = 1.0;
 
-    // SMART AUDIO DUCKING & EVENT-DRIVEN SPEECH COMPLETION
+    let hasHandledEnd = false;
+    const finishSpeech = () => {
+      if (hasHandledEnd) return;
+      hasHandledEnd = true;
+
+      if (speechFallbackTimer) {
+        clearTimeout(speechFallbackTimer);
+        speechFallbackTimer = null;
+      }
+      activeUtterance = null;
+      duckBackgroundMusic(false);
+      if (onSpeechEndCallback) onSpeechEndCallback();
+    };
+
     utterance.onstart = () => {
       duckBackgroundMusic(true);
     };
-    utterance.onend = () => {
-      duckBackgroundMusic(false);
-      if (onSpeechEndCallback) onSpeechEndCallback();
-    };
-    utterance.onerror = () => {
-      duckBackgroundMusic(false);
-      if (onSpeechEndCallback) onSpeechEndCallback();
-    };
+
+    utterance.onend = finishSpeech;
+    utterance.onerror = finishSpeech;
+
+    // TEMPORIZADOR DE SEGURIDAD GARANTIZADO: Si el navegador no dispara onend tras tiempo estimado, forzar continuacion
+    const estimatedDurationMs = Math.max(3500, textToSpeak.split(" ").length * 350 + 2500);
+    speechFallbackTimer = setTimeout(finishSpeech, estimatedDurationMs);
 
     window.speechSynthesis.speak(utterance);
     return textToSpeak;
