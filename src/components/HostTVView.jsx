@@ -12,6 +12,7 @@ export default function HostTVView({
   drawnBalls = [],
   availableNumbers = [],
   players = {},
+  maxPlayers = 1,
   winner = null,
   victoryMode = "line",
   isHost = true,
