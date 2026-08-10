@@ -138,25 +138,35 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
     const numVal = Number(number);
     const numWord = NUMBER_WORDS[numVal] || numVal.toString();
 
-    let textToSpeak = `Letra ${letterPhonetic}, número ${numWord}.`;
+    // 5 Estructuras de Inicio Dinámicas y Variadas (Evita repetir "Letra X, número Y")
+    const introStyles = [
+      () => `Letra ${letterPhonetic}, número ${numWord}.`,
+      () => `¡Salió la ${letterPhonetic}, número ${numWord}!`,
+      () => `¡Atención en la sala! Letra ${letterPhonetic}, número ${numWord}.`,
+      () => `Y la suerte nos trae... ¡Letra ${letterPhonetic}, número ${numWord}!`,
+      () => `¡Marque en su cartón la ${letterPhonetic}, número ${numWord}!`
+    ];
+
+    const chosenIntro = introStyles[Math.floor(Math.random() * introStyles.length)]();
+    let textToSpeak = chosenIntro;
 
     const randChoice = Math.random();
 
     // 1. Dichos tradicionales especiales por número
     const specialJoke = getBingoNumberJoke(numVal);
-    if (specialJoke) {
+    if (specialJoke && Math.random() < 0.7) {
       textToSpeak += ` ${specialJoke}`;
     } 
-    // 2. Chanza sana para el Colero (25% probabilidad)
-    else if (underdogInfo && underdogInfo.name && randChoice < 0.25) {
+    // 2. Chanza sana para el Colero (30% probabilidad)
+    else if (underdogInfo && underdogInfo.name && randChoice < 0.30) {
       textToSpeak += ` ${getRandomUnderdogPhrase(underdogInfo.name)}`;
     }
-    // 3. Mención de Presión al Líder (25% probabilidad)
-    else if (leaderInfo && leaderInfo.name && leaderInfo.hits >= 3 && randChoice < 0.50) {
+    // 3. Mención de Presión al Líder (30% probabilidad)
+    else if (leaderInfo && leaderInfo.name && leaderInfo.hits >= 3 && randChoice < 0.60) {
       textToSpeak += ` ${getRandomLeaderPhrase(leaderInfo.name)}`;
     } 
-    // 4. Comentario humorístico general de juego (20% probabilidad)
-    else if (randChoice < 0.70) {
+    // 4. Comentario humorístico general de juego (30% probabilidad)
+    else if (randChoice < 0.90) {
       textToSpeak += ` ${getRandomEventPhrase()}`;
     }
 

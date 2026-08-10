@@ -97,12 +97,17 @@ export default function HostTVView({
     : null;
 
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const spokenBallRef = useRef(null);
+  const handleDrawNextBall = () => {
+    setIsSpeaking(true);
+    setTimerCountdown(speedSec);
+    onDrawNextBall();
+  };
 
   useEffect(() => {
     if (currentBall && spokenBallRef.current !== currentBall) {
       spokenBallRef.current = currentBall;
       setIsSpeaking(true);
+      setTimerCountdown(speedSec);
       speakBallNumber(
         currentLetter,
         currentBall,
@@ -130,22 +135,21 @@ export default function HostTVView({
       interval = setInterval(() => {
         setTimerCountdown((prev) => {
           if (prev <= 1) {
-            onDrawNextBall();
+            handleDrawNextBall();
             return speedSec;
           }
           return prev - 1;
         });
       }, 1000);
-    } else if (isSpeaking) {
-      setTimerCountdown(speedSec);
     } else {
+      // Mientras el locutor esté hablando O el juego esté pausado, congelar el reloj en speedSec
       setTimerCountdown(speedSec);
     }
 
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [autoDraw, status, availableNumbers.length, speedSec, isSpeaking, onDrawNextBall]);
+  }, [autoDraw, status, availableNumbers.length, speedSec, isSpeaking]);
 
   return (
     <div className="w-full max-w-[1600px] mx-auto p-4 sm:p-8 font-syne text-white flex flex-col min-h-screen justify-between bg-[#000000] select-none">
@@ -299,7 +303,7 @@ export default function HostTVView({
             <div className="border-t border-white/10 pt-6 space-y-3">
               <div className="grid grid-cols-2 gap-2">
                 <button
-                  onClick={onDrawNextBall}
+                  onClick={handleDrawNextBall}
                   disabled={availableNumbers.length === 0}
                   className="bg-gradient-to-r from-[#00ff88] to-[#00f3ff] hover:opacity-90 text-black font-black text-base py-3.5 border border-white/40 uppercase tracking-wider rounded-xl shadow-[0_0_20px_rgba(0,255,136,0.3)] flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                 >
