@@ -9,9 +9,19 @@ let ambientAudioCtx = null;
 let musicGainNode = null;
 let ambientOsc1 = null;
 let ambientOsc2 = null;
+let bgAudioElement = null;
 let isMusicPlaying = false;
 let isAudioUnlocked = false;
-let currentTrackId = "track1"; // "track1" | "track2" | "off"
+let currentTrackId = "track1";
+
+const TRACK_PATHS = {
+  track1: "/audio/track1.mp3",
+  track2: "/audio/track2.mp3"
+};
+
+// Configuración Profesional de Audio: 20% de volumen ambiente, 4% durante locución
+const BASE_MUSIC_VOLUME = 0.20;
+const DUCKED_MUSIC_VOLUME = 0.04;
 
 // Mapeo fonético estricto de números a palabras escritas para dicción cristalina
 const NUMBER_WORDS = {
@@ -74,21 +84,26 @@ export function getAvailableSpanishVoices() {
 }
 
 /**
- * Atenuación Inteligente de Música (Audio Ducking): Bromea la música cuando habla el locutor
+ * Atenuación Profesional de Audio (Smart Ducking al 20% / 4%)
  */
 function duckBackgroundMusic(duck = true) {
-  if (!musicGainNode || !ambientAudioCtx) return;
-  try {
-    const targetVol = duck ? 0.015 : 0.08; // Reduce el volumen al 15% para dar prioridad total a la voz
-    musicGainNode.gain.cancelScheduledValues(ambientAudioCtx.currentTime);
-    musicGainNode.gain.linearRampToValueAtTime(targetVol, ambientAudioCtx.currentTime + 0.15);
-  } catch (err) {
-    // Ignorar
+  if (bgAudioElement) {
+    bgAudioElement.volume = duck ? DUCKED_MUSIC_VOLUME : BASE_MUSIC_VOLUME;
+  }
+
+  if (musicGainNode && ambientAudioCtx) {
+    try {
+      const targetVol = duck ? 0.015 : 0.08;
+      musicGainNode.gain.cancelScheduledValues(ambientAudioCtx.currentTime);
+      musicGainNode.gain.linearRampToValueAtTime(targetVol, ambientAudioCtx.currentTime + 0.15);
+    } catch (err) {
+      // Ignorar
+    }
   }
 }
 
 /**
- * Locución Perfeccionada con Humor Inteligente y Smart Audio Ducking
+ * Locución Perfeccionada con Smart Audio Ducking
  */
 export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInfo = null, underdogInfo = null) {
   if (!letter || !number) return "";
@@ -148,7 +163,7 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
     utterance.rate = 0.95;
     utterance.pitch = 1.0;
 
-    // EVENTOS DE SMART AUDIO DUCKING: Baja la música al iniciar, la sube al finalizar
+    // SMART AUDIO DUCKING: Baja la música al 4% al empezar a hablar, la sube al 20% al terminar
     utterance.onstart = () => {
       duckBackgroundMusic(true);
     };
@@ -224,75 +239,90 @@ export function playBallPingSound() {
   }
 }
 
-/**
- * Selector de 2 Pistas Musicales Famosas Sin Copyright (Arcade Party Fever & Chill Casino Lounge)
- */
-export function toggleBackgroundMusic(enable = true, trackId = "track1") {
+function playSynthesizedTrack(trackId) {
   try {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     if (!AudioContext) return;
 
-    currentTrackId = trackId;
-
-    if (enable && trackId !== "off") {
-      if (!ambientAudioCtx) {
-        ambientAudioCtx = new AudioContext();
-      }
-
-      if (ambientAudioCtx.state === "suspended") {
-        ambientAudioCtx.resume();
-      }
-
-      if (ambientOsc1) {
-        try { ambientOsc1.stop(); } catch (e) {}
-      }
-      if (ambientOsc2) {
-        try { ambientOsc2.stop(); } catch (e) {}
-      }
-
-      ambientOsc1 = ambientAudioCtx.createOscillator();
-      ambientOsc2 = ambientAudioCtx.createOscillator();
-      musicGainNode = ambientAudioCtx.createGain();
-
-      if (trackId === "track1") {
-        // PISTA 1: 🕺 Arcade Party Fever (Electro Funk Alegre)
-        ambientOsc1.type = "sine";
-        ambientOsc1.frequency.setValueAtTime(220, ambientAudioCtx.currentTime);
-
-        ambientOsc2.type = "sawtooth";
-        ambientOsc2.frequency.setValueAtTime(329.63, ambientAudioCtx.currentTime);
-      } else {
-        // PISTA 2: 🎷 Chill Casino Lounge (Lofi Jazz Elegante)
-        ambientOsc1.type = "triangle";
-        ambientOsc1.frequency.setValueAtTime(174.61, ambientAudioCtx.currentTime);
-
-        ambientOsc2.type = "sine";
-        ambientOsc2.frequency.setValueAtTime(261.63, ambientAudioCtx.currentTime);
-      }
-
-      musicGainNode.gain.setValueAtTime(0.08, ambientAudioCtx.currentTime);
-
-      ambientOsc1.connect(musicGainNode);
-      ambientOsc2.connect(musicGainNode);
-      musicGainNode.connect(ambientAudioCtx.destination);
-
-      ambientOsc1.start();
-      ambientOsc2.start();
-      isMusicPlaying = true;
-    } else {
-      if (ambientOsc1) {
-        try { ambientOsc1.stop(); } catch (e) {}
-        ambientOsc1 = null;
-      }
-      if (ambientOsc2) {
-        try { ambientOsc2.stop(); } catch (e) {}
-        ambientOsc2 = null;
-      }
-      musicGainNode = null;
-      isMusicPlaying = false;
+    if (!ambientAudioCtx) {
+      ambientAudioCtx = new AudioContext();
     }
+    if (ambientAudioCtx.state === "suspended") {
+      ambientAudioCtx.resume();
+    }
+
+    if (ambientOsc1) {
+      try { ambientOsc1.stop(); } catch (e) {}
+    }
+    if (ambientOsc2) {
+      try { ambientOsc2.stop(); } catch (e) {}
+    }
+
+    ambientOsc1 = ambientAudioCtx.createOscillator();
+    ambientOsc2 = ambientAudioCtx.createOscillator();
+    musicGainNode = ambientAudioCtx.createGain();
+
+    if (trackId === "track1") {
+      ambientOsc1.type = "sine";
+      ambientOsc1.frequency.setValueAtTime(220, ambientAudioCtx.currentTime);
+      ambientOsc2.type = "sawtooth";
+      ambientOsc2.frequency.setValueAtTime(329.63, ambientAudioCtx.currentTime);
+    } else {
+      ambientOsc1.type = "triangle";
+      ambientOsc1.frequency.setValueAtTime(174.61, ambientAudioCtx.currentTime);
+      ambientOsc2.type = "sine";
+      ambientOsc2.frequency.setValueAtTime(261.63, ambientAudioCtx.currentTime);
+    }
+
+    musicGainNode.gain.setValueAtTime(0.08, ambientAudioCtx.currentTime);
+
+    ambientOsc1.connect(musicGainNode);
+    ambientOsc2.connect(musicGainNode);
+    musicGainNode.connect(ambientAudioCtx.destination);
+
+    ambientOsc1.start();
+    ambientOsc2.start();
   } catch (err) {
-    console.warn("Música de fondo no disponible:", err);
+    console.warn("Fallback sintetizado no disponible:", err);
+  }
+}
+
+/**
+ * Carga y Reproduce Pistas MP3 reales de public/audio/track1.mp3 y track2.mp3 al 20%
+ */
+export function toggleBackgroundMusic(enable = true, trackId = "track1") {
+  currentTrackId = trackId;
+
+  if (bgAudioElement) {
+    bgAudioElement.pause();
+    bgAudioElement = null;
+  }
+  if (ambientOsc1) {
+    try { ambientOsc1.stop(); } catch (e) {}
+    ambientOsc1 = null;
+  }
+  if (ambientOsc2) {
+    try { ambientOsc2.stop(); } catch (e) {}
+    ambientOsc2 = null;
+  }
+
+  if (enable && trackId !== "off") {
+    const audioPath = TRACK_PATHS[trackId] || TRACK_PATHS.track1;
+
+    const audio = new Audio(audioPath);
+    audio.loop = true;
+    audio.volume = BASE_MUSIC_VOLUME; // 20% del volumen master
+
+    audio.play().then(() => {
+      bgAudioElement = audio;
+      isMusicPlaying = true;
+    }).catch(() => {
+      // Fallback a sintetizador nativo si el archivo MP3 no existe aún
+      playSynthesizedTrack(trackId);
+      isMusicPlaying = true;
+    });
+  } else {
+    isMusicPlaying = false;
   }
 }
 
