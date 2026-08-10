@@ -91,20 +91,34 @@ export default function HostTVView({
     ? { name: underdogPlayer.name, hits: (underdogPlayer.confirmedNumbers || []).length }
     : null;
 
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
   useEffect(() => {
     if (currentBall) {
-      const text = speakBallNumber(currentLetter, currentBall, selectedVoiceURI, leaderInfo, underdogInfo);
+      setIsSpeaking(true);
+      const text = speakBallNumber(
+        currentLetter,
+        currentBall,
+        selectedVoiceURI,
+        leaderInfo,
+        underdogInfo,
+        () => {
+          setIsSpeaking(false);
+          setTimerCountdown(speedSec);
+        }
+      );
       setAnnouncerSubtitle(text);
     } else {
       setAnnouncerSubtitle("");
+      setIsSpeaking(false);
     }
   }, [currentBall, currentLetter, selectedVoiceURI]);
 
-  // Temporizador de Cuenta Regresiva
+  // Temporizador de Cuenta Regresiva Sincronizado por Eventos de Voz
   useEffect(() => {
     let interval = null;
 
-    if (autoDraw && status === "playing" && availableNumbers.length > 0) {
+    if (autoDraw && status === "playing" && availableNumbers.length > 0 && !isSpeaking) {
       interval = setInterval(() => {
         setTimerCountdown((prev) => {
           if (prev <= 1) {
@@ -114,6 +128,8 @@ export default function HostTVView({
           return prev - 1;
         });
       }, 1000);
+    } else if (isSpeaking) {
+      setTimerCountdown(speedSec);
     } else {
       setTimerCountdown(speedSec);
     }
@@ -121,7 +137,7 @@ export default function HostTVView({
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [autoDraw, status, availableNumbers.length, speedSec, onDrawNextBall]);
+  }, [autoDraw, status, availableNumbers.length, speedSec, isSpeaking, onDrawNextBall]);
 
   return (
     <div className="w-full max-w-7xl mx-auto p-4 sm:p-8 font-syne text-white flex flex-col min-h-screen justify-between bg-[#06070d]">

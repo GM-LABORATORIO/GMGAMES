@@ -105,7 +105,7 @@ function duckBackgroundMusic(duck = true) {
 /**
  * Locución Perfeccionada con Smart Audio Ducking
  */
-export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInfo = null, underdogInfo = null) {
+export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInfo = null, underdogInfo = null, onSpeechEndCallback = null) {
   if (!letter || !number) return "";
 
   if (!isAudioUnlocked) {
@@ -114,6 +114,7 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
 
   if (!("speechSynthesis" in window)) {
     playBallPingSound();
+    if (onSpeechEndCallback) setTimeout(onSpeechEndCallback, 1500);
     return `Letra ${letter}, ${number}`;
   }
 
@@ -163,15 +164,17 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
     utterance.rate = 0.95;
     utterance.pitch = 1.0;
 
-    // SMART AUDIO DUCKING: Baja la música al 4% al empezar a hablar, la sube al 20% al terminar
+    // SMART AUDIO DUCKING & EVENT-DRIVEN SPEECH COMPLETION
     utterance.onstart = () => {
       duckBackgroundMusic(true);
     };
     utterance.onend = () => {
       duckBackgroundMusic(false);
+      if (onSpeechEndCallback) onSpeechEndCallback();
     };
     utterance.onerror = () => {
       duckBackgroundMusic(false);
+      if (onSpeechEndCallback) onSpeechEndCallback();
     };
 
     window.speechSynthesis.speak(utterance);
@@ -179,6 +182,7 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
   } catch (err) {
     console.error("Error en locución perfeccionada:", err);
     playBallPingSound();
+    if (onSpeechEndCallback) setTimeout(onSpeechEndCallback, 1500);
     return `Letra ${letter}, ${number}`;
   }
 }
