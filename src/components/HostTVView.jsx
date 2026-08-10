@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { getLetterForNumber } from "../utils/bingoLogic";
 import { speakBallNumber, toggleBackgroundMusic, unlockTVAudio, getAvailableSpanishVoices } from "../utils/audio";
-import { Play, Pause, Tv, QrCode, Copy, Check, Volume2, Music, VolumeX, Mic, Sparkles } from "lucide-react";
+import { Play, Pause, Tv, QrCode, Copy, Check, Volume2, Music, VolumeX, Mic, Sparkles, Grid3X3, Users } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import BingoBallSphere from "./BingoBallSphere";
 import PlayersTVGrid from "./PlayersTVGrid";
+import MasterBingoBoard from "./MasterBingoBoard";
 
 export default function HostTVView({
   status = "playing",
@@ -31,8 +32,8 @@ export default function HostTVView({
   const [showLargeQR, setShowLargeQR] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [bgMusicEnabled, setBgMusicEnabled] = useState(false);
-  const [announcerSubtitle, setAnnouncerSubtitle] = useState("");
   const [isTvAudioActivated, setIsTvAudioActivated] = useState(false);
+  const [rightViewMode, setRightViewMode] = useState("board"); // "board" | "players"
 
   const [availableVoices, setAvailableVoices] = useState([]);
   const [selectedVoiceURI, setSelectedVoiceURI] = useState("");
@@ -77,7 +78,6 @@ export default function HostTVView({
     return pCount > topCount ? p : top;
   }, null);
 
-  // Calcular el "colero" (jugador con menos aciertos) para chanzas sanas
   const underdogPlayer = playersList.length > 1
     ? playersList.reduce((low, p) => {
         const pCount = (p.confirmedNumbers || []).length;
@@ -101,7 +101,7 @@ export default function HostTVView({
     if (currentBall && spokenBallRef.current !== currentBall) {
       spokenBallRef.current = currentBall;
       setIsSpeaking(true);
-      const text = speakBallNumber(
+      speakBallNumber(
         currentLetter,
         currentBall,
         selectedVoiceURI,
@@ -112,10 +112,8 @@ export default function HostTVView({
           setTimerCountdown(speedSec);
         }
       );
-      setAnnouncerSubtitle(text);
     } else if (!currentBall) {
       spokenBallRef.current = null;
-      setAnnouncerSubtitle("");
       setIsSpeaking(false);
     }
   }, [currentBall, currentLetter, selectedVoiceURI]);
@@ -146,7 +144,7 @@ export default function HostTVView({
   }, [autoDraw, status, availableNumbers.length, speedSec, isSpeaking, onDrawNextBall]);
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-4 sm:p-8 font-syne text-white flex flex-col min-h-screen justify-between bg-[#06070d]">
+    <div className="w-full max-w-[1600px] mx-auto p-4 sm:p-8 font-syne text-white flex flex-col min-h-screen justify-between bg-[#000000] select-none">
       
       {/* Header Widescreen Cyber Glass LA SALA */}
       <header className="flex flex-wrap justify-between items-center border-b border-white/10 pb-4 mb-6 gap-4 relative z-10">
@@ -173,9 +171,10 @@ export default function HostTVView({
             <div className="text-3xl font-black text-[#00ff88] tracking-widest font-space">{roomId}</div>
           </div>
 
-          <div className="flex items-center gap-3 glass-panel p-2 rounded-xl border border-white/20">
-            <div className="bg-white p-1 rounded-lg cursor-pointer" onClick={() => setShowLargeQR(true)}>
-              <QRCodeSVG value={joinUrl} size={45} level="M" />
+          {/* QR Compacto & Botón Agrar */}
+          <div className="flex items-center gap-3 bg-[#06070d] border border-white/20 p-2 rounded-xl">
+            <div className="bg-white p-1 rounded-lg">
+              <QRCodeSVG value={joinUrl} size={44} level="M" />
             </div>
             <div className="text-left hidden sm:block">
               <span className="text-[10px] text-[#00ff88] font-black block uppercase tracking-wider">
@@ -183,7 +182,7 @@ export default function HostTVView({
               </span>
               <button
                 onClick={() => setShowLargeQR(true)}
-                className="text-xs font-black text-white hover:underline flex items-center gap-1 mt-0.5"
+                className="text-xs font-black text-white hover:underline flex items-center gap-1 mt-0.5 cursor-pointer"
               >
                 <QrCode size={14} /> AGRANDAR QR
               </button>
@@ -192,7 +191,7 @@ export default function HostTVView({
 
           <button
             onClick={copyJoinLink}
-            className="glass-panel hover:border-[#00ff88] p-3 text-white transition-colors rounded-xl"
+            className="glass-panel hover:border-[#00ff88] p-3 text-white transition-colors rounded-xl cursor-pointer"
             title="Copiar Link"
           >
             {copiedLink ? <Check size={18} className="text-[#00ff88]" /> : <Copy size={18} />}
@@ -250,26 +249,26 @@ export default function HostTVView({
         </div>
       )}
 
-      {/* Main TV Layout Cyber Glass */}
+      {/* Main TV Arena Layout Cyber Glass */}
       <main className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch flex-1 relative z-10">
         
-        {/* Left Column: Balota Cantada & Timer */}
+        {/* Left Column: Esfera 3D Gigante y Controles del Host */}
         <section className="lg:col-span-5 glass-panel border border-white/20 p-8 rounded-2xl flex flex-col justify-between shadow-[0_0_30px_rgba(0,0,0,0.5)]">
           <div className="flex justify-between items-center border-b border-white/10 pb-3">
             <span className="text-xs font-black uppercase text-slate-200 tracking-widest flex items-center gap-2">
-              <Sparkles size={16} className="text-[#00ff88]" /> ÚLTIMA BALOTA
+              <Sparkles size={16} className="text-[#00ff88]" /> BALOTA EN TRANSMISIÓN
             </span>
             {currentLetter && (
               <span className="bg-[#00ff88] text-black font-black text-sm px-3 py-1 uppercase tracking-widest rounded-full">
-                LETRA {currentLetter}
+                COLUMNA {currentLetter}
               </span>
             )}
           </div>
 
-          {/* Temporizador */}
+          {/* Temporizador de Extracción */}
           <div className="bg-[#06070d] border border-white/15 p-3 my-4 rounded-xl text-center">
             <div className="flex items-center justify-between text-xs font-black text-[#00ff88] uppercase mb-1">
-              <span>TEMPORIZADOR AUTOMÁTICO</span>
+              <span>AUTOMÁTICO SINCRONIZADO</span>
               <span>{autoDraw ? `SIGUIENTE EN ${timerCountdown}s` : "PAUSADO"}</span>
             </div>
             <div className="w-full bg-white/10 h-3 rounded-full overflow-hidden">
@@ -280,25 +279,18 @@ export default function HostTVView({
             </div>
           </div>
 
-          <div className="my-auto text-center py-4">
+          {/* Escenario Central: Esfera 3D Gigante Maximizada */}
+          <div className="my-auto text-center py-6 flex flex-col items-center justify-center">
             {currentBall ? (
-              <div className="flex flex-col items-center justify-center space-y-4">
-                <BingoBallSphere letter={currentLetter} number={currentBall} size="lg" />
-
-                {announcerSubtitle && (
-                  <div className="mt-3 glass-panel border border-[#00ff88]/40 p-3 rounded-xl text-[#00ff88] font-black text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 max-w-md mx-auto shadow-[0_0_15px_rgba(0,255,136,0.2)]">
-                    <Volume2 size={18} className="text-white shrink-0" />
-                    <span>🎙️ LOCUTOR: "{announcerSubtitle}"</span>
-                  </div>
-                )}
-              </div>
+              <BingoBallSphere letter={currentLetter} number={currentBall} size="lg" />
             ) : (
-              <div className="py-16 text-slate-400 font-black text-3xl uppercase tracking-wider border-2 border-dashed border-white/20 rounded-2xl">
+              <div className="py-20 text-slate-400 font-black text-2xl uppercase tracking-wider border-2 border-dashed border-white/20 rounded-2xl w-full">
                 ESPERANDO BALOTA
               </div>
             )}
           </div>
 
+          {/* Panel de Controles del TV Host */}
           {isHost && (
             <div className="border-t border-white/10 pt-6 space-y-3">
               <div className="grid grid-cols-2 gap-2">
@@ -353,7 +345,7 @@ export default function HostTVView({
                   <select
                     value={selectedVoiceURI}
                     onChange={(e) => setSelectedVoiceURI(e.target.value)}
-                    className="w-full bg-[#151a2d] text-[#00ff88] font-black border border-white/20 text-xs px-2 py-1 uppercase rounded-lg focus:outline-none"
+                    className="w-full bg-[#151a2d] text-[#00ff88] font-black border border-white/20 text-xs px-2 py-1 uppercase rounded-lg focus:outline-none cursor-pointer"
                   >
                     {availableVoices.map((v) => {
                       const isNeural = v.name.toLowerCase().includes("google") || v.name.toLowerCase().includes("natural") || v.name.toLowerCase().includes("neural") || v.name.toLowerCase().includes("premium");
@@ -396,9 +388,39 @@ export default function HostTVView({
           )}
         </section>
 
-        {/* Right Column: Players Grid */}
-        <section className="lg:col-span-7 glass-panel border border-white/20 p-6 rounded-2xl flex flex-col justify-between shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-          <PlayersTVGrid players={players} drawnBalls={drawnBalls} maxPlayers={maxPlayers} />
+        {/* Right Column: Tablero General (1-75) & Jugadores en Vivo */}
+        <section className="lg:col-span-7 flex flex-col gap-4">
+          
+          {/* Selector de Pestañas Derecha (Tablero 75 vs Jugadores) */}
+          <div className="glass-panel p-2 rounded-xl flex items-center gap-2 border border-white/15">
+            <button
+              onClick={() => setRightViewMode("board")}
+              className={`flex-1 py-2.5 px-4 font-black text-xs uppercase rounded-lg flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                rightViewMode === "board"
+                  ? "bg-[#00ff88] text-black shadow-[0_0_15px_rgba(0,255,136,0.4)]"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Grid3X3 size={16} /> TABLERO 75 BALOTAS
+            </button>
+            <button
+              onClick={() => setRightViewMode("players")}
+              className={`flex-1 py-2.5 px-4 font-black text-xs uppercase rounded-lg flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                rightViewMode === "players"
+                  ? "bg-[#00f3ff] text-black shadow-[0_0_15px_rgba(0,243,255,0.4)]"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Users size={16} /> JUGADORES EN VIVO ({playersList.length})
+            </button>
+          </div>
+
+          {/* Contenido Dinámico Seleccionado */}
+          {rightViewMode === "board" ? (
+            <MasterBingoBoard drawnBalls={drawnBalls} currentBall={currentBall} />
+          ) : (
+            <PlayersTVGrid players={players} drawnBalls={drawnBalls} maxPlayers={maxPlayers} />
+          )}
         </section>
       </main>
 
@@ -413,7 +435,7 @@ export default function HostTVView({
             <p className="text-xl font-black text-[#00ff88] font-space mb-6">{roomId}</p>
             <button
               onClick={() => setShowLargeQR(false)}
-              className="w-full bg-[#00ff88] text-black font-black py-4 rounded-xl uppercase text-lg border border-black"
+              className="w-full bg-[#00ff88] text-black font-black py-4 rounded-xl uppercase text-lg border border-black cursor-pointer"
             >
               CERRAR
             </button>
