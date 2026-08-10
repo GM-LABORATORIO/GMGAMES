@@ -265,6 +265,7 @@ export default function GameRoom({ session, onLeaveRoom }) {
             onResetGame={handleResetGame}
             onUpdateVictoryMode={handleUpdateVictoryMode}
             roomId={roomId}
+            groupName={roomData.groupName || "FAMILIA REUNIDA"}
           />
         ) : (
           <div className="w-full flex-1 flex flex-col justify-center p-2 sm:p-4">

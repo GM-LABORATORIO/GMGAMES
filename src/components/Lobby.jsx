@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { createRoomProvider, joinRoomProvider } from "../utils/realtimeProvider";
 import { generateAvailableNumbers } from "../utils/bingoLogic";
 import PlayerJourney from "./PlayerJourney";
-import { Users, Play, LogIn, Tv, Gamepad2, ShieldCheck, TestTube, ArrowLeft } from "lucide-react";
+import { Users, Play, LogIn, Tv, Gamepad2, ShieldCheck, TestTube, ArrowLeft, UsersRound } from "lucide-react";
 
 export default function Lobby({ onJoinRoom, onBackToHub }) {
   const [playerName, setPlayerName] = useState("");
   const [roomCode, setRoomCode] = useState("");
+  const [groupName, setGroupName] = useState("FAMILIA REUNIDA");
   const [maxPlayers, setMaxPlayers] = useState(1);
   const [showPlayerJourney, setShowPlayerJourney] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -34,9 +35,11 @@ export default function Lobby({ onJoinRoom, onBackToHub }) {
       const newRoomId = generateRoomId();
       const hostBotId = "bot_host_tv";
       const initialAvailable = generateAvailableNumbers();
+      const cleanGroupName = groupName.trim().toUpperCase() || "FAMILIA REUNIDA";
 
       const newRoomData = {
         roomId: newRoomId,
+        groupName: cleanGroupName,
         status: "waiting",
         hostId: hostBotId,
         maxPlayers: Number(maxPlayers),
@@ -53,6 +56,7 @@ export default function Lobby({ onJoinRoom, onBackToHub }) {
 
       onJoinRoom({
         roomId: newRoomId,
+        groupName: cleanGroupName,
         playerId: hostBotId,
         isHost: true,
         playerName: "TV Locutor Bot",
@@ -154,7 +158,7 @@ export default function Lobby({ onJoinRoom, onBackToHub }) {
                 <Gamepad2 size={16} /> LA SALA // BINGO MULTIJUGADOR
               </div>
               <h1 className="text-2xl md:text-4xl font-black text-white uppercase leading-tight">
-                BINGO DE LA <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00ff88] via-[#00f3ff] to-[#a855f7]">FAMILIA LOAIZA SILLE</span>
+                BINGO MULTIJUGADOR <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00ff88] via-[#00f3ff] to-[#a855f7]">EN PANTALLA GRANDE</span>
               </h1>
             </div>
           </div>
@@ -193,25 +197,40 @@ export default function Lobby({ onJoinRoom, onBackToHub }) {
               </div>
 
               <p className="text-sm text-slate-300 font-bold mb-6 uppercase">
-                El TV proyecta el bombo de balotas en 4K con la voz del locutor. <span className="text-[#00ff88]">La familia escanea el QR con su celular para jugar.</span>
+                El TV proyecta el bombo de balotas en 4K con la voz del locutor. <span className="text-[#00ff88]">Tu grupo escanea el QR con su celular para jugar.</span>
               </p>
 
-              <div>
-                <label className="block text-xs font-black text-[#00ff88] uppercase tracking-wider mb-2">
-                  JUGADORES ESPERADOS:
-                </label>
-                <select
-                  value={maxPlayers}
-                  onChange={(e) => setMaxPlayers(Number(e.target.value))}
-                  className="w-full bg-[#06070d] text-[#00ff88] font-black border border-white/20 rounded-xl px-4 py-3 text-base uppercase focus:outline-none focus:border-[#00ff88]"
-                >
-                  <option value={1}>🧪 1 JUGADOR (MODO PRUEBAS)</option>
-                  <option value={2}>2 JUGADORES (DUELO FAMILIAR)</option>
-                  <option value={4}>4 JUGADORES (ESTÁNDAR)</option>
-                  <option value={6}>6 JUGADORES (MEDIO)</option>
-                  <option value={8}>8 JUGADORES (GRANDE)</option>
-                  <option value={10}>10 JUGADORES (MÁXIMO FAMILIAR)</option>
-                </select>
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-xs font-black text-[#00ff88] uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <UsersRound size={14} /> NOMBRE DE TU FAMILIA O PARCHE:
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full bg-[#06070d] border border-white/20 text-[#00ff88] font-black rounded-xl px-4 py-3 text-base uppercase tracking-wider focus:outline-none focus:border-[#00ff88]"
+                    placeholder="EJ: FAMILIA REUNIDA / LOS CRACKS"
+                    value={groupName}
+                    onChange={(e) => setGroupName(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-black text-[#00ff88] uppercase tracking-wider mb-2">
+                    JUGADORES ESPERADOS:
+                  </label>
+                  <select
+                    value={maxPlayers}
+                    onChange={(e) => setMaxPlayers(Number(e.target.value))}
+                    className="w-full bg-[#06070d] text-[#00ff88] font-black border border-white/20 rounded-xl px-4 py-3 text-base uppercase focus:outline-none focus:border-[#00ff88]"
+                  >
+                    <option value={1}>🧪 1 JUGADOR (MODO PRUEBAS)</option>
+                    <option value={2}>2 JUGADORES (DUELO)</option>
+                    <option value={4}>4 JUGADORES (ESTÁNDAR)</option>
+                    <option value={6}>6 JUGADORES (MEDIO)</option>
+                    <option value={8}>8 JUGADORES (GRANDE)</option>
+                    <option value={10}>10 JUGADORES (MÁXIMO)</option>
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -268,8 +287,8 @@ export default function Lobby({ onJoinRoom, onBackToHub }) {
           <span className="flex items-center gap-2 text-[#00ff88]">
             <ShieldCheck size={16} /> LA SALA // PLATAFORMA // JUEGOS // FAMILIA & AMIGOS
           </span>
-          <span className="text-slate-500">
-            EDICIÓN ESPECIAL FAMILIA LOAIZA SILLE
+          <span className="text-slate-500 uppercase">
+            EDICIÓN MULTIJUGADOR EN VIVO
           </span>
         </footer>
       </div>

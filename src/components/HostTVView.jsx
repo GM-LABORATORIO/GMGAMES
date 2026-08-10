@@ -6,18 +6,19 @@ import { QRCodeSVG } from "qrcode.react";
 import PlayersTVGrid from "./PlayersTVGrid";
 
 export default function HostTVView({
-  currentBall,
+  status = "playing",
+  currentBall = null,
   drawnBalls = [],
   availableNumbers = [],
   players = {},
-  maxPlayers = 1,
-  status = "waiting",
+  winner = null,
   victoryMode = "line",
   isHost = true,
   onDrawNextBall,
   onResetGame,
   onUpdateVictoryMode,
-  roomId = "BINGO-88"
+  roomId = "BINGO-88",
+  groupName = "FAMILIA REUNIDA"
 }) {
   const drawnSet = new Set(drawnBalls);
   const currentLetter = getLetterForNumber(currentBall);
@@ -156,7 +157,7 @@ export default function HostTVView({
               <span className="tracking-widest uppercase text-xs sm:text-sm">TRANSMISIÓN TV 4K</span>
             </div>
             <h1 className="text-xl md:text-2xl font-black tracking-tight text-white uppercase hidden sm:block">
-              BINGO DE LA <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00ff88] to-[#00f3ff]">FAMILIA LOAIZA SILLE</span>
+              BINGO DE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00ff88] via-[#00f3ff] to-[#a855f7]">{groupName}</span>
             </h1>
           </div>
         </div>

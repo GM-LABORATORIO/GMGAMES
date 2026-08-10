@@ -5,9 +5,13 @@ export default function GameHub({ onSelectBingo }) {
   const [inCatalog, setInCatalog] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#000000] text-white font-syne p-6 md:p-12 flex flex-col justify-between select-none relative overflow-hidden">
+    <div className="min-h-screen bg-[#06070d] text-white font-syne p-6 md:p-12 flex flex-col justify-between select-none relative overflow-hidden">
       
-      {/* Background Decorativo - Se muestra únicamente en el Catálogo */}
+      {/* Luz Ambiental Nebulosa Sutil en Esquinas (Vida Orgánica al Fondo Negro) */}
+      <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#00ff88]/10 rounded-full blur-[120px] pointer-events-none animate-pulse" />
+      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#a855f7]/10 rounded-full blur-[120px] pointer-events-none animate-pulse" />
+
+      {/* Background Decorativo de Puntos en Catálogo */}
       {inCatalog && (
         <div 
           className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#00ff88_1px,transparent_1px)] [background-size:32px_32px]" 
@@ -15,15 +19,15 @@ export default function GameHub({ onSelectBingo }) {
       )}
 
       {!inCatalog ? (
-        /* HERO INTRO OFICIAL DE LA MARCA: LA SALA (FONDO NEGRO PURO & LOGO ESTÁTICO) */
+        /* HERO INTRO OFICIAL DE LA MARCA: LA SALA (DISEÑO SENIOR ELEGANTE) */
         <div className="max-w-4xl w-full mx-auto my-auto text-center relative z-10 space-y-8 flex flex-col items-center">
           
-          {/* Logo Oficial LA SALA - Imagen Estática Integrada al Fondo Negro */}
+          {/* Logo Oficial LA SALA - Integración Absoluta al Fondo */}
           <div className="w-full">
             <img
               src="/lasala_logo.jpg"
               alt="LA SALA - Plataforma // Juegos // Familia & Amigos"
-              className="w-80 sm:w-[480px] md:w-[560px] mx-auto h-auto object-contain pointer-events-none select-none block"
+              className="w-72 sm:w-[460px] md:w-[540px] mx-auto h-auto object-contain pointer-events-none select-none block"
             />
           </div>
 
@@ -31,11 +35,12 @@ export default function GameHub({ onSelectBingo }) {
             Donde la familia y los amigos se unen a competir en <span className="text-[#00ff88]">pantalla grande y celular</span>.
           </p>
 
+          {/* Botón Ultra-Elegante en 1 Sola Línea con Estilo Pill Pro */}
           <button
             onClick={() => setInCatalog(true)}
-            className="bg-gradient-to-r from-[#00ff88] via-[#00f3ff] to-[#a855f7] hover:opacity-95 text-black font-black text-2xl sm:text-3xl py-6 px-12 border border-white/40 uppercase tracking-wider active:scale-95 transition-all flex items-center justify-center gap-4 rounded-2xl shadow-[0_0_40px_rgba(0,255,136,0.5)] animate-pulse cursor-pointer mt-4"
+            className="bg-gradient-to-r from-[#00ff88] via-[#00f3ff] to-[#a855f7] hover:brightness-110 text-black font-black text-base sm:text-xl py-4 px-10 border border-white/50 uppercase tracking-wider rounded-full shadow-[0_0_30px_rgba(0,255,136,0.4)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer whitespace-nowrap mt-4"
           >
-            <Play size={32} fill="currentColor" /> ENTRAR AL CATÁLOGO DE JUEGOS
+            <Play size={24} fill="currentColor" /> ENTRAR AL CATÁLOGO DE JUEGOS
           </button>
         </div>
       ) : (
@@ -182,8 +187,8 @@ export default function GameHub({ onSelectBingo }) {
         <span className="flex items-center gap-2 text-[#00ff88]">
           <ShieldCheck size={16} /> LA SALA // PLATAFORMA // JUEGOS // FAMILIA & AMIGOS
         </span>
-        <span className="text-slate-500">
-          EDICIÓN ESPECIAL FAMILIA LOAIZA SILLE
+        <span className="text-slate-500 uppercase">
+          EDICIÓN MULTIJUGADOR EN VIVO
         </span>
       </footer>
     </div>
