@@ -146,7 +146,7 @@ export default function HostTVView({
       <header className="flex flex-wrap justify-between items-center border-b border-white/10 pb-4 mb-6 gap-4 relative z-10">
         <div className="flex items-center gap-4">
           <img
-            src="/lasala_logo.png"
+            src="/lasala_logo.jpg"
             alt="LA SALA Logo"
             className="w-24 sm:w-32 h-auto object-contain drop-shadow-[0_0_15px_rgba(255,204,0,0.4)]"
           />

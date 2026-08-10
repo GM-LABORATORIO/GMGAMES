@@ -17,7 +17,7 @@ export default function GameHub({ onSelectBingo }) {
           {/* Logo Oficial LA SALA */}
           <div className="relative group">
             <img
-              src="/lasala_logo.png"
+              src="/lasala_logo.jpg"
               alt="LA SALA - Plataforma // Juegos // Familia & Amigos"
               className="w-72 sm:w-96 md:w-[480px] mx-auto h-auto object-contain drop-shadow-[0_0_35px_rgba(255,204,0,0.5)] transition-transform duration-300 group-hover:scale-105"
             />
@@ -42,7 +42,7 @@ export default function GameHub({ onSelectBingo }) {
           <header className="flex flex-wrap justify-between items-center border-b border-white/10 pb-6 gap-6">
             <div className="flex items-center gap-4">
               <img
-                src="/lasala_logo.png"
+                src="/lasala_logo.jpg"
                 alt="LA SALA Logo"
                 className="w-24 sm:w-32 h-auto object-contain drop-shadow-[0_0_15px_rgba(255,204,0,0.4)]"
               />

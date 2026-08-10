@@ -139,7 +139,7 @@ export default function Lobby({ onJoinRoom, onBackToHub }) {
         <header className="flex flex-wrap justify-between items-center border-b border-white/10 pb-6 gap-6">
           <div className="flex items-center gap-4">
             <img
-              src="/lasala_logo.png"
+              src="/lasala_logo.jpg"
               alt="LA SALA Logo"
               className="w-28 sm:w-36 h-auto object-contain drop-shadow-[0_0_20px_rgba(255,204,0,0.4)]"
             />
