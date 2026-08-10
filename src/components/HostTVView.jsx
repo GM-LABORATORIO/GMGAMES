@@ -51,11 +51,14 @@ export default function HostTVView({
     }
   }, []);
 
+  const [currentTrack, setCurrentTrack] = useState("track1");
+
   const handleActivateAudio = () => {
     unlockTVAudio();
     setIsTvAudioActivated(true);
-    toggleBackgroundMusic(true);
+    toggleBackgroundMusic(true, "track1");
     setBgMusicEnabled(true);
+    setCurrentTrack("track1");
   };
 
   const copyJoinLink = () => {
@@ -321,17 +324,26 @@ export default function HostTVView({
                 <div className="bg-[#06070d] border border-white/15 p-2 rounded-xl flex items-center justify-center">
                   <button
                     onClick={() => {
-                      const nextState = !bgMusicEnabled;
-                      setBgMusicEnabled(nextState);
-                      toggleBackgroundMusic(nextState);
+                      let nextTrack = "track1";
+                      if (currentTrack === "track1") nextTrack = "track2";
+                      else if (currentTrack === "track2") nextTrack = "off";
+                      else nextTrack = "track1";
+
+                      setCurrentTrack(nextTrack);
+                      toggleBackgroundMusic(nextTrack !== "off", nextTrack);
                     }}
                     className={`w-full h-full font-black text-[10px] py-1 px-2 border rounded-lg uppercase tracking-wider flex items-center justify-center gap-1 transition-all cursor-pointer ${
-                      bgMusicEnabled
+                      currentTrack !== "off"
                         ? "bg-[#00ff88] text-black border-black shadow-[0_0_15px_rgba(0,255,136,0.4)]"
                         : "bg-white/10 text-slate-400 border-white/20"
                     }`}
                   >
-                    <Music size={12} /> {bgMusicEnabled ? "MÚSICA ON" : "MÚSICA OFF"}
+                    <Music size={12} />
+                    {currentTrack === "track1"
+                      ? "🕺 ARCADE FEVER"
+                      : currentTrack === "track2"
+                      ? "🎷 LOFI CASINO"
+                      : "🔇 MÚSICA OFF"}
                   </button>
                 </div>
               </div>
