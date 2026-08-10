@@ -130,8 +130,14 @@ export default function Lobby({ onJoinRoom, onBackToHub }) {
   return (
     <div className="min-h-screen bg-[#06070d] text-white font-syne p-6 md:p-12 flex flex-col justify-between select-none relative overflow-hidden">
       
-      {/* Background sutil cyber glow */}
-      <div className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#00ff88_1px,transparent_1px)] [background-size:32px_32px]" />
+      {/* Background sutil cyber glow con máscara radial */}
+      <div 
+        className="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#00ff88_1px,transparent_1px)] [background-size:32px_32px]" 
+        style={{
+          maskImage: "radial-gradient(circle at center, transparent 10%, black 70%)",
+          WebkitMaskImage: "radial-gradient(circle at center, transparent 10%, black 70%)"
+        }}
+      />
 
       <div className="max-w-7xl w-full mx-auto relative z-10 space-y-8">
         
@@ -141,7 +147,7 @@ export default function Lobby({ onJoinRoom, onBackToHub }) {
             <img
               src="/lasala_logo.jpg"
               alt="LA SALA Logo"
-              className="w-28 sm:w-36 h-auto object-contain drop-shadow-[0_0_20px_rgba(255,204,0,0.4)]"
+              className="w-28 sm:w-36 h-auto object-contain mix-blend-screen"
             />
             <div>
               <div className="inline-flex items-center gap-2 bg-[#00ff88] text-black font-black px-3 py-1 text-xs tracking-widest uppercase rounded-full mb-1 shadow-[0_0_15px_rgba(0,255,136,0.3)]">

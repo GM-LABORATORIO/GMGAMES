@@ -148,7 +148,7 @@ export default function HostTVView({
           <img
             src="/lasala_logo.jpg"
             alt="LA SALA Logo"
-            className="w-24 sm:w-32 h-auto object-contain drop-shadow-[0_0_15px_rgba(255,204,0,0.4)]"
+            className="w-24 sm:w-32 h-auto object-contain mix-blend-screen"
           />
           <div className="flex items-center gap-3">
             <div className="bg-[#00ff88] text-black p-2 font-black rounded-xl flex items-center gap-2 shadow-[0_0_15px_rgba(0,255,136,0.3)]">

@@ -7,19 +7,25 @@ export default function GameHub({ onSelectBingo }) {
   return (
     <div className="min-h-screen bg-[#06070d] text-white font-syne p-6 md:p-12 flex flex-col justify-between select-none relative overflow-hidden">
       
-      {/* Background Decorativo Cyber Glow */}
-      <div className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(#00ff88_1px,transparent_1px)] [background-size:32px_32px]" />
+      {/* Background Decorativo Cyber Glow con Máscara Radial para Limpiar el Centro de Puntos */}
+      <div 
+        className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(#00ff88_1px,transparent_1px)] [background-size:32px_32px]" 
+        style={{
+          maskImage: "radial-gradient(circle at center, transparent 10%, black 70%)",
+          WebkitMaskImage: "radial-gradient(circle at center, transparent 10%, black 70%)"
+        }}
+      />
 
       {!inCatalog ? (
         /* HERO INTRO OFICIAL DE LA MARCA: LA SALA */
         <div className="max-w-4xl w-full mx-auto my-auto text-center relative z-10 space-y-8 animate-fadeIn flex flex-col items-center">
           
-          {/* Logo Oficial LA SALA */}
+          {/* Logo Oficial LA SALA - Integración Profesional Senior con mix-blend-screen */}
           <div className="relative group">
             <img
               src="/lasala_logo.jpg"
               alt="LA SALA - Plataforma // Juegos // Familia & Amigos"
-              className="w-72 sm:w-96 md:w-[480px] mx-auto h-auto object-contain drop-shadow-[0_0_35px_rgba(255,204,0,0.5)] transition-transform duration-300 group-hover:scale-105"
+              className="w-72 sm:w-96 md:w-[500px] mx-auto h-auto object-contain mix-blend-screen transition-transform duration-300 group-hover:scale-105"
             />
           </div>
 
@@ -44,7 +50,7 @@ export default function GameHub({ onSelectBingo }) {
               <img
                 src="/lasala_logo.jpg"
                 alt="LA SALA Logo"
-                className="w-24 sm:w-32 h-auto object-contain drop-shadow-[0_0_15px_rgba(255,204,0,0.4)]"
+                className="w-24 sm:w-32 h-auto object-contain mix-blend-screen"
               />
               <div>
                 <div className="inline-flex items-center gap-2 bg-[#00ff88] text-black font-black px-3 py-1 text-xs tracking-widest uppercase rounded-full mb-1">
