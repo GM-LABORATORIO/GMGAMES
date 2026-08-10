@@ -11,49 +11,54 @@ export default function GameHub({ onSelectBingo }) {
       <div className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(#00ff88_1px,transparent_1px)] [background-size:32px_32px]" />
 
       {!inCatalog ? (
-        /* HERO INTRO DE MARCA: JUNTOS JUGAMOS ULTRA MODERNO */
-        <div className="max-w-4xl w-full mx-auto my-auto text-center relative z-10 space-y-8 animate-fadeIn">
+        /* HERO INTRO OFICIAL DE LA MARCA: LA SALA */
+        <div className="max-w-4xl w-full mx-auto my-auto text-center relative z-10 space-y-8 animate-fadeIn flex flex-col items-center">
           
-          <div className="inline-flex items-center gap-2 bg-[#00ff88] text-black font-black px-4 py-1.5 text-xs sm:text-sm tracking-widest uppercase rounded-full shadow-[0_0_20px_rgba(0,255,136,0.4)]">
-            <Sparkles size={18} /> PLATAFORMA FAMILIAR CYBER GAMING
+          {/* Logo Oficial LA SALA */}
+          <div className="relative group">
+            <img
+              src="/lasala_logo.png"
+              alt="LA SALA - Plataforma // Juegos // Familia & Amigos"
+              className="w-72 sm:w-96 md:w-[480px] mx-auto h-auto object-contain drop-shadow-[0_0_35px_rgba(255,204,0,0.5)] transition-transform duration-300 group-hover:scale-105"
+            />
           </div>
 
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight text-white uppercase leading-none drop-shadow-[0_4px_30px_rgba(0,255,136,0.3)]">
-            JUNTOS <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00ff88] via-[#00f3ff] to-[#a855f7]">
-              JUGAMOS
-            </span>
-          </h1>
-
-          <p className="text-base sm:text-xl text-slate-300 font-bold max-w-2xl mx-auto uppercase tracking-wide">
+          <p className="text-base sm:text-2xl text-slate-200 font-black max-w-2xl mx-auto uppercase tracking-wide">
             Donde la familia y los amigos se unen a competir en <span className="text-[#00ff88]">pantalla grande y celular</span>.
           </p>
 
           <button
             onClick={() => setInCatalog(true)}
-            className="bg-gradient-to-r from-[#00ff88] to-[#00f3ff] hover:opacity-95 text-black font-black text-2xl sm:text-3xl py-6 px-10 border border-white/40 uppercase tracking-wider active:scale-95 transition-all flex items-center justify-center gap-4 mx-auto rounded-2xl shadow-[0_0_35px_rgba(0,255,136,0.4)] animate-pulse cursor-pointer"
+            className="bg-gradient-to-r from-[#00ff88] via-[#00f3ff] to-[#a855f7] hover:opacity-95 text-black font-black text-2xl sm:text-3xl py-6 px-12 border border-white/40 uppercase tracking-wider active:scale-95 transition-all flex items-center justify-center gap-4 rounded-2xl shadow-[0_0_40px_rgba(0,255,136,0.5)] animate-pulse cursor-pointer mt-4"
           >
-            <Play size={32} fill="currentColor" /> ENTRAR AL CATÁLOGOS DE JUEGOS
+            <Play size={32} fill="currentColor" /> ENTRAR AL CATÁLOGO DE JUEGOS
           </button>
         </div>
       ) : (
-        /* PANEL DE CATÁLOGO MULTIJUEGOS CYBER GLASS */
+        /* PANEL DE CATÁLOGO MULTIJUEGOS LA SALA */
         <div className="max-w-7xl w-full mx-auto relative z-10 space-y-8 animate-fadeIn">
           
-          {/* Header de la Marca */}
+          {/* Header de LA SALA */}
           <header className="flex flex-wrap justify-between items-center border-b border-white/10 pb-6 gap-6">
-            <div>
-              <div className="inline-flex items-center gap-2 bg-[#00ff88] text-black font-black px-3 py-1 text-xs tracking-widest uppercase rounded-full mb-2">
-                <Gamepad2 size={16} /> JUNTOS JUGAMOS // CATÁLOGO OFICIAL
+            <div className="flex items-center gap-4">
+              <img
+                src="/lasala_logo.png"
+                alt="LA SALA Logo"
+                className="w-24 sm:w-32 h-auto object-contain drop-shadow-[0_0_15px_rgba(255,204,0,0.4)]"
+              />
+              <div>
+                <div className="inline-flex items-center gap-2 bg-[#00ff88] text-black font-black px-3 py-1 text-xs tracking-widest uppercase rounded-full mb-1">
+                  <Gamepad2 size={16} /> LA SALA // CATÁLOGO OFICIAL
+                </div>
+                <h1 className="text-2xl md:text-4xl font-black text-white uppercase">
+                  PANEL DE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00ff88] to-[#00f3ff]">JUEGOS FAMILIARES</span>
+                </h1>
               </div>
-              <h1 className="text-3xl md:text-5xl font-black text-white uppercase">
-                PANEL DE <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00ff88] to-[#00f3ff]">JUEGOS FAMILIARES</span>
-              </h1>
             </div>
 
             <button
               onClick={() => setInCatalog(false)}
-              className="glass-panel hover:border-[#00ff88] px-5 py-2.5 text-xs font-black text-white uppercase tracking-wider rounded-xl transition-all"
+              className="glass-panel hover:border-[#00ff88] px-5 py-2.5 text-xs font-black text-white uppercase tracking-wider rounded-xl transition-all cursor-pointer"
             >
               VOLVER A LA INTRO
             </button>
@@ -168,10 +173,10 @@ export default function GameHub({ onSelectBingo }) {
         </div>
       )}
 
-      {/* Footer General de la Marca */}
+      {/* Footer General de LA SALA */}
       <footer className="border-t border-white/10 pt-4 flex flex-wrap justify-between items-center text-xs text-slate-400 font-bold uppercase tracking-widest gap-4 relative z-10">
         <span className="flex items-center gap-2 text-[#00ff88]">
-          <ShieldCheck size={16} /> JUNTOS JUGAMOS // PLATAFORMA FAMILIAR CYBER GAMING
+          <ShieldCheck size={16} /> LA SALA // PLATAFORMA // JUEGOS // FAMILIA & AMIGOS
         </span>
         <span className="text-slate-500">
           EDICIÓN ESPECIAL FAMILIA LOAIZA SILLE

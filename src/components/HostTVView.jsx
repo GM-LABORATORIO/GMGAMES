@@ -142,16 +142,23 @@ export default function HostTVView({
   return (
     <div className="w-full max-w-7xl mx-auto p-4 sm:p-8 font-syne text-white flex flex-col min-h-screen justify-between bg-[#06070d]">
       
-      {/* Header Widescreen Cyber Glass */}
+      {/* Header Widescreen Cyber Glass LA SALA */}
       <header className="flex flex-wrap justify-between items-center border-b border-white/10 pb-4 mb-6 gap-4 relative z-10">
-        <div className="flex items-center gap-3">
-          <div className="bg-[#00ff88] text-black p-2 font-black rounded-xl flex items-center gap-2 shadow-[0_0_15px_rgba(0,255,136,0.3)]">
-            <Tv size={24} />
-            <span className="tracking-widest uppercase text-sm">TRANSMISIÓN TV 4K</span>
+        <div className="flex items-center gap-4">
+          <img
+            src="/lasala_logo.png"
+            alt="LA SALA Logo"
+            className="w-24 sm:w-32 h-auto object-contain drop-shadow-[0_0_15px_rgba(255,204,0,0.4)]"
+          />
+          <div className="flex items-center gap-3">
+            <div className="bg-[#00ff88] text-black p-2 font-black rounded-xl flex items-center gap-2 shadow-[0_0_15px_rgba(0,255,136,0.3)]">
+              <Tv size={22} />
+              <span className="tracking-widest uppercase text-xs sm:text-sm">TRANSMISIÓN TV 4K</span>
+            </div>
+            <h1 className="text-xl md:text-2xl font-black tracking-tight text-white uppercase hidden sm:block">
+              BINGO DE LA <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00ff88] to-[#00f3ff]">FAMILIA LOAIZA SILLE</span>
+            </h1>
           </div>
-          <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white uppercase">
-            BINGO DE LA <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00ff88] to-[#00f3ff]">FAMILIA LOAIZA SILLE</span>
-          </h1>
         </div>
 
         <div className="flex items-center gap-4">

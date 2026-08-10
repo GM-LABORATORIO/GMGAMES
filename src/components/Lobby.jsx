@@ -135,18 +135,22 @@ export default function Lobby({ onJoinRoom, onBackToHub }) {
 
       <div className="max-w-7xl w-full mx-auto relative z-10 space-y-8">
         
-        {/* Header Elegante Cyber Glass */}
+        {/* Header Elegante LA SALA */}
         <header className="flex flex-wrap justify-between items-center border-b border-white/10 pb-6 gap-6">
-          <div>
-            <div className="inline-flex items-center gap-2 bg-[#00ff88] text-black font-black px-3 py-1 text-xs tracking-widest uppercase rounded-full mb-3 shadow-[0_0_15px_rgba(0,255,136,0.3)]">
-              <Gamepad2 size={16} /> JUNTOS JUGAMOS // BINGO FAMILIAR
+          <div className="flex items-center gap-4">
+            <img
+              src="/lasala_logo.png"
+              alt="LA SALA Logo"
+              className="w-28 sm:w-36 h-auto object-contain drop-shadow-[0_0_20px_rgba(255,204,0,0.4)]"
+            />
+            <div>
+              <div className="inline-flex items-center gap-2 bg-[#00ff88] text-black font-black px-3 py-1 text-xs tracking-widest uppercase rounded-full mb-1 shadow-[0_0_15px_rgba(0,255,136,0.3)]">
+                <Gamepad2 size={16} /> LA SALA // BINGO MULTIJUGADOR
+              </div>
+              <h1 className="text-2xl md:text-4xl font-black text-white uppercase leading-tight">
+                BINGO DE LA <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00ff88] via-[#00f3ff] to-[#a855f7]">FAMILIA LOAIZA SILLE</span>
+              </h1>
             </div>
-            <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white uppercase leading-tight">
-              BINGO DE LA <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00ff88] via-[#00f3ff] to-[#a855f7]">
-                FAMILIA LOAIZA SILLE
-              </span>
-            </h1>
           </div>
 
           <div className="flex items-center gap-4">
@@ -155,7 +159,7 @@ export default function Lobby({ onJoinRoom, onBackToHub }) {
                 onClick={onBackToHub}
                 className="glass-panel hover:border-[#00ff88] px-5 py-2.5 text-xs font-black text-white uppercase tracking-wider rounded-xl transition-all flex items-center gap-2 cursor-pointer"
               >
-                <ArrowLeft size={16} /> VOLVER A JUNTOS JUGAMOS
+                <ArrowLeft size={16} /> CATÁLOGO LA SALA
               </button>
             )}
           </div>
@@ -253,10 +257,10 @@ export default function Lobby({ onJoinRoom, onBackToHub }) {
           </div>
         </div>
 
-        {/* Footer de Marca */}
+        {/* Footer de Marca LA SALA */}
         <footer className="border-t border-white/10 pt-4 flex flex-wrap justify-between items-center text-xs text-slate-400 font-bold uppercase tracking-widest gap-4">
           <span className="flex items-center gap-2 text-[#00ff88]">
-            <ShieldCheck size={16} /> JUNTOS JUGAMOS // BINGO MULTIJUGADOR FAMILIAR
+            <ShieldCheck size={16} /> LA SALA // PLATAFORMA // JUEGOS // FAMILIA & AMIGOS
           </span>
           <span className="text-slate-500">
             EDICIÓN ESPECIAL FAMILIA LOAIZA SILLE
