@@ -97,6 +97,8 @@ export default function HostTVView({
     : null;
 
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const spokenBallRef = useRef(null);
+
   const handleDrawNextBall = () => {
     setIsSpeaking(true);
     setTimerCountdown(speedSec);
