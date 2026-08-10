@@ -71,13 +71,26 @@ export default function HostTVView({
     return pCount > topCount ? p : top;
   }, null);
 
+  // Calcular el "colero" (jugador con menos aciertos) para chanzas sanas
+  const underdogPlayer = playersList.length > 1
+    ? playersList.reduce((low, p) => {
+        const pCount = (p.confirmedNumbers || []).length;
+        const lowCount = (low?.confirmedNumbers || []).length;
+        return pCount < lowCount ? p : low;
+      }, null)
+    : null;
+
   const leaderInfo = leaderPlayer && (leaderPlayer.confirmedNumbers || []).length > 0
     ? { name: leaderPlayer.name, hits: leaderPlayer.confirmedNumbers.length, color: leaderPlayer.playerColor }
     : null;
 
+  const underdogInfo = underdogPlayer && leaderPlayer && underdogPlayer.id !== leaderPlayer.id
+    ? { name: underdogPlayer.name, hits: (underdogPlayer.confirmedNumbers || []).length }
+    : null;
+
   useEffect(() => {
     if (currentBall) {
-      const text = speakBallNumber(currentLetter, currentBall, selectedVoiceURI, leaderInfo);
+      const text = speakBallNumber(currentLetter, currentBall, selectedVoiceURI, leaderInfo, underdogInfo);
       setAnnouncerSubtitle(text);
     } else {
       setAnnouncerSubtitle("");

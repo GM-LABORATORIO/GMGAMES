@@ -1,5 +1,6 @@
 /**
- * Módulo de Audio con Diccionario Fonético de Alta Claridad y Selección de Voces Neurales
+ * Módulo de Audio con Diccionario Fonético de Alta Claridad, Selección de Voces Neurales
+ * y Motor de Locutor Humorístico Familiar de Alto Repertorio.
  */
 
 let ambientAudioCtx = null;
@@ -27,28 +28,51 @@ const NUMBER_WORDS = {
   71: "setenta y uno", 72: "setenta y dos", 73: "setenta y tres", 74: "setenta y cuatro", 75: "setenta y cinco"
 };
 
-const SHORT_NUMBER_JOKES = {
-  1: "¡Arrancamos con toda!",
-  7: "¡Número de la suerte!",
-  13: "¡Sin miedo!",
-  15: "¡La niña bonita!",
-  22: "¡Los dos patitos!",
+// Dichos populares tradicionales de Bingo
+const TRADITIONAL_BINGO_JOKES = {
+  1: "¡Arrancamos con el solterón y sin compromiso!",
+  5: "¡Brincote de cinco!",
+  7: "¡El número de la suerte!",
+  11: "¡El par de muletas!",
+  13: "¡Sin miedo al trece!",
+  15: "¡La quinceañera, la niña bonita!",
+  18: "¡Mayoría de edad!",
+  22: "¡Los dos patitos nadando!",
+  25: "¡Bodas de plata!",
   33: "¡La edad de Cristo!",
-  48: "¡Está caliente!",
+  44: "¡Los dos jorobados paseando!",
+  50: "¡Las bodas de oro pura elegancia!",
   69: "¡El favorito de la casa!",
-  75: "¡La última balota!"
+  75: "¡La última balota de la fiesta!"
 };
 
-const HUMOROUS_COMMENTS = [
-  "¡Revisen bien el cartón!",
-  "¡Atentos en la sala!",
-  "¡Se viene el bingo!",
-  "¡No se dejen coger la ventaja!"
+// Frases de Presión al Líder de la Partida
+const LEADER_PRESSURE_PHRASES = [
+  (name) => `¡Alguien que le ponga freno a ${name} que viene volando!`,
+  (name) => `¡Ojo todos en la mesa que ${name} ya siente el olor del Bingo!`,
+  (name) => `¡${name} va comandando la tabla con mano firme!`,
+  (name) => `¡Alerta en la sala, ${name} está acariciando la victoria!`
 ];
 
-/**
- * Desbloquea el contexto de audio en Smart TVs y celulares
- */
+// Chanzas Sanas y Cariñosas para el que va más atrás ("El Colero")
+const UNDERDOG_TEASING_PHRASES = [
+  (name) => `¡Un aplauso de ánimo para ${name}, que está guardando la suerte para el final!`,
+  (name) => `¡Tranquilo ${name}, acuerdate que los últimos serán los primeros!`,
+  (name) => `¡${name} está usando la estrategia del cazador sigiloso!`,
+  (name) => `¡${name}, despiértame a los números de la suerte que se quedaron dormidos!`,
+  (name) => `¡Mucha fe ${name}, que las mejores cosas se hacen esperar!`
+];
+
+// Comentarios Cómicos Generales de Partida
+const GENERAL_HUMOR_PHRASES = [
+  "¡Preparen los dedos que esa casilla estaba caliente!",
+  "¡Revisen bien esa tabla que este número vale oro!",
+  "¡El bombo giró y la suerte ya decidió!",
+  "¡El que no marca ahora se queda para la próxima!",
+  "¡Soplen el cartón a ver si llegan los números buenos!",
+  "¡Concentración total en la mesa familiar!"
+];
+
 export function unlockTVAudio() {
   try {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -76,15 +100,11 @@ export function unlockTVAudio() {
   }
 }
 
-/**
- * Obtiene la lista ordenada de voces en español disponibles, priorizando voces Neurales / HD
- */
 export function getAvailableSpanishVoices() {
   if (!("speechSynthesis" in window)) return [];
   const voices = window.speechSynthesis.getVoices();
   const esVoices = voices.filter((v) => v.lang.startsWith("es") || v.lang.includes("es-"));
 
-  // Priorizar voces Google, Natural, Neural y Apple en la parte superior
   return esVoices.sort((a, b) => {
     const aIsNeural = a.name.toLowerCase().includes("google") || a.name.toLowerCase().includes("natural") || a.name.toLowerCase().includes("neural") || a.name.toLowerCase().includes("premium");
     const bIsNeural = b.name.toLowerCase().includes("google") || b.name.toLowerCase().includes("natural") || b.name.toLowerCase().includes("neural") || b.name.toLowerCase().includes("premium");
@@ -95,9 +115,9 @@ export function getAvailableSpanishVoices() {
 }
 
 /**
- * Locución con Pronunciación y Dicción Perfeccionada
+ * Locución Perfeccionada con Humor Inteligente y Repertorio Familiar
  */
-export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInfo = null) {
+export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInfo = null, underdogInfo = null) {
   if (!letter || !number) return "";
 
   if (!isAudioUnlocked) {
@@ -112,33 +132,38 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
   try {
     window.speechSynthesis.cancel();
 
-    // Diccionario fonético estricto para letras
     const fonetica = { B: 'Bé', I: 'I', N: 'Éne', G: 'Ge', O: 'O' };
     const letterPhonetic = fonetica[letter] || letter;
 
     const numVal = Number(number);
     const numWord = NUMBER_WORDS[numVal] || numVal.toString();
 
-    // Texto de locución perfecto: "Letra Bé, número 22."
     let textToSpeak = `Letra ${letterPhonetic}, número ${numWord}.`;
 
-    // 1. Dichos especiales por número famoso
-    if (SHORT_NUMBER_JOKES[numVal]) {
-      textToSpeak += ` ${SHORT_NUMBER_JOKES[numVal]}`;
+    const randChoice = Math.random();
+
+    // 1. Dichos tradicionales especiales por número (100% garantizados para números famosos)
+    if (TRADITIONAL_BINGO_JOKES[numVal]) {
+      textToSpeak += ` ${TRADITIONAL_BINGO_JOKES[numVal]}`;
     } 
-    // 2. Mención de PRESIÓN AL LÍDER (15% de probabilidad)
-    else if (leaderInfo && leaderInfo.name && leaderInfo.hits >= 3 && Math.random() < 0.15) {
-      textToSpeak += ` ¡Ojo con ${leaderInfo.name}!`;
+    // 2. Chanza sana para el Colero (20% probabilidad si hay colero)
+    else if (underdogInfo && underdogInfo.name && randChoice < 0.20) {
+      const getUnderdogPhrase = UNDERDOG_TEASING_PHRASES[Math.floor(Math.random() * UNDERDOG_TEASING_PHRASES.length)];
+      textToSpeak += ` ${getUnderdogPhrase(underdogInfo.name)}`;
+    }
+    // 3. Mención de Presión al Líder (20% probabilidad)
+    else if (leaderInfo && leaderInfo.name && leaderInfo.hits >= 3 && randChoice < 0.40) {
+      const getLeaderPhrase = LEADER_PRESSURE_PHRASES[Math.floor(Math.random() * LEADER_PRESSURE_PHRASES.length)];
+      textToSpeak += ` ${getLeaderPhrase(leaderInfo.name)}`;
     } 
-    // 3. Comentario humorístico general ocasional (15%)
-    else if (Math.random() < 0.15) {
-      const randomShort = HUMOROUS_COMMENTS[Math.floor(Math.random() * HUMOROUS_COMMENTS.length)];
+    // 4. Comentario humorístico general ocasional (20% probabilidad)
+    else if (randChoice < 0.60) {
+      const randomShort = GENERAL_HUMOR_PHRASES[Math.floor(Math.random() * GENERAL_HUMOR_PHRASES.length)];
       textToSpeak += ` ${randomShort}`;
     }
 
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
 
-    // Asignar la voz elegida por el usuario o forzar idioma español (es-ES / es-US / es-MX)
     const voices = window.speechSynthesis.getVoices();
     if (selectedVoiceURI) {
       const chosenVoice = voices.find((v) => v.voiceURI === selectedVoiceURI);
@@ -149,8 +174,8 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
     }
 
     utterance.lang = utterance.voice?.lang || "es-ES";
-    utterance.rate = 0.95;  // Ritmo pausado y modulado para articulación 100% clara
-    utterance.pitch = 1.0;  // Tono de voz humano natural de alta dicción
+    utterance.rate = 0.95;
+    utterance.pitch = 1.0;
 
     window.speechSynthesis.speak(utterance);
     return textToSpeak;
@@ -161,9 +186,6 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
   }
 }
 
-/**
- * Efecto de sonido SFX de marcado táctil (Arcade Pop)
- */
 export function playPopSound() {
   try {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -192,9 +214,6 @@ export function playPopSound() {
   }
 }
 
-/**
- * Efecto de sonido SFX al salir una balota
- */
 export function playBallPingSound() {
   try {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -223,9 +242,6 @@ export function playBallPingSound() {
   }
 }
 
-/**
- * Música de Fondo Casino Arcade Garantizada (Web Audio API)
- */
 export function toggleBackgroundMusic(enable = true) {
   try {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -282,16 +298,10 @@ export function toggleBackgroundMusic(enable = true) {
   }
 }
 
-/**
- * Audio de Victoria al cantar BINGO
- */
 export function playVictoryAudio(audioUrl = "/audio/victory.mp3") {
   playSynthesizedFanfare();
 }
 
-/**
- * Fanfarria triunfal sintetizada nativamente con Web Audio API
- */
 export function playSynthesizedFanfare() {
   try {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
