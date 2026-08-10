@@ -1,7 +1,9 @@
-/**
- * Módulo de Audio con Diccionario Fonético de Alta Claridad, Selección de Voces Neurales
- * y Motor de Locutor Humorístico Familiar de Alto Repertorio.
- */
+import {
+  getRandomLeaderPhrase,
+  getRandomUnderdogPhrase,
+  getRandomEventPhrase,
+  getBingoNumberJoke
+} from "./announcerEngine";
 
 let ambientAudioCtx = null;
 let ambientOsc1 = null;
@@ -27,51 +29,6 @@ const NUMBER_WORDS = {
   66: "sesenta y seis", 67: "sesenta y siete", 68: "sesenta y ocho", 69: "sesenta y nueve", 70: "setenta",
   71: "setenta y uno", 72: "setenta y dos", 73: "setenta y tres", 74: "setenta y cuatro", 75: "setenta y cinco"
 };
-
-// Dichos populares tradicionales de Bingo
-const TRADITIONAL_BINGO_JOKES = {
-  1: "¡Arrancamos con el solterón y sin compromiso!",
-  5: "¡Brincote de cinco!",
-  7: "¡El número de la suerte!",
-  11: "¡El par de muletas!",
-  13: "¡Sin miedo al trece!",
-  15: "¡La quinceañera, la niña bonita!",
-  18: "¡Mayoría de edad!",
-  22: "¡Los dos patitos nadando!",
-  25: "¡Bodas de plata!",
-  33: "¡La edad de Cristo!",
-  44: "¡Los dos jorobados paseando!",
-  50: "¡Las bodas de oro pura elegancia!",
-  69: "¡El favorito de la casa!",
-  75: "¡La última balota de la fiesta!"
-};
-
-// Frases de Presión al Líder de la Partida
-const LEADER_PRESSURE_PHRASES = [
-  (name) => `¡Alguien que le ponga freno a ${name} que viene volando!`,
-  (name) => `¡Ojo todos en la mesa que ${name} ya siente el olor del Bingo!`,
-  (name) => `¡${name} va comandando la tabla con mano firme!`,
-  (name) => `¡Alerta en la sala, ${name} está acariciando la victoria!`
-];
-
-// Chanzas Sanas y Cariñosas para el que va más atrás ("El Colero")
-const UNDERDOG_TEASING_PHRASES = [
-  (name) => `¡Un aplauso de ánimo para ${name}, que está guardando la suerte para el final!`,
-  (name) => `¡Tranquilo ${name}, acuerdate que los últimos serán los primeros!`,
-  (name) => `¡${name} está usando la estrategia del cazador sigiloso!`,
-  (name) => `¡${name}, despiértame a los números de la suerte que se quedaron dormidos!`,
-  (name) => `¡Mucha fe ${name}, que las mejores cosas se hacen esperar!`
-];
-
-// Comentarios Cómicos Generales de Partida
-const GENERAL_HUMOR_PHRASES = [
-  "¡Preparen los dedos que esa casilla estaba caliente!",
-  "¡Revisen bien esa tabla que este número vale oro!",
-  "¡El bombo giró y la suerte ya decidió!",
-  "¡El que no marca ahora se queda para la próxima!",
-  "¡Soplen el cartón a ver si llegan los números buenos!",
-  "¡Concentración total en la mesa familiar!"
-];
 
 export function unlockTVAudio() {
   try {
@@ -142,24 +99,22 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
 
     const randChoice = Math.random();
 
-    // 1. Dichos tradicionales especiales por número (100% garantizados para números famosos)
-    if (TRADITIONAL_BINGO_JOKES[numVal]) {
-      textToSpeak += ` ${TRADITIONAL_BINGO_JOKES[numVal]}`;
+    // 1. Dichos tradicionales especiales por número (Garantizados para números famosos)
+    const specialJoke = getBingoNumberJoke(numVal);
+    if (specialJoke) {
+      textToSpeak += ` ${specialJoke}`;
     } 
-    // 2. Chanza sana para el Colero (20% probabilidad si hay colero)
-    else if (underdogInfo && underdogInfo.name && randChoice < 0.20) {
-      const getUnderdogPhrase = UNDERDOG_TEASING_PHRASES[Math.floor(Math.random() * UNDERDOG_TEASING_PHRASES.length)];
-      textToSpeak += ` ${getUnderdogPhrase(underdogInfo.name)}`;
+    // 2. Chanza sana para el Colero (25% probabilidad si hay colero)
+    else if (underdogInfo && underdogInfo.name && randChoice < 0.25) {
+      textToSpeak += ` ${getRandomUnderdogPhrase(underdogInfo.name)}`;
     }
-    // 3. Mención de Presión al Líder (20% probabilidad)
-    else if (leaderInfo && leaderInfo.name && leaderInfo.hits >= 3 && randChoice < 0.40) {
-      const getLeaderPhrase = LEADER_PRESSURE_PHRASES[Math.floor(Math.random() * LEADER_PRESSURE_PHRASES.length)];
-      textToSpeak += ` ${getLeaderPhrase(leaderInfo.name)}`;
+    // 3. Mención de Presión al Líder (25% probabilidad)
+    else if (leaderInfo && leaderInfo.name && leaderInfo.hits >= 3 && randChoice < 0.50) {
+      textToSpeak += ` ${getRandomLeaderPhrase(leaderInfo.name)}`;
     } 
-    // 4. Comentario humorístico general ocasional (20% probabilidad)
-    else if (randChoice < 0.60) {
-      const randomShort = GENERAL_HUMOR_PHRASES[Math.floor(Math.random() * GENERAL_HUMOR_PHRASES.length)];
-      textToSpeak += ` ${randomShort}`;
+    // 4. Comentario humorístico general de juego (20% probabilidad)
+    else if (randChoice < 0.70) {
+      textToSpeak += ` ${getRandomEventPhrase()}`;
     }
 
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
