@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { getLetterForNumber } from "../utils/bingoLogic";
-import { speakBallNumber, toggleBackgroundMusic, unlockTVAudio, getAvailableSpanishVoices } from "../utils/audio";
+import { speakBallNumber, toggleBackgroundMusic, unlockTVAudio, getAvailableSpanishVoices, playPopSound } from "../utils/audio";
 import { PERSONALITY_MODES } from "../utils/announcerEngine";
 import { Play, Pause, Tv, QrCode, Copy, Check, Volume2, Music, VolumeX, Mic, Sparkles, Grid3X3, Users, Drama } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
@@ -18,6 +18,7 @@ export default function HostTVView({
   winner = null,
   victoryMode = "line",
   isHost = true,
+  onStartGame,
   onDrawNextBall,
   onResetGame,
   onUpdateVictoryMode,
@@ -36,6 +37,33 @@ export default function HostTVView({
   const [isTvAudioActivated, setIsTvAudioActivated] = useState(false);
   const [rightViewMode, setRightViewMode] = useState("board"); // "board" | "players"
   const [personalityMode, setPersonalityMode] = useState("auto");
+  const [countdownOverlay, setCountdownOverlay] = useState(null);
+
+  const triggerStartGameWithCountdown = () => {
+    if (countdownOverlay !== null) return;
+    playPopSound();
+    setCountdownOverlay(3);
+
+    setTimeout(() => {
+      playPopSound();
+      setCountdownOverlay(2);
+    }, 1000);
+
+    setTimeout(() => {
+      playPopSound();
+      setCountdownOverlay(1);
+    }, 2000);
+
+    setTimeout(() => {
+      playPopSound();
+      setCountdownOverlay("¡QUE EMPIECE EL BINGO!");
+    }, 3000);
+
+    setTimeout(() => {
+      setCountdownOverlay(null);
+      if (onStartGame) onStartGame();
+    }, 4200);
+  };
 
   const [availableVoices, setAvailableVoices] = useState([]);
   const [selectedVoiceURI, setSelectedVoiceURI] = useState("");
@@ -237,25 +265,54 @@ export default function HostTVView({
         </div>
       )}
 
-      {/* Banner Hero QR Gigante de Bienvenida en Estado de Espera */}
+      {/* Stage de Espera y Bienvenida con QR Gigante */}
       {status === "waiting" && (
-        <div className="glass-panel border-2 border-[#00ff88] p-6 mb-6 rounded-2xl text-center z-20 animate-fadeIn shadow-[0_0_30px_rgba(0,255,136,0.2)]">
-          <div className="flex flex-col sm:flex-row items-center justify-around gap-6">
-            <div className="bg-white p-3 rounded-xl border border-black shadow-lg inline-block">
-              <QRCodeSVG value={joinUrl} size={140} level="H" />
+        <div className="glass-panel border-2 border-[#00ff88] p-8 mb-8 rounded-3xl text-center z-20 animate-fadeIn shadow-[0_0_50px_rgba(0,255,136,0.3)] space-y-6">
+          <div className="inline-flex items-center gap-2 bg-[#00ff88] text-black font-black text-xs sm:text-sm px-4 py-1.5 uppercase rounded-full tracking-widest shadow-[0_0_15px_#00ff88]">
+            📱 ESCANEA EL CÓDIGO QR PARA UNIRTE DESDE TU CELULAR
+          </div>
+
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8 my-4">
+            {/* QR Gigante */}
+            <div className="bg-white p-4 rounded-2xl border-4 border-black shadow-[0_0_30px_rgba(255,255,255,0.3)] inline-block">
+              <QRCodeSVG value={joinUrl} size={200} level="H" />
             </div>
-            <div className="text-center sm:text-left space-y-2">
-              <span className="bg-[#00ff88] text-black font-black px-3 py-1 text-xs uppercase rounded-full inline-block">
-                📱 ESCANEA EL QR PARA UNIRTE DESDE TU CELULAR
-              </span>
-              <h2 className="text-2xl sm:text-4xl font-black text-white uppercase">
-                CÓDIGO DE SALA: <span className="text-[#00ff88] font-space">{roomId}</span>
+
+            <div className="text-center md:text-left space-y-3 max-w-lg">
+              <h2 className="text-3xl sm:text-5xl font-black text-white uppercase tracking-tight">
+                SALÓN: <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00ff88] to-[#00f3ff]">{groupName}</span>
               </h2>
-              <p className="text-xs text-slate-300 font-bold uppercase">
-                {playersList.length} DE {maxPlayers} JUGADORES CONECTADOS
+              <div className="text-xl sm:text-2xl font-black text-[#00ff88] font-space tracking-widest bg-white/5 border border-white/10 px-4 py-2 rounded-xl inline-block">
+                CÓDIGO: {roomId}
+              </div>
+              <p className="text-xs sm:text-sm text-slate-300 font-bold uppercase tracking-wider">
+                {playersList.length} DE {maxPlayers} JUGADORES LISTOS EN LA MESA
               </p>
+
+              {/* Chips de Jugadores Conectados */}
+              <div className="flex flex-wrap gap-2 justify-center md:justify-start pt-2">
+                {playersList.map((p) => (
+                  <span key={p.id} className="bg-white/10 border border-[#00ff88]/40 text-[#00ff88] text-xs font-black px-3 py-1 rounded-full uppercase flex items-center gap-1">
+                    👤 {p.name}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
+
+          {/* Botón de Inicio con Conteo 3, 2, 1 */}
+          {isHost ? (
+            <button
+              onClick={triggerStartGameWithCountdown}
+              className="w-full max-w-lg bg-gradient-to-r from-[#00ff88] via-[#00f3ff] to-[#a855f7] hover:brightness-110 text-black font-black text-xl sm:text-2xl py-5 px-8 border border-white/50 uppercase tracking-wider rounded-full shadow-[0_0_40px_rgba(0,255,136,0.5)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 cursor-pointer mx-auto"
+            >
+              <Play size={28} fill="currentColor" /> INICIAR PARTIDA DE BINGO
+            </button>
+          ) : (
+            <div className="bg-white/10 border border-white/20 p-4 rounded-2xl text-center text-slate-300 font-black text-sm uppercase tracking-wider animate-pulse max-w-lg mx-auto">
+              ⏳ ESPERANDO A QUE EL ANFITRIÓN INICIE LA PARTIDA...
+            </div>
+          )}
         </div>
       )}
 
@@ -467,6 +524,25 @@ export default function HostTVView({
             >
               CERRAR
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Overlay Cinematográfico de Cuenta Regresiva 3, 2, 1 */}
+      {countdownOverlay !== null && (
+        <div className="fixed inset-0 bg-black/95 z-50 flex flex-col items-center justify-center backdrop-blur-xl animate-fadeIn select-none">
+          <div className="text-center space-y-6">
+            <span className="bg-[#00ff88] text-black font-black text-sm sm:text-base px-6 py-2 uppercase rounded-full tracking-widest shadow-[0_0_25px_#00ff88]">
+              🚀 INICIANDO BINGO DE {groupName}
+            </span>
+
+            <div className="text-8xl sm:text-[14rem] font-black text-[#00ff88] font-space leading-none animate-bounce drop-shadow-[0_0_60px_rgba(0,255,136,0.9)]">
+              {countdownOverlay}
+            </div>
+
+            <p className="text-base sm:text-2xl font-black text-slate-200 uppercase tracking-widest">
+              ¡PREPAREN SUS CARTONES MÓVILES!
+            </p>
           </div>
         </div>
       )}

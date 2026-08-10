@@ -55,6 +55,22 @@ export default function GameRoom({ session, onLeaveRoom }) {
   const drawnBalls = roomData.drawnBalls || [];
   const availableNumbers = roomData.availableNumbers || [];
 
+  const handleStartGame = async () => {
+    if (!isHost || availableNumbers.length === 0) return;
+
+    const { ball, remaining } = drawRandomBall(availableNumbers);
+    if (!ball) return;
+
+    const updatedDrawn = [Number(ball)];
+
+    await updateRoomProvider(roomId, {
+      currentBall: Number(ball),
+      drawnBalls: updatedDrawn,
+      availableNumbers: remaining,
+      status: "playing"
+    });
+  };
+
   const handleDrawNextBall = async () => {
     if (!isHost || availableNumbers.length === 0) return;
 
@@ -261,6 +277,7 @@ export default function GameRoom({ session, onLeaveRoom }) {
             status={roomData.status || "waiting"}
             victoryMode={roomData.victoryMode || "line"}
             isHost={isHost}
+            onStartGame={handleStartGame}
             onDrawNextBall={handleDrawNextBall}
             onResetGame={handleResetGame}
             onUpdateVictoryMode={handleUpdateVictoryMode}
