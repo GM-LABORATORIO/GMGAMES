@@ -69,7 +69,7 @@ export const TRADITIONAL_BINGO_JOKES = {
   62: "¡Sesenta y dos al centro!",
   63: "¡Sesenta y tres de fiesta!",
   64: "¡Sesenta y cuatro fuerte!",
-  65: "¡Sesenta y cinco avanzando!",
+  65: "¡Sesenta y cinco advancing!",
   66: "¡Las dos herramientas mellizas!",
   67: "¡Sesenta y siete firme!",
   68: "¡Sesenta y ocho en la mesa!",
@@ -82,13 +82,28 @@ export const TRADITIONAL_BINGO_JOKES = {
   75: "¡La balota cumbre de la fiesta total!"
 };
 
-// 2. BANCOS TEMÁTICOS DE PRESIÓN Y CHANZAS
+// 2. BANCO DEL TÍO CHANCERO Y CHANZAS FAMILIARES (INCLUYE "JUGABA MEJOR MI ABUELITA")
+export const UNDERDOG_TEASING_BANK = [
+  (name) => `¡Ay mi madre, pónganle ganas en la mesa que jugaba mejor mi abuelita que ${name} hoy!`,
+  (name) => `¡Un aplauso de aliento para ${name}, que está guardando toda la suerte para el remate!`,
+  (name) => `¡Tranquilo ${name}, póngale fe que mi abuelita marcaba más rápido en sus tiempos!`,
+  (name) => `¡${name} está aplicando la famosa estrategia del cazador sigiloso!`,
+  (name) => `¡${name}, despiértame a la buena suerte que se nos quedó dormida en el sofá!`,
+  (name) => `¡Mucha fe ${name}, que hasta mi abuelita con gafas te saca ventaja hoy!`,
+  (name) => `¡${name} está jugando con la serenidad de un maestro zen!`,
+  (name) => `¡No se rinda ${name}, que un buen remate cambia la historia!`,
+  (name) => `¡Sople las cartas ${name}, a ver si bajan las luces de la suerte!`,
+  (name) => `¡${name} nos está dando ventaja para hacer el juego más emocionante!`,
+  (name) => `¡Fuerza ${name}, que la remontada de la casa está por comenzar!`,
+  (name) => `¡${name} es el rey de la paciencia en la mesa familiar!`
+];
+
 export const LEADER_PRESSURE_BANK = [
   (name) => `¡Alguien que le ponga freno a ${name} que viene volando sin frenos!`,
   (name) => `¡Ojo todos en la mesa que ${name} ya siente el olor del trofeo!`,
   (name) => `¡Atención familia, ${name} va comandando la partida con mano firme!`,
   (name) => `¡Alerta máxima en la sala, ${name} está acariciando la victoria!`,
-  (name) => `¡Que alguien le pida una pausa a ${name} que nos va a dejar a todos atrás!`,
+  (name) => `¡Que alguien le pida una pausa a ${name} que nos va a dejar a todos a cero!`,
   (name) => `¡${name} viene encendido como un motor de carreras!`,
   (name) => `¡Aprieten el paso que ${name} no está pidiendo permiso!`,
   (name) => `¡El trono de la casa ahora mismo lo reclama ${name}!`,
@@ -101,46 +116,39 @@ export const LEADER_PRESSURE_BANK = [
   (name) => `¡Mucho ojo con ${name}, que no da tregua ni un segundo!`
 ];
 
-export const UNDERDOG_TEASING_BANK = [
-  (name) => `¡Un aplauso de aliento para ${name}, que está guardando toda la suerte para el remate!`,
-  (name) => `¡Tranquilo ${name}, acuérdate que los últimos serán los primeros!`,
-  (name) => `¡${name} está aplicando la famosa estrategia del cazador sigiloso!`,
-  (name) => `¡${name}, despiértame a la buena suerte que se nos quedó dormida!`,
-  (name) => `¡Mucha fe ${name}, que las mejores cosas de la vida se hacen esperar!`,
-  (name) => `¡${name} está jugando con la serenidad de un maestro zen!`,
-  (name) => `¡No se rinda ${name}, que un buen remate cambia la historia!`,
-  (name) => `¡${name} está analizando el terreno antes de dar el gran golpe!`,
-  (name) => `¡Sople las cartas ${name}, para que baje la bendición del juego!`,
-  (name) => `¡${name} nos está dando ventaja para hacer el juego más emocionante!`,
-  (name) => `¡Fuerza ${name}, que la remontada épica está por comenzar!`,
-  (name) => `¡${name} es el rey de la paciencia en la mesa familiar!`
-];
-
 export const GAME_EVENT_BANK = [
-  "¡Preparen los dedos que la partida está caliente!",
-  "¡Revisen bien la pantalla que aquí nadie puede pestañear!",
+  "¡Oigan pues parceros, soplen los celulares a ver si cae la buena!",
+  "¡Preparen los dedos que jugaba mejor mi abuelita si se duermen en la mesa!",
   "¡El juego giró y la suerte ya tomó su decisión!",
   "¡El que no esté atento se queda fuera de la foto de la victoria!",
   "¡Soplen los celulares y la TV para que llegue la suerte buena!",
-  "¡Se siente la tensión sabrosa del juego en vivo!",
+  "¡Se siente la tensión sabrosa del juego en vivo en la sala!",
   "¡Cualquiera puede dar la sorpresa en los próximos segundos!",
-  "¡Qué gran nivel de juego estamos disfrutando todos!",
+  "¡Qué gran nivel de juego estamos disfrutando en familia!",
   "¡El trofeo busca dueño y la mesa está encendida!",
   "¡Ni en la final del mundial se vive tanta emoción!",
   "¡Atención en la sala que la suerte cambió de bando!",
   "¡No despeguen la vista ni un segundo!",
-  "¡Marque con fe y convicción!"
+  "¡Marque con fe y convicción que el Tío Chancero está vigilando!"
 ];
 
-// 3. PERSONALIDADES DEL LOCUTOR (MODOS CONFIGURABLES)
+// 3. PERSONALIDADES DEL LOCUTOR (MODOS Y ADAPTACIÓN AUTOMÁTICA INTELIGENTE)
 export const PERSONALITY_MODES = {
-  classic: {
-    id: "classic",
-    name: "🎙️ LOCUTOR CLÁSICO",
-    rate: 0.95,
-    pitch: 1.0,
+  auto: {
+    id: "auto",
+    name: "🧠 INTELIGENTE (ADAPTATIVO AUTOMÁTICO)",
+    rate: 0.98,
+    pitch: 1.02,
     prefix: "",
     suffix: ""
+  },
+  comedian: {
+    id: "comedian",
+    name: "🤪 EL TÍO CHANCERO DE LA CASA",
+    rate: 0.98,
+    pitch: 1.05,
+    prefix: "¡Oigan pues parceros! ",
+    suffix: " ¡A ponerse las pilas!"
   },
   sports: {
     id: "sports",
@@ -150,23 +158,55 @@ export const PERSONALITY_MODES = {
     prefix: "¡Atención fans de la mesa! ",
     suffix: " ¡Qué partidazo estamos viviendo!"
   },
-  comedian: {
-    id: "comedian",
-    name: "🤪 TÍO CHANCERO",
-    rate: 0.98,
-    pitch: 1.05,
-    prefix: "¡Oigan pues parceros! ",
-    suffix: " ¡A ponerse las pilas!"
+  classic: {
+    id: "classic",
+    name: "🎙️ LOCUTOR CLÁSICO",
+    rate: 0.95,
+    pitch: 1.0,
+    prefix: "",
+    suffix: ""
   },
   cyber: {
     id: "cyber",
     name: "🤖 IA FUTURISTA",
     rate: 0.90,
     pitch: 0.92,
-    prefix: "Protocolo de extracción ejecutado: ",
-    suffix: " Procesando datos de partida."
+    prefix: "Protocolo de extracción: ",
+    suffix: ""
   }
 };
+
+/**
+ * Determina automáticamente la personalidad adecuada según el momento de la partida
+ */
+export function getDynamicPersonality(drawnCount = 0, isNearVictory = false, userPreference = "auto") {
+  if (userPreference && userPreference !== "auto" && PERSONALITY_MODES[userPreference]) {
+    return PERSONALITY_MODES[userPreference];
+  }
+
+  // 1. Momento de Alta Tensión (Casi Bingo): Pasa automáticamente a Deportivo Ferviente
+  if (isNearVictory) {
+    return {
+      ...PERSONALITY_MODES.sports,
+      prefix: "¡ALERTA MÁXIMA DE BINGO EN LA SALA! "
+    };
+  }
+
+  // 2. Etapa Final de Partida (Más de 30 balotas cantadas): Clásico Dinámico con Toques Deportivos
+  if (drawnCount > 30) {
+    return {
+      ...PERSONALITY_MODES.sports,
+      rate: 1.02,
+      prefix: "¡Se aprieta la partida! "
+    };
+  }
+
+  // 3. Etapa Inicial y Media (1 a 30 balotas): 100% El Tío Chancero de la Casa
+  return {
+    ...PERSONALITY_MODES.comedian,
+    prefix: Math.random() < 0.3 ? "¡Oigan pues! " : ""
+  };
+}
 
 /**
  * Obtiene una frase de "Casi Bingo" cuando a un jugador le falta 1 solo número
@@ -181,9 +221,6 @@ export function getNearVictoryPhrase(playerName) {
   return phrases[Math.floor(Math.random() * phrases.length)];
 }
 
-/**
- * Obtiene una frase para rachas de columnas (ej: varias de la B seguidas)
- */
 export function getStreakPhrase(letter, count) {
   if (!letter || count < 3) return null;
   return `¡Atención que la letra ${letter} viene imparable con ${count} balotas seguidas!`;

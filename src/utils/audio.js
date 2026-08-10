@@ -3,7 +3,8 @@ import {
   getRandomUnderdogPhrase,
   getRandomEventPhrase,
   getBingoNumberJoke,
-  PERSONALITY_MODES
+  PERSONALITY_MODES,
+  getDynamicPersonality
 } from "./announcerEngine";
 
 let ambientAudioCtx = null;
@@ -109,7 +110,7 @@ let speechFallbackTimer = null;
 /**
  * Locución Perfeccionada con Smart Audio Ducking y Garantía de Finalización de Voz
  */
-export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInfo = null, underdogInfo = null, personalityModeKey = "classic", onSpeechEndCallback = null) {
+export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInfo = null, underdogInfo = null, personalityModeKey = "auto", drawnCount = 0, onSpeechEndCallback = null) {
   if (!letter || !number) return "";
 
   if (!isAudioUnlocked) {
@@ -159,7 +160,8 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
       textToSpeak += ` ${getRandomEventPhrase()}`;
     }
 
-    const personality = PERSONALITY_MODES[personalityModeKey] || PERSONALITY_MODES.classic;
+    const isNearVictory = Boolean(leaderInfo && leaderInfo.hits >= 4);
+    const personality = getDynamicPersonality(drawnCount, isNearVictory, personalityModeKey);
     const fullPhrase = `${personality.prefix || ""}${textToSpeak}${personality.suffix || ""}`;
 
     const utterance = new SpeechSynthesisUtterance(fullPhrase);
@@ -175,8 +177,8 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
     }
 
     utterance.lang = utterance.voice?.lang || "es-ES";
-    utterance.rate = personality.rate || 0.95;
-    utterance.pitch = personality.pitch || 1.0;
+    utterance.rate = personality.rate || 0.98;
+    utterance.pitch = personality.pitch || 1.02;
 
     let hasHandledEnd = false;
     const finishSpeech = () => {

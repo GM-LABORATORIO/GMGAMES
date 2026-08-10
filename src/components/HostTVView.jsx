@@ -35,7 +35,7 @@ export default function HostTVView({
   const [bgMusicEnabled, setBgMusicEnabled] = useState(false);
   const [isTvAudioActivated, setIsTvAudioActivated] = useState(false);
   const [rightViewMode, setRightViewMode] = useState("board"); // "board" | "players"
-  const [personalityMode, setPersonalityMode] = useState("classic");
+  const [personalityMode, setPersonalityMode] = useState("auto");
 
   const [availableVoices, setAvailableVoices] = useState([]);
   const [selectedVoiceURI, setSelectedVoiceURI] = useState("");
@@ -110,6 +110,7 @@ export default function HostTVView({
         leaderInfo,
         underdogInfo,
         personalityMode,
+        drawnBalls.length,
         () => {
           setIsSpeaking(false);
           setTimerCountdown(speedSec);
@@ -119,7 +120,7 @@ export default function HostTVView({
       spokenBallRef.current = null;
       setIsSpeaking(false);
     }
-  }, [currentBall, currentLetter, selectedVoiceURI, personalityMode]);
+  }, [currentBall, currentLetter, selectedVoiceURI, personalityMode, drawnBalls.length]);
 
   // Temporizador de Cuenta Regresiva Sincronizado por Eventos de Voz
   useEffect(() => {
@@ -328,9 +329,10 @@ export default function HostTVView({
                   onChange={(e) => setPersonalityMode(e.target.value)}
                   className="bg-[#151a2d] text-[#00ff88] font-black border border-white/20 text-xs px-2 py-1 uppercase rounded-lg focus:outline-none cursor-pointer"
                 >
-                  <option value="classic">🎙️ CLÁSICO ELEGANTE</option>
+                  <option value="auto">🧠 AUTOMÁTICO INTELIGENTE (RECOMENDADO)</option>
+                  <option value="comedian">🤪 EL TÍO CHANCERO DE LA CASA</option>
                   <option value="sports">🔥 DEPORTIVO FERVIENTE</option>
-                  <option value="comedian">🤪 TÍO CHANCERO</option>
+                  <option value="classic">🎙️ CLÁSICO ELEGANTE</option>
                   <option value="cyber">🤖 IA FUTURISTA</option>
                 </select>
               </div>
