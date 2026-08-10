@@ -1,10 +1,88 @@
 /**
- * Motor Reutilizable de Comentarista Familiar Multijuegos (JUNTOS JUGAMOS)
- * Diseñado para abastecer de locución, humor familiar y comentarios en tiempo real
- * a cualquier juego de la plataforma (Bingo, Trivia, Stop, Memoria, Parqués).
+ * Motor Conversacional AAA de Comentarista Familiar Multijuegos (LA SALA)
+ * Provee locución contextual, personalidades dinámicas y comentarios de alta variedad.
  */
 
-// 1. BANCO DE FRASES DE PRESIÓN AL LÍDER (20+ Frases Reutilizables)
+// 1. DICCIONARIO TRADICIONAL COMPLETO DE BINGO (75 BALOTAS)
+export const TRADITIONAL_BINGO_JOKES = {
+  1: "¡El solterón y sin compromiso!",
+  2: "¡El patito nadando en la laguna!",
+  3: "¡La tercera es la vencida!",
+  4: "¡Las cuatro esquinas del tablero!",
+  5: "¡Brincote de cinco en la mesa!",
+  6: "¡Media docena completa!",
+  7: "¡El número de la suerte de la casa!",
+  8: "¡Los anteojos del abuelo!",
+  9: "¡El noveno de la suerte!",
+  10: "¡La decena perfecta!",
+  11: "¡El par de muletas alineadas!",
+  12: "¡La docena entera!",
+  13: "¡Sin miedo al trece que trae la buena fortuna!",
+  14: "¡El catorce de la suerte!",
+  15: "¡La quinceañera, la niña bonita!",
+  16: "¡Los dulces dieciséis!",
+  17: "¡La dicha del diecisiete!",
+  18: "¡La mayoría de edad celebrada!",
+  19: "¡A un paso de los veinte!",
+  20: "¡La primera veintena de la jornada!",
+  21: "¡El número del triunfo!",
+  22: "¡Los dos patitos gemelos en el agua!",
+  23: "¡Los veintitrés de la dicha!",
+  24: "¡El día entero de veinticuatro horas!",
+  25: "¡Las bodas de plata de la fiesta!",
+  26: "¡Veintiséis de la buena suerte!",
+  27: "¡Veintisiete en la mesa!",
+  28: "¡Veintiocho cantado con ganas!",
+  29: "¡Rumbo al tres con el veintinueve!",
+  30: "¡Treinta bien contados!",
+  31: "¡Treinta y uno de suerte pura!",
+  32: "¡Treinta y dos de la suerte!",
+  33: "¡La edad de Cristo sagrada!",
+  34: "¡Treinta y cuatro sonando fuerte!",
+  35: "¡Treinta y cinco a mitad de camino!",
+  36: "¡Tres docenas exactas!",
+  37: "¡Treinta y siete chispeante!",
+  38: "¡Treinta y ocho brillante!",
+  39: "¡Treinta y nueve rozando los cuarenta!",
+  40: "¡Cuarenta de la buena cosecha!",
+  41: "¡Cuarenta y uno adelante!",
+  42: "¡Cuarenta y dos firme!",
+  43: "¡Cuarenta y tres en la cancha!",
+  44: "¡Los dos jorobados paseando juntos!",
+  45: "¡Cuarenta y cinco a tres cuartos de marcha!",
+  46: "¡Cuarenta y seis encendido!",
+  47: "¡Cuarenta y siete en el tablero!",
+  48: "¡Cuatro docenas completas!",
+  49: "¡Cuarenta y nueve arañando los cincuenta!",
+  50: "¡Las bodas de oro, pura elegancia!",
+  51: "¡Cincuenta y uno cantado!",
+  52: "¡Las cincuenta y dos semanas del año!",
+  53: "¡Cincuenta y tres potente!",
+  54: "¡Cincuenta y cuatro presente!",
+  55: "¡Los dos cincos hermanos de fiesta!",
+  56: "¡Cincuenta y seis directo a la tabla!",
+  57: "¡Cincuenta y siete en la jugada!",
+  58: "¡Cincuenta y ocho firme!",
+  59: "¡Cincuenta y nueve rozando el sesenta!",
+  60: "¡Sesenta de la gran fiesta!",
+  61: "¡Sesenta y uno brillando!",
+  62: "¡Sesenta y dos al centro!",
+  63: "¡Sesenta y tres de fiesta!",
+  64: "¡Sesenta y cuatro fuerte!",
+  65: "¡Sesenta y cinco avanzando!",
+  66: "¡Las dos herramientas mellizas!",
+  67: "¡Sesenta y siete firme!",
+  68: "¡Sesenta y ocho en la mesa!",
+  69: "¡El favorito de la casa de siempre!",
+  70: "¡Setenta cantados con todo el impulso!",
+  71: "¡Setenta y uno adelante!",
+  72: "¡Setenta y dos en la jugada!",
+  73: "¡Setenta y tres firme!",
+  74: "¡Setenta y cuatro al filo del triunfo!",
+  75: "¡La balota cumbre de la fiesta total!"
+};
+
+// 2. BANCOS TEMÁTICOS DE PRESIÓN Y CHANZAS
 export const LEADER_PRESSURE_BANK = [
   (name) => `¡Alguien que le ponga freno a ${name} que viene volando sin frenos!`,
   (name) => `¡Ojo todos en la mesa que ${name} ya siente el olor del trofeo!`,
@@ -20,16 +98,9 @@ export const LEADER_PRESSURE_BANK = [
   (name) => `¡Cuidado que ${name} viene pisando fuerte el acelerador!`,
   (name) => `¡${name} se tomó un café cargado antes de jugar hoy!`,
   (name) => `¡La buena suerte se mudó a la silla de ${name}!`,
-  (name) => `¡Mucho ojo con ${name}, que no da tregua ni un segundo!`,
-  (name) => `¡${name} trae la racha dorada en el bolsillo!`,
-  (name) => `¡Si siguen descuidándose, ${name} se lleva el trofeo a casa!`,
-  (name) => `¡Increíble la precisión de ${name} en este juego!`,
-  (name) => `¡${name} está dando cátedra de juego rápido!`,
-  (name) => `¡Alguien que llame a los bomberos que la tabla de ${name} está echando chispas!`,
-  (name) => `¡Partida estelar de ${name}, que viene marcando el ritmo!`
+  (name) => `¡Mucho ojo con ${name}, que no da tregua ni un segundo!`
 ];
 
-// 2. BANCO DE CHANZAS SANAS AL COLERO (20+ Frases Cariñosas y Respetuosas)
 export const UNDERDOG_TEASING_BANK = [
   (name) => `¡Un aplauso de aliento para ${name}, que está guardando toda la suerte para el remate!`,
   (name) => `¡Tranquilo ${name}, acuérdate que los últimos serán los primeros!`,
@@ -39,92 +110,101 @@ export const UNDERDOG_TEASING_BANK = [
   (name) => `¡${name} está jugando con la serenidad de un maestro zen!`,
   (name) => `¡No se rinda ${name}, que un buen remate cambia la historia!`,
   (name) => `¡${name} está analizando el terreno antes de dar el gran golpe!`,
-  (name) => `¡Sople las cartas o los botones ${name}, para que baje la bendición del juego!`,
+  (name) => `¡Sople las cartas ${name}, para que baje la bendición del juego!`,
   (name) => `¡${name} nos está dando ventaja para hacer el juego más emocionante!`,
   (name) => `¡Fuerza ${name}, que la remontada épica está por comenzar!`,
-  (name) => `¡${name} es el rey de la paciencia en la mesa familiar!`,
-  (name) => `¡Atención todos, que cuando ${name} arranque no lo para nadie!`,
-  (name) => `¡${name} está guardando los ases bajo la manga para el final!`,
-  (name) => `¡Ánimo ${name}, que la suerte da muchas vueltas en este juego!`,
-  (name) => `¡${name} prefiere la emoción de ganar viniendo de atrás!`,
-  (name) => `¡Envíenle buena vibra a ${name} para que rompa la racha!`,
-  (name) => `¡${name} está acumulando energía para el grito de victoria!`,
-  (name) => `¡Que no cunda el pánico ${name}, que esto no se acaba hasta que se acaba!`,
-  (name) => `¡${name} está jugando con el corazón y la sonrisa intacta!`,
-  (name) => `¡Aplausos de la barra brava para ${name}!`
+  (name) => `¡${name} es el rey de la paciencia en la mesa familiar!`
 ];
 
-// 3. BANCO DE EVENTOS Y COMENTARIOS DE AMBIENTE (20+ Frases Generales)
 export const GAME_EVENT_BANK = [
   "¡Preparen los dedos que la partida está caliente!",
   "¡Revisen bien la pantalla que aquí nadie puede pestañear!",
   "¡El juego giró y la suerte ya tomó su decisión!",
   "¡El que no esté atento se queda fuera de la foto de la victoria!",
   "¡Soplen los celulares y la TV para que llegue la suerte buena!",
-  "¡Concentración total en la mesa de la familia Loaiza Sille!",
-  "¡Esta jugada estuvo de película de acción!",
   "¡Se siente la tensión sabrosa del juego en vivo!",
   "¡Cualquiera puede dar la sorpresa en los próximos segundos!",
-  "¡Qué gran nivel de juego estamos viendo hoy en familia!",
+  "¡Qué gran nivel de juego estamos disfrutando todos!",
   "¡El trofeo busca dueño y la mesa está encendida!",
   "¡Ni en la final del mundial se vive tanta emoción!",
   "¡Atención en la sala que la suerte cambió de bando!",
   "¡No despeguen la vista ni un segundo!",
-  "¡Marque con fe y convicción!",
-  "¡La tabla está que echa chispas hoy!",
-  "¡Un sorbo de agua para los nervios y a seguir jugando!",
-  "¡La suerte está rondando la casa en este momento!",
-  "¡Qué partidazo nos estamos disfrutando todos!",
-  "¡Aquí nadie se da por vencido hasta el último segundo!",
-  "¡El suspenso está en su punto máximo!"
+  "¡Marque con fe y convicción!"
 ];
 
-// 4. DICCIONARIO TRADICIONAL DE BINGO (Balotas Famosas)
-export const TRADITIONAL_BINGO_JOKES = {
-  1: "¡Arrancamos con el solterón y sin compromiso!",
-  5: "¡Brincote de cinco!",
-  7: "¡El número de la suerte de la casa!",
-  11: "¡El par de muletas!",
-  13: "¡Sin miedo al trece que trae la fortuna!",
-  15: "¡La quinceañera, la niña bonita!",
-  18: "¡La mayoría de edad celebrada!",
-  22: "¡Los dos patitos nadando en el estanque!",
-  25: "¡Las bodas de plata de la fiesta!",
-  33: "¡La edad de Cristo sagrada!",
-  44: "¡Los dos jorobados paseando!",
-  50: "¡Las bodas de oro pura elegancia!",
-  69: "¡El favorito de la casa de siempre!",
-  75: "¡La balota cumbre de la fiesta total!"
+// 3. PERSONALIDADES DEL LOCUTOR (MODOS CONFIGURABLES)
+export const PERSONALITY_MODES = {
+  classic: {
+    id: "classic",
+    name: "🎙️ LOCUTOR CLÁSICO",
+    rate: 0.95,
+    pitch: 1.0,
+    prefix: "",
+    suffix: ""
+  },
+  sports: {
+    id: "sports",
+    name: "🔥 DEPORTIVO FERVIENTE",
+    rate: 1.08,
+    pitch: 1.1,
+    prefix: "¡Atención fans de la mesa! ",
+    suffix: " ¡Qué partidazo estamos viviendo!"
+  },
+  comedian: {
+    id: "comedian",
+    name: "🤪 TÍO CHANCERO",
+    rate: 0.98,
+    pitch: 1.05,
+    prefix: "¡Oigan pues parceros! ",
+    suffix: " ¡A ponerse las pilas!"
+  },
+  cyber: {
+    id: "cyber",
+    name: "🤖 IA FUTURISTA",
+    rate: 0.90,
+    pitch: 0.92,
+    prefix: "Protocolo de extracción ejecutado: ",
+    suffix: " Procesando datos de partida."
+  }
 };
 
 /**
- * Obtiene una frase aleatoria de Presión al Líder
+ * Obtiene una frase de "Casi Bingo" cuando a un jugador le falta 1 solo número
  */
+export function getNearVictoryPhrase(playerName) {
+  if (!playerName) return "";
+  const phrases = [
+    `¡Alerta de infarto en la sala! ¡A ${playerName} le falta solo UNA balota para cantar Bingo!`,
+    `¡Atención máxima! ¡${playerName} está a UN número de llevarse la gloria!`,
+    `¡Corazones palpitando! ¡${playerName} acaricia la victoria a una casilla del triunfo!`
+  ];
+  return phrases[Math.floor(Math.random() * phrases.length)];
+}
+
+/**
+ * Obtiene una frase para rachas de columnas (ej: varias de la B seguidas)
+ */
+export function getStreakPhrase(letter, count) {
+  if (!letter || count < 3) return null;
+  return `¡Atención que la letra ${letter} viene imparable con ${count} balotas seguidas!`;
+}
+
 export function getRandomLeaderPhrase(leaderName) {
   if (!leaderName) return "";
   const fn = LEADER_PRESSURE_BANK[Math.floor(Math.random() * LEADER_PRESSURE_BANK.length)];
   return fn(leaderName);
 }
 
-/**
- * Obtiene una frase aleatoria para el Colero (Underdog)
- */
 export function getRandomUnderdogPhrase(underdogName) {
   if (!underdogName) return "";
   const fn = UNDERDOG_TEASING_BANK[Math.floor(Math.random() * UNDERDOG_TEASING_BANK.length)];
   return fn(underdogName);
 }
 
-/**
- * Obtiene una frase aleatoria de evento de juego
- */
 export function getRandomEventPhrase() {
   return GAME_EVENT_BANK[Math.floor(Math.random() * GAME_EVENT_BANK.length)];
 }
 
-/**
- * Obtiene el dicho del número de Bingo si aplica
- */
 export function getBingoNumberJoke(number) {
   return TRADITIONAL_BINGO_JOKES[Number(number)] || null;
 }

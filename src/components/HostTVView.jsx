@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { getLetterForNumber } from "../utils/bingoLogic";
 import { speakBallNumber, toggleBackgroundMusic, unlockTVAudio, getAvailableSpanishVoices } from "../utils/audio";
-import { Play, Pause, Tv, QrCode, Copy, Check, Volume2, Music, VolumeX, Mic, Sparkles, Grid3X3, Users } from "lucide-react";
+import { PERSONALITY_MODES } from "../utils/announcerEngine";
+import { Play, Pause, Tv, QrCode, Copy, Check, Volume2, Music, VolumeX, Mic, Sparkles, Grid3X3, Users, Drama } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import BingoBallSphere from "./BingoBallSphere";
 import PlayersTVGrid from "./PlayersTVGrid";
@@ -34,6 +35,7 @@ export default function HostTVView({
   const [bgMusicEnabled, setBgMusicEnabled] = useState(false);
   const [isTvAudioActivated, setIsTvAudioActivated] = useState(false);
   const [rightViewMode, setRightViewMode] = useState("board"); // "board" | "players"
+  const [personalityMode, setPersonalityMode] = useState("classic");
 
   const [availableVoices, setAvailableVoices] = useState([]);
   const [selectedVoiceURI, setSelectedVoiceURI] = useState("");
@@ -107,6 +109,7 @@ export default function HostTVView({
         selectedVoiceURI,
         leaderInfo,
         underdogInfo,
+        personalityMode,
         () => {
           setIsSpeaking(false);
           setTimerCountdown(speedSec);
@@ -116,7 +119,7 @@ export default function HostTVView({
       spokenBallRef.current = null;
       setIsSpeaking(false);
     }
-  }, [currentBall, currentLetter, selectedVoiceURI]);
+  }, [currentBall, currentLetter, selectedVoiceURI, personalityMode]);
 
   // Temporizador de Cuenta Regresiva Sincronizado por Eventos de Voz
   useEffect(() => {
@@ -171,7 +174,7 @@ export default function HostTVView({
             <div className="text-3xl font-black text-[#00ff88] tracking-widest font-space">{roomId}</div>
           </div>
 
-          {/* QR Compacto & Botón Agrar */}
+          {/* QR Compacto & Botón Agrandar */}
           <div className="flex items-center gap-3 bg-[#06070d] border border-white/20 p-2 rounded-xl">
             <div className="bg-white p-1 rounded-lg">
               <QRCodeSVG value={joinUrl} size={44} level="M" />
@@ -313,6 +316,23 @@ export default function HostTVView({
                   {autoDraw ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" />}
                   {autoDraw ? "PAUSAR AUTO" : "AUTO EXTRACCIÓN"}
                 </button>
+              </div>
+
+              {/* Selector de Personalidad del Locutor */}
+              <div className="bg-[#06070d] border border-white/15 p-2 rounded-xl flex items-center justify-between">
+                <span className="text-[10px] text-slate-300 font-bold uppercase tracking-wider flex items-center gap-1">
+                  <Drama size={14} className="text-[#00ff88]" /> ESTILO DEL LOCUTOR:
+                </span>
+                <select
+                  value={personalityMode}
+                  onChange={(e) => setPersonalityMode(e.target.value)}
+                  className="bg-[#151a2d] text-[#00ff88] font-black border border-white/20 text-xs px-2 py-1 uppercase rounded-lg focus:outline-none cursor-pointer"
+                >
+                  <option value="classic">🎙️ CLÁSICO ELEGANTE</option>
+                  <option value="sports">🔥 DEPORTIVO FERVIENTE</option>
+                  <option value="comedian">🤪 TÍO CHANCERO</option>
+                  <option value="cyber">🤖 IA FUTURISTA</option>
+                </select>
               </div>
 
               {/* Selector de Tiempo entre Balotas */}

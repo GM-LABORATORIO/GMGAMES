@@ -2,7 +2,8 @@ import {
   getRandomLeaderPhrase,
   getRandomUnderdogPhrase,
   getRandomEventPhrase,
-  getBingoNumberJoke
+  getBingoNumberJoke,
+  PERSONALITY_MODES
 } from "./announcerEngine";
 
 let ambientAudioCtx = null;
@@ -108,7 +109,7 @@ let speechFallbackTimer = null;
 /**
  * Locución Perfeccionada con Smart Audio Ducking y Garantía de Finalización de Voz
  */
-export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInfo = null, underdogInfo = null, onSpeechEndCallback = null) {
+export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInfo = null, underdogInfo = null, personalityModeKey = "classic", onSpeechEndCallback = null) {
   if (!letter || !number) return "";
 
   if (!isAudioUnlocked) {
@@ -158,7 +159,10 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
       textToSpeak += ` ${getRandomEventPhrase()}`;
     }
 
-    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+    const personality = PERSONALITY_MODES[personalityModeKey] || PERSONALITY_MODES.classic;
+    const fullPhrase = `${personality.prefix || ""}${textToSpeak}${personality.suffix || ""}`;
+
+    const utterance = new SpeechSynthesisUtterance(fullPhrase);
     activeUtterance = utterance; // EVITAR GARBAGE COLLECTION EN SAFARI/CHROME MID-SPEECH
 
     const voices = window.speechSynthesis.getVoices();
@@ -171,8 +175,8 @@ export function speakBallNumber(letter, number, selectedVoiceURI = "", leaderInf
     }
 
     utterance.lang = utterance.voice?.lang || "es-ES";
-    utterance.rate = 0.95;
-    utterance.pitch = 1.0;
+    utterance.rate = personality.rate || 0.95;
+    utterance.pitch = personality.pitch || 1.0;
 
     let hasHandledEnd = false;
     const finishSpeech = () => {
