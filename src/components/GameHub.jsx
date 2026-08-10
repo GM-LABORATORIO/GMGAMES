@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Gamepad2, Play, Sparkles, Trophy, Lock, Users, Zap, Brain, HelpCircle, FileText, Puzzle, Dice5, ShieldCheck } from "lucide-react";
+import BingoBallSphere from "./BingoBallSphere";
 
 export default function GameHub({ onSelectBingo }) {
   const [inCatalog, setInCatalog] = useState(false);
@@ -83,8 +84,8 @@ export default function GameHub({ onSelectBingo }) {
               </div>
 
               <div>
-                <div className="w-14 h-14 bg-gradient-to-br from-[#00ff88] to-[#00f3ff] text-black font-black text-2xl flex items-center justify-center rounded-2xl mb-4 shadow-[0_0_20px_rgba(0,255,136,0.4)]">
-                  🎱
+                <div className="mb-4">
+                  <BingoBallSphere letter="B" number={7} size="sm" />
                 </div>
                 <h2 className="text-2xl font-black text-white uppercase group-hover:text-[#00ff88] transition-colors">
                   BINGO MULTIJUGADOR ARCADIA

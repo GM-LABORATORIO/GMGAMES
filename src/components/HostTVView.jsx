@@ -3,6 +3,7 @@ import { getLetterForNumber } from "../utils/bingoLogic";
 import { speakBallNumber, toggleBackgroundMusic, unlockTVAudio, getAvailableSpanishVoices } from "../utils/audio";
 import { Play, Pause, Tv, QrCode, Copy, Check, Volume2, Music, VolumeX, Mic, Sparkles } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
+import BingoBallSphere from "./BingoBallSphere";
 import PlayersTVGrid from "./PlayersTVGrid";
 
 export default function HostTVView({
@@ -277,17 +278,12 @@ export default function HostTVView({
 
           <div className="my-auto text-center py-4">
             {currentBall ? (
-              <div className="flex flex-col items-center justify-center">
-                <div className="text-5xl md:text-7xl font-black text-[#00ff88] tracking-widest mb-2 font-space drop-shadow-[0_0_20px_rgba(0,255,136,0.5)]">
-                  {currentLetter}
-                </div>
-                <div className="text-[10rem] md:text-[14rem] font-black text-white leading-none tracking-tighter font-syne drop-shadow-[0_4px_30px_rgba(255,255,255,0.4)]">
-                  {currentBall}
-                </div>
+              <div className="flex flex-col items-center justify-center space-y-4">
+                <BingoBallSphere letter={currentLetter} number={currentBall} size="lg" />
 
                 {announcerSubtitle && (
-                  <div className="mt-3 glass-panel border border-[#00ff88]/40 p-2.5 rounded-xl text-[#00ff88] font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 max-w-md mx-auto">
-                    <Volume2 size={16} className="text-white shrink-0" />
+                  <div className="mt-3 glass-panel border border-[#00ff88]/40 p-3 rounded-xl text-[#00ff88] font-black text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 max-w-md mx-auto shadow-[0_0_15px_rgba(0,255,136,0.2)]">
+                    <Volume2 size={18} className="text-white shrink-0" />
                     <span>🎙️ LOCUTOR: "{announcerSubtitle}"</span>
                   </div>
                 )}

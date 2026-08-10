@@ -3,6 +3,8 @@ import { Star, Trophy, Check, Crown } from "lucide-react";
 import confetti from "canvas-confetti";
 import { getPlayerNeonTheme } from "../utils/themeEngine";
 import { playPopSound } from "../utils/audio";
+import { getLetterForNumber } from "../utils/bingoLogic";
+import BingoBallSphere from "./BingoBallSphere";
 
 export default function PlayerMobileCard({
   card,
@@ -97,16 +99,20 @@ export default function PlayerMobileCard({
         </div>
 
         {/* Última Balota Cantada */}
-        <div className="text-right">
-          <span
-            style={{ color: theme.hex }}
-            className="text-[9px] font-black uppercase tracking-wider block"
-          >
-            ÚLTIMA BALOTA
-          </span>
-          <div className="text-2xl sm:text-3xl font-black text-white font-space leading-none drop-shadow-[0_0_10px_rgba(255,255,255,0.6)]">
-            {currentBall ? currentBall : "--"}
+        <div className="text-right flex items-center gap-2">
+          <div className="text-right">
+            <span
+              style={{ color: theme.hex }}
+              className="text-[9px] font-black uppercase tracking-wider block"
+            >
+              BALOTA
+            </span>
           </div>
+          {currentBall ? (
+            <BingoBallSphere letter={getLetterForNumber(currentBall)} number={currentBall} size="sm" />
+          ) : (
+            <div className="text-xl font-black text-slate-500 font-space">--</div>
+          )}
         </div>
       </div>
 
